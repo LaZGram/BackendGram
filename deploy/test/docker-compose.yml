@@ -1,63 +1,69 @@
-version: "3"
+version: '3.7'
 # -----------------------------------------------
 networks:
   internal_network:
     driver: bridge
 # -----------------------------------------------
+
 # -----------------------------------------------
 services:
-  micro-account:
-    build:
-      context: ../../services/account
-      dockerfile: Dockerfile
-    restart: always
+  node-base:
+    &node-base
+    image: node:20.15-alpine
+    working_dir: /usr/app
+    depends_on:
+      - "kafka"
     networks:
       - internal_network
+# -----------------------------------------------
+  micro-account:
+    <<: *node-base
+    volumes:
+      - ../../services/account:/usr/app
+    command: "npm install"
+    entrypoint: ["npm", "run", "start:dev"]
+    
 # -----------------------------------------------
   api_gateway:
-    build:
-      context: ../../gateway
-      dockerfile: Dockerfile
-    restart: always
-    networks:
-      - internal_network
+    <<: *node-base
+    volumes:
+      - ../../gateway:/usr/app
     ports:
       - "3000:3000"
+    command: "npm install"
+    entrypoint: ["npm", "run", "start:dev"]
+    
 # -----------------------------------------------
   kafdrop:
-    image: linuxforhealth/kafdrop
+    image: obsidiandynamics/kafdrop
     restart: "no"
     ports:
       - "9000:9000"
     environment:
       KAFKA_BROKERCONNECT: "kafka:9092"
-      JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
     depends_on:
       - "kafka"
     networks:
       - internal_network
   kafka:
-    image: wurstmeister/kafka
+    image: obsidiandynamics/kafka
     restart: "no"
     ports:
       - "2181:2181"
       - "9092:9092"
     environment:
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_LISTENERS: 'INTERNAL://:9092'
-      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://:9092'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'INTERNAL:PLAINTEXT'
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: '1'
-      KAFKA_CREATE_TOPICS: 'example-topic:1:1'
-      KAFKA_ADVERTISED_HOST_NAME: "kafka"
-      KAFKA_ADVERTISED_PORT: 9092
-    depends_on:
-      - "zookeeper"
+      KAFKA_LISTENERS: "INTERNAL://:9092"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+      KAFKA_ZOOKEEPER_SESSION_TIMEOUT: "6000"
+      KAFKA_RESTART_ATTEMPTS: "10"
+      KAFKA_RESTART_DELAY: "5"
+      ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: "0"
     networks:
       - internal_network
-  zookeeper:
-    image: zookeeper:3.5.9
-    restart: "no"
-    networks:
-      - internal_network
+    # healthcheck:
+    #   test: /kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server kafka:9092 || exit 1
+    #   interval: 1s
+    #   timeout: 60s
+    #   retries: 60
