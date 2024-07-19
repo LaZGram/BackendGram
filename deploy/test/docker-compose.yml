@@ -1,0 +1,63 @@
+version: "3"
+# -----------------------------------------------
+networks:
+  internal_network:
+    driver: bridge
+# -----------------------------------------------
+# -----------------------------------------------
+services:
+  micro-account:
+    build:
+      context: ../../services/account
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      - internal_network
+# -----------------------------------------------
+  api_gateway:
+    build:
+      context: ../../gateway
+      dockerfile: Dockerfile
+    restart: always
+    networks:
+      - internal_network
+    ports:
+      - "3000:3000"
+# -----------------------------------------------
+  kafdrop:
+    image: linuxforhealth/kafdrop
+    restart: "no"
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "kafka:9092"
+      JVM_OPTS: "-Xms16M -Xmx48M -Xss180K -XX:-TieredCompilation -XX:+UseStringDeduplication -noverify"
+    depends_on:
+      - "kafka"
+    networks:
+      - internal_network
+  kafka:
+    image: wurstmeister/kafka
+    restart: "no"
+    ports:
+      - "2181:2181"
+      - "9092:9092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENERS: 'INTERNAL://:9092'
+      KAFKA_ADVERTISED_LISTENERS: 'INTERNAL://:9092'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'INTERNAL:PLAINTEXT'
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: '1'
+      KAFKA_CREATE_TOPICS: 'example-topic:1:1'
+      KAFKA_ADVERTISED_HOST_NAME: "kafka"
+      KAFKA_ADVERTISED_PORT: 9092
+    depends_on:
+      - "zookeeper"
+    networks:
+      - internal_network
+  zookeeper:
+    image: zookeeper:3.5.9
+    restart: "no"
+    networks:
+      - internal_network
