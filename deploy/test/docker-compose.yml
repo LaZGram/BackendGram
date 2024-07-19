@@ -1,37 +1,40 @@
 version: '3.7'
+x-node-common:
+  &node-base
+  working_dir: /usr/app
+  depends_on:
+    - "kafka"
+  networks:
+    - internal_network
 # -----------------------------------------------
 networks:
   internal_network:
     driver: bridge
 # -----------------------------------------------
-
 # -----------------------------------------------
 services:
-  node-base:
-    &node-base
-    image: node:20.15-alpine
-    working_dir: /usr/app
-    depends_on:
-      - "kafka"
-    networks:
-      - internal_network
+
 # -----------------------------------------------
   micro-account:
     <<: *node-base
+    build:
+      context: ../../services/account
+      dockerfile: ../../deploy/test/Dockerfile
     volumes:
       - ../../services/account:/usr/app
-    command: "npm install"
-    entrypoint: ["npm", "run", "start:dev"]
+    command: /bin/sh -c "npm run start:dev"
     
 # -----------------------------------------------
   api_gateway:
     <<: *node-base
+    build:
+      context: ../../gateway
+      dockerfile: ../deploy/test/Dockerfile
     volumes:
       - ../../gateway:/usr/app
     ports:
       - "3000:3000"
-    command: "npm install"
-    entrypoint: ["npm", "run", "start:dev"]
+    command: /bin/sh -c "npm run start:dev"
     
 # -----------------------------------------------
   kafdrop:
