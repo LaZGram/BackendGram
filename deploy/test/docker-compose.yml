@@ -21,7 +21,7 @@ services:
       context: ../../services/account
       dockerfile: ../../deploy/test/Dockerfile
     volumes:
-      - ../../services/account:/usr/app
+      - ../../services/account/src:/usr/app/src
     command: /bin/sh -c "npm run start:dev"
     
 # -----------------------------------------------
@@ -31,7 +31,7 @@ services:
       context: ../../gateway
       dockerfile: ../deploy/test/Dockerfile
     volumes:
-      - ../../gateway:/usr/app
+      - ../../gateway/src:/usr/app/src
     ports:
       - "3000:3000"
     command: /bin/sh -c "npm run start:dev"
