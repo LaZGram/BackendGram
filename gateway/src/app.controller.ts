@@ -10,9 +10,13 @@ export class AppController {
   private admin: Admin;
   private readonly appService: AppService;
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get('/hello')
+  // getHello(): string {
+  //   return this.appService.getHello();
+  // }
+  async getHello() {
+    const fibo = await this.getHello();
+    return fibo;
   }
 
   async onModuleInit() {
