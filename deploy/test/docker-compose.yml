@@ -1,10 +1,12 @@
-version: '3.7'
+version: '3.8'
 x-node-common:
   &node-base
   depends_on:
-    - "kafka"
+    kafka:
+      condition: service_healthy
   networks:
     - internal_network
+  restart: on-failure
 # -----------------------------------------------
 networks:
   internal_network:
@@ -44,7 +46,8 @@ services:
     environment:
       KAFKA_BROKERCONNECT: "kafka:9092"
     depends_on:
-      - "kafka"
+      kafka:
+        condition: service_healthy
     networks:
       - internal_network
   kafka:
@@ -64,8 +67,9 @@ services:
       ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: "0"
     networks:
       - internal_network
-    # healthcheck:
-    #   test: /kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server kafka:9092 || exit 1
-    #   interval: 1s
-    #   timeout: 60s
-    #   retries: 60
+    healthcheck:
+      test: ["CMD", "nc", "-zv", "kafka", "9092"]
+      interval: 10s
+      timeout: 10s
+      retries: 100
+      start_period: 30s
