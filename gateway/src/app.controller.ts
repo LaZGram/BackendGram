@@ -6,17 +6,13 @@ import { Kafka } from 'kafkajs';
 
 @Controller()
 export class AppController {
-  constructor(@Inject() private client: ClientKafka) {}
+  constructor(@Inject('KAFKA') private client: ClientKafka) {}
   private admin: Admin;
   private readonly appService: AppService;
 
   @Get('/hello')
-  // getHello(): string {
-  //   return this.appService.getHello();
-  // }
-  async getHello() {
-    const fibo = await this.getHello();
-    return fibo;
+  getHello(): string {
+    return this.appService.getHello();
   }
 
   async onModuleInit() {
