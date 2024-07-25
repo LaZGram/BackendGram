@@ -8,13 +8,22 @@ x-node-common:
     - internal_network
   restart: on-failure
 # -----------------------------------------------
+x-db-common:
+  &db-base
+  image: postgres
+  environment:
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: password
+  networks:
+    - internal_network
+# -----------------------------------------------
 networks:
   internal_network:
     driver: bridge
 # -----------------------------------------------
 # -----------------------------------------------
-services:
 
+services:
 # -----------------------------------------------
   micro-account:
     <<: *node-base
@@ -24,7 +33,12 @@ services:
     volumes:
       - ../../services/account/src:/usr/app/src
     entrypoint: ["npm", "run", "start:dev"]
-    
+
+  db-account:
+    <<: *db-base
+    volumes:
+      - ../../services/account/db:/var/lib/postgresql/data
+  
 # -----------------------------------------------
   api_gateway:
     <<: *node-base
