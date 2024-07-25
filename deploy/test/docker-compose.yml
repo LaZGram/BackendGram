@@ -13,14 +13,22 @@ x-db-common:
   image: postgres
   environment:
     POSTGRES_USER: postgres
-    POSTGRES_PASSWORD: password
+    POSTGRES_PASSWORD: postgres
+    POSTGRES_DB: postgres
   networks:
     - internal_network
+  user: "0:0"
 # -----------------------------------------------
 networks:
   internal_network:
     driver: bridge
 # -----------------------------------------------
+
+volumes:
+  pgadmin:
+    driver: local
+  db-account:
+    driver: local
 # -----------------------------------------------
 
 services:
@@ -37,7 +45,7 @@ services:
   db-account:
     <<: *db-base
     volumes:
-      - ../../services/account/db:/var/lib/postgresql/data
+      - db-account:/var/lib/postgresql/data
   
 # -----------------------------------------------
   api_gateway:
@@ -85,3 +93,17 @@ services:
       timeout: 10s
       retries: 100
       start_period: 30s
+# -----------------------------------------------
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: "no"
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: postgres@postgres.com
+      PGADMIN_DEFAULT_PASSWORD: postgres
+    networks:
+      - internal_network
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    user: "0:0"
