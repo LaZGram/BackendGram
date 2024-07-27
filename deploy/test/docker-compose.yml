@@ -33,6 +33,11 @@ volumes:
 
 services:
 # -----------------------------------------------
+  db-postgres:
+    <<: *db-base
+    volumes:
+      - db-postgres:/var/lib/postgresql/data
+# -----------------------------------------------
   micro-account:
     <<: *node-base
     build:
@@ -41,11 +46,6 @@ services:
     volumes:
       - ../../services/account/src:/usr/app/src
     entrypoint: ["npm", "run", "start:dev"]
-
-  db-postgres:
-    <<: *db-base
-    volumes:
-      - db-postgres:/var/lib/postgresql/data
   
 # -----------------------------------------------
   api_gateway:
