@@ -10,7 +10,7 @@ x-node-common:
     - internal_network
   restart: on-failure
   volumes:
-    - ../../prisma:/usr/app/prisma
+    - ../../prisma:/prisma
 # -----------------------------------------------
 x-db-common:
   &db-base
