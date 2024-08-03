@@ -40,13 +40,13 @@ services:
     volumes:
       - db-postgres:/var/lib/postgresql/data
 # -----------------------------------------------
-  micro-account:
+  micro-base:
     <<: *node-base
     build:
-      context: ../../services/account
-      dockerfile: ../../deploy/test/Dockerfile
+      context: ../../services/base_service
+      dockerfile: ../../deploy/test/service.Dockerfile
     volumes:
-      - ../../services/account/src:/usr/app/src
+      - ../../services/base_service/src:/usr/app/src
     entrypoint: ["npm", "run", "start:dev"]
   
 # -----------------------------------------------
@@ -54,7 +54,7 @@ services:
     <<: *node-base
     build:
       context: ../../gateway
-      dockerfile: ../deploy/test/Dockerfile
+      dockerfile: ../deploy/test/gateway.Dockerfile
     volumes:
       - ../../gateway/src:/usr/app/src
     ports:
