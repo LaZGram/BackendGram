@@ -40,16 +40,6 @@ services:
     volumes:
       - db-postgres:/var/lib/postgresql/data
 # -----------------------------------------------
-  micro-base:
-    <<: *node-base
-    build:
-      context: ../../services/base_service
-      dockerfile: ../../deploy/test/service.Dockerfile
-    volumes:
-      - ../../services/base_service/src:/usr/app/src
-    entrypoint: ["npm", "run", "start:dev"]
-  
-# -----------------------------------------------
   api_gateway:
     <<: *node-base
     build:
@@ -61,6 +51,31 @@ services:
       - "3000:3000"
     entrypoint: [ "npm", "run", "start:dev"]
     
+# -----------------------------------------------
+  micro-base:
+    <<: *node-base
+    build:
+      context: ../../services/base_service
+      dockerfile: ../../deploy/test/service.Dockerfile
+    environment:
+      - SERVICE_NAME=micro-base
+    volumes:
+      - ../../services/base_service/src:/usr/app/src
+    entrypoint: ["npm", "run", "start:dev"]
+
+# -----------------------------------------------
+  micro-requester:
+    <<: *node-base
+    build:
+      context: ../../services/requester
+      dockerfile: ../../deploy/test/service.Dockerfile
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db-postgres:5432/postgres
+      SERVICE_NAME: micro-requester
+    volumes:
+      - ../../services/requester/src:/usr/app/src
+    entrypoint: ["npm", "run", "start:dev"]
+  
 # -----------------------------------------------
   kafdrop:
     image: obsidiandynamics/kafdrop

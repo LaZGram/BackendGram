@@ -1,4 +1,4 @@
-import { Controller, Get, Inject } from '@nestjs/common';
+import { Controller, Get, Inject, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ClientKafka } from '@nestjs/microservices';
 import { Admin } from '@nestjs/microservices/external/kafka.interface';
@@ -7,7 +7,7 @@ import { lastValueFrom, Observable } from 'rxjs';
 
 @Controller()
 export class AppController {
-  constructor(@Inject('KAFKA') private client: ClientKafka, private appService: AppService) {}
+  constructor(@Inject('KAFKA') private client: ClientKafka, private appService: AppService) { }
   private admin: Admin;
 
   @Get('/hello')
@@ -18,7 +18,10 @@ export class AppController {
   }
 
   async onModuleInit() {
-    this.client.subscribeToResponseOf('hello');
+    const topic_list = ['hello', 'requesterRegistration'];
+    topic_list.forEach(async (topic) => {
+      await this.client.subscribeToResponseOf(topic);
+    });
 
 
     const kafka = new Kafka({
@@ -29,21 +32,20 @@ export class AppController {
     const topics = await this.admin.listTopics();
 
     const topicList = [];
-    if (!topics.includes('hello')) {
-      topicList.push({
-        topic: 'hello',
-        numPartitions: 10,
-        replicationFactor: 1,
-      });
-    }
-
-    if (!topics.includes('hello.reply')) {
-      topicList.push({
-        topic: 'hello.reply',
-        numPartitions: 10,
-        replicationFactor: 1,
-      });
-    }
+    topic_list.forEach((topic) => {
+      if (!topics.includes(topic)) {
+        topicList.push({
+          topic,
+          numPartitions: 1,
+        });
+      }
+      if (!topics.includes(`${topic}.reply`)) {
+        topicList.push({
+          topic: `${topic}.reply`,
+          numPartitions: 1,
+        });
+      }
+    });
 
     if (topicList.length) {
       await this.admin.createTopics({

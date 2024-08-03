@@ -13,7 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 //  --------------------------------------------------------------------------
-model Test1 {
+model Requester {
   id   Int     @id @default(autoincrement())
-  data Int?
+  name String?
 }
