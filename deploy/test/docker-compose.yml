@@ -9,8 +9,6 @@ x-node-common:
   networks:
     - internal_network
   restart: on-failure
-  volumes:
-    - ../../dtos:/dtos
 # -----------------------------------------------
 x-db-common:
   &db-base
