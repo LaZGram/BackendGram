@@ -91,7 +91,7 @@ model Order {
   orderId       Int      @id @default(autoincrement())
   orderDate     DateTime
   orderStatus   String
-  totalPrice    Float
+  amount    Float
 
   admin Admin @relation(fields: [adminId], references: [adminId])
   adminId     Int @unique
@@ -113,6 +113,7 @@ model Transaction{
   type String
   date  DateTime
   status  String
+  amount  Float
 
   order Order?
 }
@@ -136,6 +137,18 @@ model Shop {
   menu  Menu[]
   canteen Canteen @relation(fields: [canteenId],  references: [canteenId])
   canteenId Int
+  schedule  Schedule[]
+}
+
+model Schedule{
+  scheduleId  Int @id @default(autoincrement())
+  dayOfWeek String
+  startTime DateTime
+  endTime DateTime
+  status Boolean
+
+  shop  Shop  @relation(fields: [shopId], references: [shopId])
+  shopId  Int @unique
 }
 
 model Review{
@@ -155,23 +168,33 @@ model Menu {
   price       Float
   picture     String
   description String
-  status      String
+  status      Boolean
 
   shop  Shop  @relation(fields: [shopId], references: [shopId])
   shopId  Int @unique
-  addon  Addon[]
+  addonItem  AddonItem[]
   orderItem OrderItem @relation(fields: [orderItemId], references: [orderItemId])
   orderItemId Int @unique
+}
+
+model AddonItem{
+  addonItemId Int @id @default(autoincrement())
+  name String
+  mustChoose Boolean
+  selectQuantity Int
+
+  menu  Menu  @relation(fields: [menuId], references: [menuId])
+  menuId  Int @unique
+  addon Addon @relation(fields: [addonId], references: [addonId])
+  addonId Int
 }
 
 model Addon{
   addonId Int @id @default(autoincrement())
   name String
   price Float
-  status  Boolean
 
-  menu  Menu  @relation(fields: [menuId], references: [menuId])
-  menuId  Int @unique
+  addonItem AddonItem[]
 }
 
 model OrderItem {
