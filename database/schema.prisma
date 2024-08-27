@@ -56,7 +56,6 @@ model Requester {
   lastName       String
   phoneNumber    String
   profilePicture String
-  debitCardId    DebitCard[]
 
   auth   Authorization @relation(fields: [authId], references: [authId])
   authId         Int    @unique
@@ -64,6 +63,7 @@ model Requester {
   addressId      Int    @unique
   order Order[]
   review  Review[]
+  debitCard    DebitCard[]
 }
 
 model DebitCard {
@@ -73,7 +73,7 @@ model DebitCard {
   cvv String
 
   requester Requester @relation(fields: [requesterId], references: [requesterId])
-  requesterId Int[]
+  requesterId Int @unique
 }
 
 model Address {
