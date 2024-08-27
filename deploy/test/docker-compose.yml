@@ -79,6 +79,18 @@ services:
     entrypoint: ["npm", "run", "start:dev"]
   
 # -----------------------------------------------
+  micro-shop:
+    <<: *node-base
+    build:
+      context: ../../services/shop
+      dockerfile: ../../deploy/test/service.Dockerfile
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db-postgres:5432/postgres
+      SERVICE_NAME: micro-shop
+    volumes:
+      - ../../services/shop/src:/usr/app/src
+    entrypoint: ["npm", "run", "start:dev"]
+# -----------------------------------------------
   kafdrop:
     image: obsidiandynamics/kafdrop
     restart: "no"
