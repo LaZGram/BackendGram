@@ -9,7 +9,6 @@ export class AppController {
 
   @MessagePattern('hello')
   getHello(@Payload() msg:HelloDto): string {
-    console.log(msg.message);
     return this.appService.getHello(msg);
   }
 }
