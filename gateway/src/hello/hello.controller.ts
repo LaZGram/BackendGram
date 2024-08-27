@@ -13,7 +13,7 @@ export class HelloController {
         let helloDto = new HelloDto();
         helloDto.message = "Hello Kafka!";
         console.log(helloDto);
-        const result = await this.client.send('hello', helloDto);
+        const result = await this.client.send('hello', JSON.stringify(helloDto));
         const value = await lastValueFrom(result);
         return value
     }
