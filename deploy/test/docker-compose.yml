@@ -9,8 +9,6 @@ x-node-common:
   networks:
     - internal_network
   restart: on-failure
-  volumes:
-    - ../../dtos:/dtos
 # -----------------------------------------------
 x-db-common:
   &db-base
@@ -60,7 +58,8 @@ services:
       context: ../../services/base_service
       dockerfile: ../../deploy/test/service.Dockerfile
     environment:
-      - SERVICE_NAME=micro-base
+      DATABASE_URL: postgres://postgres:postgres@db-postgres:5432/postgres
+      SERVICE_NAME: micro-base
     volumes:
       - ../../services/base_service/src:/usr/app/src
     entrypoint: ["npm", "run", "start:dev"]
