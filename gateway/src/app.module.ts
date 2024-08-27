@@ -3,11 +3,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ClientKafka, ClientsModule, Transport } from '@nestjs/microservices';
 import { RequesterController } from './requester/requester.controller';
-<<<<<<< HEAD
-import { ShopController } from './shop/shop.controller';
-=======
 import { HelloController } from './hello/hello.controller';
->>>>>>> upstream/main
+import { ShopController } from './shop/shop.controller';
 
 @Module({
   imports: [
@@ -27,11 +24,7 @@ import { HelloController } from './hello/hello.controller';
       },
     ]),
   ],
-<<<<<<< HEAD
-  controllers: [AppController, RequesterController, ShopController],
-=======
-  controllers: [AppController, RequesterController, HelloController],
->>>>>>> upstream/main
+  controllers: [AppController, RequesterController, HelloController, ShopController],
   providers: [AppService, ClientKafka],
 })
 export class AppModule {}
