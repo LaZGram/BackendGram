@@ -172,29 +172,29 @@ model Menu {
 
   shop  Shop  @relation(fields: [shopId], references: [shopId])
   shopId  Int @unique
-  addonItem  AddonItem[]
-  orderItem OrderItem @relation(fields: [orderItemId], references: [orderItemId])
-  orderItemId Int @unique
+  addon  Addon[]
+  orderItem OrderItem[]
 }
 
-model AddonItem{
-  addonItemId Int @id @default(autoincrement())
+model Addon{
+  addonId Int @id @default(autoincrement())
   name String
   mustChoose Boolean
   selectQuantity Int
 
   menu  Menu  @relation(fields: [menuId], references: [menuId])
   menuId  Int @unique
-  addon Addon @relation(fields: [addonId], references: [addonId])
-  addonId Int
+  addonItem AddonItem[]
 }
 
-model Addon{
-  addonId Int @id @default(autoincrement())
+model AddonItem{
+  addonItemId Int @id @default(autoincrement())
   name String
   price Float
 
-  addonItem AddonItem[]
+  addon Addon @relation(fields: [addonId], references: [addonId])
+  addonId Int @unique
+  orderItemExtra  OrderItemExtra[]
 }
 
 model OrderItem {
@@ -204,5 +204,17 @@ model OrderItem {
 
   order Order @relation(fields: [orderId], references: [orderId])
   orderId             Int @unique
-  menu  Menu[]
+  orderItemExtra  OrderItemExtra[]
+  menu  Menu  @relation(fields: [menuId], references: [menuId])
+  menuId  Int @unique
+}
+
+model OrderItemExtra{
+  OrderItemExtraId Int @id @default(autoincrement())
+  selected Boolean
+
+  orderItem OrderItem @relation(fields: [orderItemId], references: [orderItemId])
+  orderItemId Int @unique
+  addonItem AddonItem @relation(fields: [addonItemId], references: [addonItemId])
+  addonItemId Int @unique
 }
