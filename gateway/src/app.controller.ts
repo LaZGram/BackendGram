@@ -11,7 +11,7 @@ export class AppController {
   private admin: Admin;
 
   async onModuleInit() {
-    const topic_list = ['hello', 'requesterRegistration'];
+    const topic_list = ['hello', 'requesterRegistration', 'googleAuth'];
     topic_list.forEach(async (topic) => {
       await this.client.subscribeToResponseOf(topic);
     });
@@ -25,25 +25,25 @@ export class AppController {
     const topics = await this.admin.listTopics();
 
     const topicList = [];
-    // topic_list.forEach((topic) => {
-    //   if (!topics.includes(topic)) {
-    //     topicList.push({
-    //       topic,
-    //       numPartitions: 1,
-    //     });
-    //   }
-    //   if (!topics.includes(`${topic}.reply`)) {
-    //     topicList.push({
-    //       topic: `${topic}.reply`,
-    //       numPartitions: 1,
-    //     });
-    //   }
-    // });
+    topic_list.forEach((topic) => {
+      if (!topics.includes(topic)) {
+        topicList.push({
+          topic,
+          numPartitions: 1,
+        });
+      }
+      if (!topics.includes(`${topic}.reply`)) {
+        topicList.push({
+          topic: `${topic}.reply`,
+          numPartitions: 1,
+        });
+      }
+    });
 
-    // if (topicList.length) {
-    //   await this.admin.createTopics({
-    //     topics: topicList,
-    //   });
-    // }
+    if (topicList.length) {
+      await this.admin.createTopics({
+        topics: topicList,
+      });
+    }
   }
 }

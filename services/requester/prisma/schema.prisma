@@ -26,9 +26,9 @@ model Admin {
 }
 
 model Authorization {
-  authId      Int    @id
+  authId      String    @id
   tokenId     String
-  accessToken String
+  sessionToken String
 
   requester Requester?
   walker    Walker?
@@ -44,7 +44,7 @@ model Walker {
   bankAccountNo   String
 
   auth   Authorization @relation(fields: [authId], references: [authId])
-  authId          Int           @unique
+  authId          String           @unique
   order Order[]
 }
 
@@ -58,7 +58,7 @@ model Requester {
   profilePicture String
 
   auth   Authorization @relation(fields: [authId], references: [authId])
-  authId         Int    @unique
+  authId         String    @unique
   address Address @relation(fields: [addressId], references: [addressId])
   addressId      Int    @unique
   order Order[]

@@ -6,8 +6,4 @@ import { MessagePattern, Payload } from '@nestjs/microservices';
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @MessagePattern('requesterRegistration')
-  requesterRegistration(msg: any): string {
-    return this.appService.requesterRegistration(msg);
-  }
 }
