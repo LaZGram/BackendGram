@@ -20,10 +20,11 @@ export class RequesterController {
         return value;
     }
 
-    // @Get('canteens')
-    // async getCanteens(@Body() body: any): Promise<string> {
-    //     const result = await this.client.send('getCanteens', body);
-    //     const value = await lastValueFrom(result);
-    //     return value;
-    // }
+    @Post('auth/google')
+        async googleAuth(@Body() body: any): Promise<string> {
+            const token = body.token;
+            const result = await this.client.send('googleAuth', JSON.stringify({ token }));
+            const value = await lastValueFrom(result);
+            return value;
+        }
 }

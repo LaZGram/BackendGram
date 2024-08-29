@@ -14,7 +14,7 @@ export class AppController {
   private admin: Admin;
 
   async onModuleInit() {
-    const topic_list = ['hello', 'requesterRegistration', 'getCanteens', 'getProfile', 'createMenu'];
+    const topic_list = ['hello', 'requesterRegistration', 'getCanteens', 'getProfile', 'createMenu', 'googleAuth'];
     topic_list.forEach(async (topic) => {
       await this.client.subscribeToResponseOf(topic);
     });
