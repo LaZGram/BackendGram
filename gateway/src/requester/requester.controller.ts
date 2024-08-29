@@ -19,4 +19,11 @@ export class RequesterController {
         const value = await lastValueFrom(result);
         return value;
     }
+
+    // @Get('canteens')
+    // async getCanteens(@Body() body: any): Promise<string> {
+    //     const result = await this.client.send('getCanteens', body);
+    //     const value = await lastValueFrom(result);
+    //     return value;
+    // }
 }
