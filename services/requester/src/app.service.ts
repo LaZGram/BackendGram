@@ -31,21 +31,22 @@ export class AppService {
   }
 
   requesterRegistration(msg: any): any {
-    return this.prisma.requester.create({
-      data: {
-        // requesterId: msg.requesterId,
-        username: msg.username,
-        email: msg.email,
-        firstName: msg.firstName,
-        lastName: msg.lastName,
-        phoneNumber: msg.phoneNumber,
-        profilePicture: msg.profilePicture,
-        addressId: msg.addressId,
-        // address: {
-        //   connect: { addressId: msg.addressId },
-        // },
-      },
-    });
+    return "";
+    // return this.prisma.requester.create({
+    //   data: {
+    //     // requesterId: msg.requesterId,
+    //     username: msg.username,
+    //     email: msg.email,
+    //     firstName: msg.firstName,
+    //     lastName: msg.lastName,
+    //     phoneNumber: msg.phoneNumber,
+    //     profilePicture: msg.profilePicture,
+    //     addressId: msg.addressId,
+    //     // address: {
+    //     //   connect: { addressId: msg.addressId },
+    //     // },
+    //   },
+    // });
   }
 
 }
