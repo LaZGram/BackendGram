@@ -21,10 +21,10 @@ export class RequesterController {
     }
 
     @Post('auth/google')
-    async googleAuth(@Body() body: any): Promise<string> {
-        const token = body.token;
-        const result = await this.client.send('googleAuth', JSON.stringify({ token }));
-        const value = await lastValueFrom(result);
-        return value;
-    }
+        async googleAuth(@Body() body: any): Promise<string> {
+            const token = body.token;
+            const result = await this.client.send('googleAuth', JSON.stringify({ token }));
+            const value = await lastValueFrom(result);
+            return value;
+        }
 }

@@ -7,11 +7,14 @@ import { lastValueFrom, Observable } from 'rxjs';
 
 @Controller()
 export class AppController {
+  getHello(): any {
+    throw new Error('Method not implemented.');
+  }
   constructor(@Inject('KAFKA') private client: ClientKafka, private appService: AppService) { }
   private admin: Admin;
 
   async onModuleInit() {
-    const topic_list = ['hello', 'requesterRegistration', 'googleAuth'];
+    const topic_list = ['hello', 'requesterRegistration', 'getCanteens', 'getProfile', 'createMenu', 'googleAuth'];
     topic_list.forEach(async (topic) => {
       await this.client.subscribeToResponseOf(topic);
     });
