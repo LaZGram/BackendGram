@@ -28,7 +28,6 @@ model Admin {
 model Authorization {
   authId      String    @id
   tokenId     String
-  sessionToken String
 
   requester Requester?
   walker    Walker?
