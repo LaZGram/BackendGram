@@ -2,7 +2,7 @@ import { Controller, Get, Inject, Post } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { lastValueFrom, Observable } from 'rxjs';
 
-import { HelloDto } from '../../dtos/hello.dto';
+import { HelloDto } from '../dtos/hello.dto';
 
 @Controller('hello')
 export class HelloController {
