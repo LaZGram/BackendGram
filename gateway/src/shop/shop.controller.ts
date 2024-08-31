@@ -50,21 +50,21 @@ export class ShopController {
     return value;
   }
   
-  @Post('create-option')
+  @Post('menu/create-option')
   async createOption(@Body() createOptionRequest: CreateOptionRequestDto): Promise<string> {
       const result = await this.client.send('createOption', JSON.stringify(createOptionRequest));
       const value = await lastValueFrom(result);
       return value;
   }
 
-  @Post('edit-option')
+  @Post('menu/edit-option')
   async editOption(@Body() editOptionRequest: EditOptionRequestDto): Promise<string> {
       const result = await this.client.send('editOption', JSON.stringify(editOptionRequest));
       const value = await lastValueFrom(result);
       return value;
   }
 
-  @Delete('delete-option')
+  @Delete('menu/delete-option')
   async deleteOption(@Query() optionId: object): Promise<string> {
     const result = await this.client.send('deleteOption', JSON.stringify(optionId));
     const value = await lastValueFrom(result);
