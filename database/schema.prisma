@@ -176,28 +176,29 @@ model Menu {
 
   shop  Shop  @relation(fields: [shopId], references: [shopId])
   shopId  Int
-  addon  Addon[]
+  option  Option[]
   orderItem OrderItem[]
 }
 
-model Addon{
-  addonId Int @id @default(autoincrement())
+model Option{
+  optionId Int @id @default(autoincrement())
   name String
   mustChoose Boolean
-  selectQuantity Int
+  maxChoose Int
+  minChoose Int
 
   menu  Menu  @relation(fields: [menuId], references: [menuId])
   menuId  Int
-  addonItem AddonItem[]
+  optionItem OptionItem[]
 }
 
-model AddonItem{
-  addonItemId Int @id @default(autoincrement())
+model OptionItem{
+  optionItemId Int @id @default(autoincrement())
   name String
   price Float
 
-  addon Addon @relation(fields: [addonId], references: [addonId])
-  addonId Int
+  option Option @relation(fields: [optionId], references: [optionId])
+  optionId Int
   orderItemExtra  OrderItemExtra[]
 }
 
@@ -219,6 +220,6 @@ model OrderItemExtra{
 
   orderItem OrderItem @relation(fields: [orderItemId], references: [orderItemId])
   orderItemId Int
-  addonItem AddonItem @relation(fields: [addonItemId], references: [addonItemId])
-  addonItemId Int
+  optionItem OptionItem @relation(fields: [optionItemId], references: [optionItemId])
+  optionItemId Int
 }

@@ -73,7 +73,7 @@ model DebitCard {
   cvv String
 
   requester Requester @relation(fields: [requesterId], references: [requesterId])
-  requesterId Int @unique
+  requesterId Int
 }
 
 model Address {
@@ -94,15 +94,15 @@ model Order {
   amount    Float
 
   admin Admin @relation(fields: [adminId], references: [adminId])
-  adminId     Int @unique
+  adminId     Int
   address Address @relation(fields: [addressId], references: [addressId])
   addressId     Int @unique
   requester Requester @relation(fields: [requesterId], references: [requesterId])
-  requesterId   Int @unique
+  requesterId   Int
   walker  Walker  @relation(fields: [walkerId], references: [walkerId])
-  walkerId      Int @unique
+  walkerId      Int
   canteen Canteen @relation(fields: [canteenId], references: [canteenId])
-  canteenId     Int @unique
+  canteenId     Int
   transaction Transaction @relation(fields: [transactionId], references: [transactionId])
   transactionId Int @unique
   orderItem OrderItem[]
@@ -130,8 +130,13 @@ model Canteen {
 
 model Shop {
   shopId    Int    @id @default(autoincrement())
-  name      String
-  status    String
+  username      String
+  password  String
+  shopName  String
+  profilePicture  String
+  tel   String
+  shopNumber  String
+  status    Boolean
 
   review  Review[]
   menu  Menu[]
@@ -148,7 +153,7 @@ model Schedule{
   status Boolean
 
   shop  Shop  @relation(fields: [shopId], references: [shopId])
-  shopId  Int @unique
+  shopId  Int
 }
 
 model Review{
@@ -157,9 +162,9 @@ model Review{
   comment String
 
   shop  Shop  @relation(fields: [shopId], references: [shopId])
-  shopId  Int @unique
+  shopId  Int
   requester Requester @relation(fields: [requesterId], references: [requesterId])
-  requesterId Int @unique
+  requesterId Int
 }
 
 model Menu {
@@ -171,30 +176,30 @@ model Menu {
   status      Boolean
 
   shop  Shop  @relation(fields: [shopId], references: [shopId])
-  shopId  Int @unique
-  addonItem  AddonItem[]
-  orderItem OrderItem @relation(fields: [orderItemId], references: [orderItemId])
-  orderItemId Int @unique
-}
-
-model AddonItem{
-  addonItemId Int @id @default(autoincrement())
-  name String
-  mustChoose Boolean
-  selectQuantity Int
-
-  menu  Menu  @relation(fields: [menuId], references: [menuId])
-  menuId  Int @unique
-  addon Addon @relation(fields: [addonId], references: [addonId])
-  addonId Int
+  shopId  Int
+  addon  Addon[]
+  orderItem OrderItem[]
 }
 
 model Addon{
   addonId Int @id @default(autoincrement())
   name String
+  mustChoose Boolean
+  selectQuantity Int
+
+  menu  Menu  @relation(fields: [menuId], references: [menuId])
+  menuId  Int
+  addonItem AddonItem[]
+}
+
+model AddonItem{
+  addonItemId Int @id @default(autoincrement())
+  name String
   price Float
 
-  addonItem AddonItem[]
+  addon Addon @relation(fields: [addonId], references: [addonId])
+  addonId Int
+  orderItemExtra  OrderItemExtra[]
 }
 
 model OrderItem {
@@ -203,6 +208,18 @@ model OrderItem {
   specialInstructions String
 
   order Order @relation(fields: [orderId], references: [orderId])
-  orderId             Int @unique
-  menu  Menu[]
+  orderId             Int
+  orderItemExtra  OrderItemExtra[]
+  menu  Menu  @relation(fields: [menuId], references: [menuId])
+  menuId  Int
+}
+
+model OrderItemExtra{
+  OrderItemExtraId Int @id @default(autoincrement())
+  selected Boolean
+
+  orderItem OrderItem @relation(fields: [orderItemId], references: [orderItemId])
+  orderItemId Int
+  addonItem AddonItem @relation(fields: [addonItemId], references: [addonItemId])
+  addonItemId Int
 }

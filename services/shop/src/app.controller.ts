@@ -1,13 +1,25 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { AppService } from './app.service';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { ClientKafka, MessagePattern, Payload } from '@nestjs/microservices';
+import { lastValueFrom } from 'rxjs';
+import { CreateCanteenDto, CreateShopDto, SearchShopDto } from './dto/';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @MessagePattern('create-menu')
-  createMenu(msg: any): string {
-    return this.appService.createMenu(msg);
+  @MessagePattern('createCanteen')
+  createCanteen(msg: CreateCanteenDto): string {
+    return this.appService.createCanteen(msg);
+  }
+
+  @MessagePattern('createShop')
+  createShop(msg: CreateShopDto): string {
+    return this.appService.createShop(msg);
+  }
+  
+  @MessagePattern('searchShop')
+  searchShop(msg: SearchShopDto): string {
+    return this.appService.searchShop(msg);
   }
 }
