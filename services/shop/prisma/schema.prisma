@@ -78,7 +78,7 @@ model DebitCard {
 
 model Address {
   addressId Int    @id @default(autoincrement())
-  note      String
+  description      String
   latitude  Float
   longitude Float
 
