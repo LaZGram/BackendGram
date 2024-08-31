@@ -8,6 +8,9 @@ import { CreateCanteenRequestDto } from './dtos';
 
 @Controller()
 export class AppController {
+  getHello(): any {
+    throw new Error('Method not implemented.');
+  }
   constructor(@Inject('KAFKA') private client: ClientKafka, private appService: AppService) { }
   private admin: Admin;
 
@@ -22,7 +25,7 @@ export class AppController {
     const menu_topic_list = ['createMenu', 'editMenu', 'deleteMenu', 'getMenu', 'getMenuInfo'];
     const option_topic_list = ['createOption', 'editOption', 'deleteOption', 'getOption', 'getOptionInfo'];
     const shop_topic_list = ['createShop', 'searchShop', 'shopReview', 'createCanteen', ...menu_topic_list, ...option_topic_list];
-    const topic_list = ['hello', 'requesterRegistration', ...shop_topic_list];
+    const topic_list = ['hello', 'requesterRegistration', 'getCanteens', 'getProfile', 'createMenu', 'googleAuth', ...shop_topic_list];
     topic_list.forEach(async (topic) => {
       await this.client.subscribeToResponseOf(topic);
     });
