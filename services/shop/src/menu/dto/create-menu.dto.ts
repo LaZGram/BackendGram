@@ -1,4 +1,4 @@
-export class CreateMenuRequestDto {
+export class CreateMenuDto {
   shopId: number
   name: string
   picture: string
