@@ -26,9 +26,9 @@ model Admin {
 }
 
 model Authorization {
-  authId      String    @id
+  authId      Int    @id
   tokenId     String
-  sessionToken String
+  accessToken String
 
   requester Requester?
   walker    Walker?
@@ -44,7 +44,7 @@ model Walker {
   bankAccountNo   String
 
   auth   Authorization @relation(fields: [authId], references: [authId])
-  authId          String           @unique
+  authId          Int           @unique
   order Order[]
 }
 
@@ -58,7 +58,7 @@ model Requester {
   profilePicture String
 
   auth   Authorization @relation(fields: [authId], references: [authId])
-  authId         String    @unique
+  authId         Int    @unique
   address Address @relation(fields: [addressId], references: [addressId])
   addressId      Int    @unique
   order Order[]
@@ -78,7 +78,7 @@ model DebitCard {
 
 model Address {
   addressId Int    @id @default(autoincrement())
-  note      String
+  description      String
   latitude  Float
   longitude Float
 

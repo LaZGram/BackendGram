@@ -9,7 +9,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @MessagePattern('createCanteen')
-  createCanteen(msg: CreateCanteenDto): string {
+  createCanteen(msg: CreateCanteenDto) {
     return this.appService.createCanteen(msg);
   }
 
