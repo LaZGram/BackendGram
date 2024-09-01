@@ -42,10 +42,10 @@ import { JwtModule } from '@nestjs/jwt';
   ],
   controllers: [AppController, RequesterController, HelloController, ShopController, CanteenController, ProfileController],
   providers: [AppService, ClientKafka, 
-  // {
-  //   provide: 'APP_GUARD',
-  //   useClass: AuthGuard,
-  // },
+  {
+    provide: 'APP_GUARD',
+    useClass: AuthGuard,
+  },
 ],
 })
 export class AppModule {}
