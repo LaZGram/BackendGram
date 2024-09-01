@@ -8,10 +8,10 @@ import { UpdateCanteenDto } from './dto/update-canteen.dto';
 export class CanteenController {
   constructor(private readonly canteenService: CanteenService) {}
 
-  @MessagePattern('createCanteen')
-  create(@Payload() createCanteenDto: CreateCanteenDto) {
-    return this.canteenService.create(createCanteenDto);
-  }
+  // @MessagePattern('createCanteen')
+  // create(@Payload() createCanteenDto: CreateCanteenDto) {
+  //   return this.canteenService.create(createCanteenDto);
+  // }
 
   @MessagePattern('findAllCanteen')
   findAll() {

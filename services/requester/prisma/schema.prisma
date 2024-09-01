@@ -28,7 +28,6 @@ model Admin {
 model Authorization {
   authId      Int    @id
   tokenId     String
-  accessToken String
 
   requester Requester?
   walker    Walker?
@@ -84,19 +83,21 @@ model Address {
 
   requester Requester?
   canteen Canteen?
-  order Order?
+  order Order[]
 }
 
 model Order {
   orderId       Int      @id @default(autoincrement())
   orderDate     DateTime
   orderStatus   String
+  totalPrice    Float
+  shippingFee   Float
   amount    Float
 
   admin Admin @relation(fields: [adminId], references: [adminId])
   adminId     Int
   address Address @relation(fields: [addressId], references: [addressId])
-  addressId     Int @unique
+  addressId     Int
   requester Requester @relation(fields: [requesterId], references: [requesterId])
   requesterId   Int
   walker  Walker  @relation(fields: [walkerId], references: [walkerId])
@@ -206,7 +207,9 @@ model OptionItem{
 model OrderItem {
   orderItemId         Int    @id @default(autoincrement())
   quantity            Int
+  totalPrice          Float
   specialInstructions String
+  shopId  Int
 
   order Order @relation(fields: [orderId], references: [orderId])
   orderId             Int
