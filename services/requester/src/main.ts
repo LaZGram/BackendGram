@@ -5,6 +5,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { env } from 'process';
 
 async function bootstrap() {
+  console.log('SERVICE_NAME:', env.SERVICE_NAME);
+  console.log('JWT_SECRET:', env.JWT_SECRET);
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {

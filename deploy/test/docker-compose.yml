@@ -3,6 +3,7 @@ x-node-common:
   &node-base
   environment:
     DATABASE_URL: postgres://postgres:postgres@db-postgres:5432/postgres
+    NODE_ENV: test
   depends_on:
     kafka:
       condition: service_healthy
@@ -47,6 +48,9 @@ services:
       dockerfile: ../deploy/test/gateway.Dockerfile
     volumes:
       - ../../gateway/src:/usr/app/src
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db-postgres:5432/postgres
+      NODE_ENV: test
     ports:
       - "3000:3000"
     entrypoint: [ "npm", "run", "start:dev"]
