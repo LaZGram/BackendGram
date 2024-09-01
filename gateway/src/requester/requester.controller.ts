@@ -36,7 +36,7 @@ export class RequesterController {
         return value;
     }
 
-    @Get('get-status')
+    @Get('order/status')
     async getStatus(@Query() orderId: object): Promise<string> {
         const result = await this.client.send('getStatus', orderId);
         const value = await lastValueFrom(result);
@@ -50,7 +50,7 @@ export class RequesterController {
         return value;
     }
 
-    @Get('get-walker')
+    @Get('order/walker')
     async getWalker(@Query() orderId: any): Promise<string> {
         const result = await this.client.send('getWalker', orderId);
         const value = await lastValueFrom(result);
