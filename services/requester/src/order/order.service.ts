@@ -17,11 +17,16 @@ export class OrderService {
         status: "completed"
       }
     });
+    const requester = await this.prisma.requester.findUnique({
+      where: {
+        requesterId: createOrderDto.authId
+      }
+    })
     const order = await this.prisma.order.create({
       data: {
         requester: {
           connect: {
-            requesterId: createOrderDto.requesterId
+            requesterId: requester.requesterId
           }
         },
         canteen: {
@@ -64,6 +69,7 @@ export class OrderService {
           specialInstructions: item.specialInstructions,
           menuId: item.menuId,
           orderId: order.orderId,
+          shopId: item.shopId
         }
       })
     })

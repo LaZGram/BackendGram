@@ -13,7 +13,7 @@ export class OrderItem {
 }
 
 export class CreateOrderDto {
-  requesterId: number;
+  authId: number;
   canteenId: number;
   addressId: number;
   orderItems: OrderItem[];
