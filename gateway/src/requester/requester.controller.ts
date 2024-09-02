@@ -1,7 +1,5 @@
 import { Controller, Get, Inject, Post, Body, Query } from '@nestjs/common';;
 import { ClientKafka } from '@nestjs/microservices';
-import { Admin } from '@nestjs/microservices/external/kafka.interface';
-import { Kafka } from 'kafkajs';
 import { lastValueFrom, Observable } from 'rxjs';
 import { CreateOrderRequestDto } from 'src/dtos/create-order-request.dto';
 
@@ -53,6 +51,13 @@ export class RequesterController {
     @Get('order/walker')
     async getWalker(@Query() orderId: any): Promise<string> {
         const result = await this.client.send('getWalker', orderId);
+        const value = await lastValueFrom(result);
+        return value;
+    }
+
+    @Post('order/create-report')
+    async createReport(@Body() createReportRequest: CreateOrderRequestDto): Promise<string> {
+        const result = await this.client.send('createReport', createReportRequest);
         const value = await lastValueFrom(result);
         return value;
     }

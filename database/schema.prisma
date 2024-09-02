@@ -23,6 +23,7 @@ model Admin {
   phoneNumber String
 
   order Order[]
+  report Report[]
 }
 
 model Authorization {
@@ -45,6 +46,7 @@ model Walker {
   auth   Authorization @relation(fields: [authId], references: [authId])
   authId          String           @unique
   order Order[]
+  report Report[]
 }
 
 model Requester {
@@ -63,6 +65,7 @@ model Requester {
   order Order[]
   review  Review[]
   debitCard    DebitCard[]
+  report Report[]
 }
 
 model DebitCard {
@@ -107,6 +110,7 @@ model Order {
   transaction Transaction @relation(fields: [transactionId], references: [transactionId])
   transactionId Int @unique
   orderItem OrderItem[]
+  report Report?
 }
 
 model Transaction{
@@ -226,4 +230,21 @@ model OrderItemExtra{
   orderItemId Int
   optionItem OptionItem @relation(fields: [optionItemId], references: [optionItemId])
   optionItemId Int
+}
+
+model Report{
+  reportId Int @id @default(autoincrement())
+  reportDate DateTime
+  title String
+  description String
+  status String
+
+  requester Requester @relation(fields: [requesterId], references: [requesterId])
+  requesterId Int
+  walker Walker @relation(fields: [walkerId], references: [walkerId])
+  walkerId Int
+  order Order @relation(fields: [orderId], references: [orderId])
+  orderId Int @unique
+  admin Admin @relation(fields: [adminId], references: [adminId])
+  adminId Int
 }

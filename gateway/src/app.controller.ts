@@ -22,7 +22,7 @@ export class AppController {
   }
 
   async onModuleInit() {
-    const order_topic_list = ['createOrder', 'getStatus', 'cancelOrder', 'getWalker'];
+    const order_topic_list = ['createOrder', 'getStatus', 'cancelOrder', 'getWalker', 'createReport'];
     const requester_topic_list = [...order_topic_list];
     const menu_topic_list = ['createMenu', 'editMenu', 'deleteMenu', 'getMenu', 'getMenuInfo'];
     const option_topic_list = ['createOption', 'editOption', 'deleteOption', 'getOption', 'getOptionInfo'];
