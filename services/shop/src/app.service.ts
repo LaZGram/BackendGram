@@ -10,16 +10,11 @@ export class AppService {
   saltOrRounds: number = 10;
 
   async createCanteen(msg: CreateCanteenDto){
-    const address = await this.prisma.address.create({
-      data: {
-        description: msg.address,
-        latitude: msg.latitude,
-        longitude: msg.longitude
-    }});
     return this.prisma.canteen.create({
       data: {
         name: msg.name,
-        address: { connect: { addressId: address.addressId } }
+        latitude: msg.latitude,
+        longitude: msg.longitude,
       }
     })
   }

@@ -23,6 +23,7 @@ model Admin {
   phoneNumber String
 
   order Order[]
+  report Report[]
 }
 
 model Authorization {
@@ -45,6 +46,7 @@ model Walker {
   auth   Authorization @relation(fields: [authId], references: [authId])
   authId          String           @unique
   order Order[]
+  report Report[]
 }
 
 model Requester {
@@ -58,11 +60,12 @@ model Requester {
 
   auth   Authorization @relation(fields: [authId], references: [authId])
   authId         String    @unique
-  address Address @relation(fields: [addressId], references: [addressId])
-  addressId      Int    @unique
+  address Address[]
+  defaultAddress Int?
   order Order[]
   review  Review[]
   debitCard    DebitCard[]
+  report Report[]
 }
 
 model DebitCard {
@@ -77,12 +80,14 @@ model DebitCard {
 
 model Address {
   addressId Int    @id @default(autoincrement())
-  description      String
+  name      String
+  detail      String?
+  note        String?
   latitude  Float
   longitude Float
 
-  requester Requester?
-  canteen Canteen?
+  requester Requester @relation(fields: [requesterId], references: [requesterId])
+  requesterId Int
   order Order[]
 }
 
@@ -107,6 +112,7 @@ model Order {
   transaction Transaction @relation(fields: [transactionId], references: [transactionId])
   transactionId Int @unique
   orderItem OrderItem[]
+  report Report?
 }
 
 model Transaction{
@@ -122,9 +128,9 @@ model Transaction{
 model Canteen {
   canteenId Int    @id @default(autoincrement())
   name      String
+  latitude  Float
+  longitude Float
 
-  address Address @relation(fields: [addressId], references: [addressId])
-  addressId Int @unique
   order Order[]
   shop  Shop[]
 }
@@ -226,4 +232,21 @@ model OrderItemExtra{
   orderItemId Int
   optionItem OptionItem @relation(fields: [optionItemId], references: [optionItemId])
   optionItemId Int
+}
+
+model Report{
+  reportId Int @id @default(autoincrement())
+  reportDate DateTime
+  title String
+  description String
+  status String
+
+  requester Requester @relation(fields: [requesterId], references: [requesterId])
+  requesterId Int
+  walker Walker @relation(fields: [walkerId], references: [walkerId])
+  walkerId Int
+  order Order @relation(fields: [orderId], references: [orderId])
+  orderId Int @unique
+  admin Admin @relation(fields: [adminId], references: [adminId])
+  adminId Int
 }

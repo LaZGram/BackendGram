@@ -8,25 +8,25 @@ export class AppService {
 
   getCanteens(): Promise<any> {
     return this.prisma.canteen.findMany({
-      include: {
-        address: true,
-        order: true,
-        shop: true,
-      },
+      // include: {
+      //   address: true,
+      //   order: true,
+      //   shop: true,
+      // },
     });
   }
 
   getProfile(): Promise<any> {
     return this.prisma.requester.findMany({
-      select: {
-        username: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        phoneNumber: true,
-        profilePicture: true,
-        addressId: true,
-      },
+      // select: {
+      //   username: true,
+      //   email: true,
+      //   firstName: true,
+      //   lastName: true,
+      //   phoneNumber: true,
+      //   profilePicture: true,
+      //   addressId: true,
+      // },
     });
   }
 
