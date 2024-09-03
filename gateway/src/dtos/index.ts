@@ -5,3 +5,7 @@ export * from './create-menu-request.dto';
 export * from './edit-menu-request.dto';
 export * from './create-option-request.dto';
 export * from './edit-option-request.dto';
+export * from './create-address-request.dto';
+export * from './update-address-request.dto';
+export * from './create-report-request.dto';
+export * from './create-order-request.dto';

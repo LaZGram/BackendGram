@@ -52,11 +52,9 @@ export class AuthService {
                 authId,
             },
             update: {
-                sessionToken,
             },
             create: {
                 authId,
-                sessionToken,
                 tokenId
             },
         });

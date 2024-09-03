@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ClientKafka, ClientsModule, Transport } from '@nestjs/microservices';
@@ -7,6 +8,9 @@ import { CanteenController } from './canteen/canteen.controller';
 import { WalkerController } from './walker/walker.controller';
 import { HelloController } from './hello/hello.controller';
 import { ShopController } from './shop/shop.controller';
+import { AuthModule } from './auth/auth.module';
+import { AuthGuard } from './auth/auth.guard';
+import { JwtModule } from '@nestjs/jwt';
 import { ProfileController } from './profile/profile.controller';
 
 @Module({
@@ -26,9 +30,23 @@ import { ProfileController } from './profile/profile.controller';
         },
       },
     ]),
+    ConfigModule.forRoot({
+      envFilePath: `.env${process.env.NODE_ENV ? '.' + process.env.NODE_ENV : ''}`,
+      isGlobal: true,
+    }),
+    AuthModule,
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '100d' },
+    }),
   ],
-  // controllers: [AppController, RequesterController, HelloController],
   controllers: [AppController, RequesterController, HelloController, ShopController, CanteenController, ProfileController, WalkerController],
-  providers: [AppService, ClientKafka],
+  providers: [AppService, ClientKafka, 
+  {
+    provide: 'APP_GUARD',
+    useClass: AuthGuard,
+  },
+],
 })
 export class AppModule {}

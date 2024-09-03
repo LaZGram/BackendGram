@@ -1,4 +1,5 @@
 export class CreateCanteenDto {
   name: string
-  addressId: number
+  latitude: number
+  longitude: number
 }

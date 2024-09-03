@@ -7,11 +7,11 @@ export class AppService {
 
   getCanteens(): Promise<any> {
     return this.prisma.canteen.findMany({
-      include: {
-        address: true,
-        order: true,
-        shop: true,
-      },
+      // include: {
+      //   address: true,
+      //   order: true,
+      //   shop: true,
+      // },
     });
   }
 
