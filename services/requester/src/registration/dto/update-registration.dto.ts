@@ -12,4 +12,7 @@ export class UpdateRegistrationDto extends PartialType(CreateRegistrationDto) {
   profilePicture?: string;
   // authId?: null;
   addressId?: string;
+  cardNumber: string;
+  expiryDate: string;
+  cvv: string;
 }
