@@ -5,12 +5,13 @@ import { AppService } from './app.service';
 import { ClientKafka, ClientsModule, Transport } from '@nestjs/microservices';
 import { RequesterController } from './requester/requester.controller';
 import { CanteenController } from './canteen/canteen.controller';
-import { ProfileController } from './profile/profile.controller';
+import { WalkerController } from './walker/walker.controller';
 import { HelloController } from './hello/hello.controller';
 import { ShopController } from './shop/shop.controller';
 import { AuthModule } from './auth/auth.module';
 import { AuthGuard } from './auth/auth.guard';
 import { JwtModule } from '@nestjs/jwt';
+import { ProfileController } from './profile/profile.controller';
 
 @Module({
   imports: [
@@ -40,7 +41,7 @@ import { JwtModule } from '@nestjs/jwt';
       signOptions: { expiresIn: '100d' },
     }),
   ],
-  controllers: [AppController, RequesterController, HelloController, ShopController, CanteenController, ProfileController],
+  controllers: [AppController, RequesterController, HelloController, ShopController, CanteenController, ProfileController, WalkerController],
   providers: [AppService, ClientKafka, 
   {
     provide: 'APP_GUARD',
