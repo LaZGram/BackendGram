@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { JwtDto } from 'src/dtos/jwt.dto';
 
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { CreateJwtDto } from './dto/hello.dto';
+import { CreateJwtDto, TokenDto } from './dto/hello.dto';
 
 
 @ApiTags('TEST-HELLO')
@@ -31,13 +31,15 @@ export class HelloController {
     @SetMetadata('isPublic', true)
     @Post('jwt')
     @ApiOperation({ summary: 'Generate a JWT for testing' })
-    @ApiResponse({ status: 201, description: 'JWT has been generated.' })
-    async CreateJwt(@Request() req, @Body() body:CreateJwtDto): Promise<string> {
+    @ApiResponse({ status: 201, description: 'JWT has been generated.', type: TokenDto })
+    async CreateJwt(@Request() req, @Body() body:CreateJwtDto): Promise<TokenDto> {
         console.log(process.env.JWT_SECRET);
         if (!body.authId) {
             throw new HttpException('authId is required', 400);
         }
         const token = await this.JwtService.signAsync( { authId: body.authId });
-        return token;
+        let tokenDto = new TokenDto();
+        tokenDto.token = token;
+        return tokenDto;
     }
 }

@@ -11,4 +11,11 @@ export class HelloDto {
     @ApiProperty()
     @IsString()
     message: string;
+    asdf: string;
+}
+
+export class TokenDto {
+    @ApiProperty( { description: 'JWT token'})
+    @IsString()
+    token: string;
 }

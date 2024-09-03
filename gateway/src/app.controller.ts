@@ -6,6 +6,9 @@ import { Kafka } from 'kafkajs';
 import { lastValueFrom, Observable } from 'rxjs';
 import { CreateCanteenRequestDto } from './dtos';
 
+
+
+
 @Controller()
 export class AppController {
   getHello(): any {
