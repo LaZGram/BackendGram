@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Inject, Post, Query } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
-import { CreateMenuRequestDto, CreateShopRequestDto, SearchShopRequestDto, CreateOptionRequestDto, EditOptionRequestDto, EditMenuRequestDto } from 'src/dtos';
+import { CreateMenuRequestDto, CreateShopRequestDto, SearchShopRequestDto, CreateOptionRequestDto, EditOptionRequestDto, EditMenuRequestDto, CreateScheduleRequestDto, CreateSpecialOperatingHoursRequestDto } from 'src/dtos';
 
 @Controller('shop')
 export class ShopController {
@@ -96,6 +96,34 @@ export class ShopController {
   @Get('review')
   async shopReview(@Query() shopId: object): Promise<string> {
     const result = await this.client.send('shopReview', JSON.stringify(shopId));
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Post('create-weekly-schedule')
+  async createWeeklySchedule(@Body() createScheduleRequest: CreateScheduleRequestDto): Promise<string> {
+    const result = await this.client.send('createWeeklySchedule', JSON.stringify(createScheduleRequest));
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Post('create-special-operating-hours')
+  async createSpecialOperatingHours(@Body() createSpecialOperatingHoursRequest: CreateSpecialOperatingHoursRequestDto): Promise<string> {
+    const result = await this.client.send('createSpecialOperatingHours', JSON.stringify(createSpecialOperatingHoursRequest));
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Get('weekly-schedule')
+  async getWeeklySchedule(@Query() shopId: object): Promise<string> {
+    const result = await this.client.send('getWeeklySchedule', JSON.stringify(shopId));
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Get('special-operating-hours')
+  async getSpecialOperatingHours(@Query() shopId: object): Promise<string> {
+    const result = await this.client.send('getSpecialOperatingHours', JSON.stringify(shopId));
     const value = await lastValueFrom(result);
     return value;
   }
