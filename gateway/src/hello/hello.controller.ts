@@ -9,6 +9,11 @@ import { SetMetadata } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JwtDto } from 'src/dtos/jwt.dto';
 
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { CreateJwtDto } from './dto/hello.dto';
+
+
+@ApiTags('TEST-HELLO')
 @Controller('hello')
 export class HelloController {
     constructor(@Inject('KAFKA') private client: ClientKafka, private JwtService: JwtService) { }
@@ -25,7 +30,9 @@ export class HelloController {
 
     @SetMetadata('isPublic', true)
     @Post('jwt')
-    async CreateJwt(@Request() req, @Body() body): Promise<string> {
+    @ApiOperation({ summary: 'Generate a JWT for testing' })
+    @ApiResponse({ status: 201, description: 'JWT has been generated.' })
+    async CreateJwt(@Request() req, @Body() body:CreateJwtDto): Promise<string> {
         console.log(process.env.JWT_SECRET);
         if (!body.authId) {
             throw new HttpException('authId is required', 400);
