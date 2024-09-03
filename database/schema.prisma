@@ -60,8 +60,8 @@ model Requester {
 
   auth   Authorization @relation(fields: [authId], references: [authId])
   authId         String    @unique
-  address Address @relation(fields: [addressId], references: [addressId])
-  addressId      Int    @unique
+  address Address[]
+  defaultAddress Int?
   order Order[]
   review  Review[]
   debitCard    DebitCard[]
@@ -80,12 +80,14 @@ model DebitCard {
 
 model Address {
   addressId Int    @id @default(autoincrement())
-  description      String
+  name      String
+  detail      String?
+  note        String?
   latitude  Float
   longitude Float
 
-  requester Requester?
-  canteen Canteen?
+  requester Requester @relation(fields: [requesterId], references: [requesterId])
+  requesterId Int
   order Order[]
 }
 
@@ -126,9 +128,9 @@ model Transaction{
 model Canteen {
   canteenId Int    @id @default(autoincrement())
   name      String
+  latitude  Float
+  longitude Float
 
-  address Address @relation(fields: [addressId], references: [addressId])
-  addressId Int @unique
   order Order[]
   shop  Shop[]
 }
