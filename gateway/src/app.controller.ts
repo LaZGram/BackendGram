@@ -25,7 +25,10 @@ export class AppController {
     const menu_topic_list = ['createMenu', 'editMenu', 'deleteMenu', 'getMenu', 'getMenuInfo'];
     const option_topic_list = ['createOption', 'editOption', 'deleteOption', 'getOption', 'getOptionInfo'];
     const shop_topic_list = ['createShop', 'searchShop', 'shopReview', 'createCanteen', ...menu_topic_list, ...option_topic_list];
-    const topic_list = ['hello', 'requesterRegistration', 'getCanteens', 'getProfile', 'createMenu', 'googleAuth', ...shop_topic_list];
+    const topic_list = ['hello', 'requesterRegistration', 'getCanteens', 
+      'getProfile', 'createMenu', 'googleAuth', ...shop_topic_list, 'postChangeProfilePicture', 'getDebitcard', 
+      'postChangeDebitCard', 'walkerRegistration', 'walkerGet', 'getOrderList', 'getOrderDetail', 'confirmOrder', 'postReport'
+    , 'getRequesterIdByOrder'];
     topic_list.forEach(async (topic) => {
       await this.client.subscribeToResponseOf(topic);
     });

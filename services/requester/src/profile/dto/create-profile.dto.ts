@@ -6,6 +6,10 @@ export class CreateProfileDto {
     lastName: string;
     phoneNumber: string;
     profilePicture: string;
-    // authId: null;
     addressId: string;
-}
+    cardNumber: string;
+    expiryDate: string;
+    authId: number;
+    cvv: string;
+  }
+  
