@@ -149,15 +149,25 @@ model Shop {
   menu  Menu[]
   canteen Canteen @relation(fields: [canteenId],  references: [canteenId])
   canteenId Int
-  schedule  Schedule[]
+  weeklySchedule  WeeklySchedule[]
+  specialOperatingHours  SpecialOperatingHours[]
 }
 
-model Schedule{
+model WeeklySchedule{
   scheduleId  Int @id @default(autoincrement())
   dayOfWeek String
-  startTime DateTime
-  endTime DateTime
-  status Boolean
+  open String
+  close String
+
+  shop  Shop  @relation(fields: [shopId], references: [shopId])
+  shopId  Int
+}
+
+model SpecialOperatingHours{
+  specialOperatingHoursId  Int @id @default(autoincrement())
+  date DateTime
+  open String
+  close String
 
   shop  Shop  @relation(fields: [shopId], references: [shopId])
   shopId  Int
