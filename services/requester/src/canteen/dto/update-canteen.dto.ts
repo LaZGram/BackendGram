@@ -5,4 +5,5 @@ export class UpdateCanteenDto extends PartialType(CreateCanteenDto) {
   id: number;
   name: string;
   addressId: number;
+  requesterId: number;
 }

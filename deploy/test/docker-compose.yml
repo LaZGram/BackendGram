@@ -50,19 +50,6 @@ services:
     ports:
       - "3000:3000"
     entrypoint: [ "npm", "run", "start:dev"]
-    
-# -----------------------------------------------
-  micro-base:
-    <<: *node-base
-    build:
-      context: ../../services/base_service
-      dockerfile: ../../deploy/test/service.Dockerfile
-    environment:
-      DATABASE_URL: postgres://postgres:postgres@db-postgres:5432/postgres
-      SERVICE_NAME: micro-base
-    volumes:
-      - ../../services/base_service/src:/usr/app/src
-    entrypoint: ["npm", "run", "start:dev"]
 
 # -----------------------------------------------
   micro-requester:
@@ -75,6 +62,19 @@ services:
       SERVICE_NAME: micro-requester
     volumes:
       - ../../services/requester/src:/usr/app/src
+    entrypoint: ["npm", "run", "start:dev"]
+
+# -----------------------------------------------
+  micro-walker:
+    <<: *node-base
+    build:
+      context: ../../services/walker
+      dockerfile: ../../deploy/test/service.Dockerfile
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db-postgres:5432/postgres
+      SERVICE_NAME: micro-walker
+    volumes:
+      - ../../services/walker/src:/usr/app/src
     entrypoint: ["npm", "run", "start:dev"]
   
 # -----------------------------------------------

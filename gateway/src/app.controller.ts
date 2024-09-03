@@ -14,7 +14,10 @@ export class AppController {
   private admin: Admin;
 
   async onModuleInit() {
-    const topic_list = ['hello', 'requesterRegistration', 'getCanteens', 'getProfile'];
+    const topic_list = ['hello', 'requesterRegistration', 'getCanteens', 
+      'getProfile', 'postChangeProfilePicture', 'getDebitcard', 
+      'postChangeDebitCard', 'walkerRegistration', 'walkerGet', 'getOrderList', 'getOrderDetail', 'confirmOrder', 'postReport'
+    , 'getRequesterIdByOrder'];
     topic_list.forEach(async (topic) => {
       await this.client.subscribeToResponseOf(topic);
     });

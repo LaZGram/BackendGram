@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { ClientKafka, ClientsModule, Transport } from '@nestjs/microservices';
 import { RequesterController } from './requester/requester.controller';
 import { CanteenController } from './canteen/canteen.controller';
-import { ProfileController } from './profile/profile.controller';
+import { WalkerController } from './walker/walker.controller';
 
 @Module({
   imports: [
@@ -24,8 +24,7 @@ import { ProfileController } from './profile/profile.controller';
       },
     ]),
   ],
-  // controllers: [AppController, RequesterController, HelloController],
-  controllers: [AppController, RequesterController, CanteenController, ProfileController],
+  controllers: [AppController, RequesterController, CanteenController, WalkerController],
   providers: [AppService, ClientKafka],
 })
 export class AppModule {}
