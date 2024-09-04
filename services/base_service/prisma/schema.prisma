@@ -21,14 +21,13 @@ model Admin {
   email       String
   password    String
   phoneNumber String
-
+  report Report[]
   order Order[]
 }
 
 model Authorization {
-  authId      Int    @id
+  authId      String    @id
   tokenId     String
-  accessToken String
 
   requester Requester?
   walker    Walker?
@@ -42,9 +41,9 @@ model Walker {
   profilePicture  String
   bankAccountName String
   bankAccountNo   String
-
+  report Report[]
   auth   Authorization @relation(fields: [authId], references: [authId])
-  authId          Int           @unique
+  authId          String           @unique
   order Order[]
 }
 
@@ -56,11 +55,11 @@ model Requester {
   lastName       String
   phoneNumber    String
   profilePicture String
-
+  report Report[]
   auth   Authorization @relation(fields: [authId], references: [authId])
-  authId         Int    @unique
-  address Address @relation(fields: [addressId], references: [addressId])
-  addressId      Int    @unique
+  authId         String    @unique
+  address Address[]
+  defaultAddress Int?
   order Order[]
   review  Review[]
   debitCard    DebitCard[]
@@ -78,25 +77,37 @@ model DebitCard {
 
 model Address {
   addressId Int    @id @default(autoincrement())
-  note      String
+  name      String
+  detail      String?
+  note        String?
   latitude  Float
   longitude Float
 
-  requester Requester?
-  canteen Canteen?
-  order Order?
+  requester Requester @relation(fields: [requesterId], references: [requesterId])
+  requesterId Int
+  order Order[]
+}
+
+model Photo {
+  photoId     Int      @id @default(autoincrement())
+  photoPath   String
+  uploadedAt  DateTime @default(now())
+  order       Order? 
 }
 
 model Order {
   orderId       Int      @id @default(autoincrement())
   orderDate     DateTime
   orderStatus   String
-  amount    Float
-
+  totalPrice    Float
+  shippingFee   Float
+  amount        Float
+  confirmedAt   DateTime?
+  report Report[]
   admin Admin @relation(fields: [adminId], references: [adminId])
   adminId     Int
   address Address @relation(fields: [addressId], references: [addressId])
-  addressId     Int @unique
+  addressId     Int
   requester Requester @relation(fields: [requesterId], references: [requesterId])
   requesterId   Int
   walker  Walker  @relation(fields: [walkerId], references: [walkerId])
@@ -105,8 +116,11 @@ model Order {
   canteenId     Int
   transaction Transaction @relation(fields: [transactionId], references: [transactionId])
   transactionId Int @unique
+  Photo        Photo?   @relation(fields: [photoId], references: [photoId])
+  photoId      Int? @unique
   orderItem OrderItem[]
 }
+
 
 model Transaction{
   transactionId Int @id @default(autoincrement())
@@ -121,9 +135,9 @@ model Transaction{
 model Canteen {
   canteenId Int    @id @default(autoincrement())
   name      String
+  latitude  Float
+  longitude Float
 
-  address Address @relation(fields: [addressId], references: [addressId])
-  addressId Int @unique
   order Order[]
   shop  Shop[]
 }
@@ -137,20 +151,30 @@ model Shop {
   tel   String
   shopNumber  String
   status    Boolean
-
+  
   review  Review[]
   menu  Menu[]
   canteen Canteen @relation(fields: [canteenId],  references: [canteenId])
   canteenId Int
-  schedule  Schedule[]
+  weeklySchedule  WeeklySchedule[]
+  specialOperatingHours  SpecialOperatingHours[]
 }
 
-model Schedule{
+model WeeklySchedule{
   scheduleId  Int @id @default(autoincrement())
   dayOfWeek String
-  startTime DateTime
-  endTime DateTime
-  status Boolean
+  open String
+  close String
+
+  shop  Shop  @relation(fields: [shopId], references: [shopId])
+  shopId  Int
+}
+
+model SpecialOperatingHours{
+  specialOperatingHoursId  Int @id @default(autoincrement())
+  date DateTime
+  open String
+  close String
 
   shop  Shop  @relation(fields: [shopId], references: [shopId])
   shopId  Int
@@ -177,35 +201,38 @@ model Menu {
 
   shop  Shop  @relation(fields: [shopId], references: [shopId])
   shopId  Int
-  addon  Addon[]
+  option  Option[]
   orderItem OrderItem[]
 }
 
-model Addon{
-  addonId Int @id @default(autoincrement())
+model Option{
+  optionId Int @id @default(autoincrement())
   name String
   mustChoose Boolean
-  selectQuantity Int
+  maxChoose Int
+  minChoose Int
 
   menu  Menu  @relation(fields: [menuId], references: [menuId])
   menuId  Int
-  addonItem AddonItem[]
+  optionItem OptionItem[]
 }
 
-model AddonItem{
-  addonItemId Int @id @default(autoincrement())
+model OptionItem{
+  optionItemId Int @id @default(autoincrement())
   name String
   price Float
 
-  addon Addon @relation(fields: [addonId], references: [addonId])
-  addonId Int
+  option Option @relation(fields: [optionId], references: [optionId])
+  optionId Int
   orderItemExtra  OrderItemExtra[]
 }
 
 model OrderItem {
   orderItemId         Int    @id @default(autoincrement())
   quantity            Int
+  totalPrice          Float
   specialInstructions String
+  shopId  Int
 
   order Order @relation(fields: [orderId], references: [orderId])
   orderId             Int
@@ -220,6 +247,23 @@ model OrderItemExtra{
 
   orderItem OrderItem @relation(fields: [orderItemId], references: [orderItemId])
   orderItemId Int
-  addonItem AddonItem @relation(fields: [addonItemId], references: [addonItemId])
-  addonItemId Int
+  optionItem OptionItem @relation(fields: [optionItemId], references: [optionItemId])
+  optionItemId Int
+}
+
+model Report{
+  reportId Int @id @default(autoincrement())
+  reportDate DateTime
+  title String
+  description String
+  status Boolean
+
+  requester Requester @relation(fields: [requesterId], references: [requesterId])
+  requesterId Int
+  walker Walker @relation(fields: [walkerId], references: [walkerId])
+  walkerId Int
+  order Order @relation(fields: [orderId], references: [orderId])
+  orderId Int @unique
+  admin Admin @relation(fields: [adminId], references: [adminId])
+  adminId Int
 }
