@@ -6,9 +6,10 @@ import { MenuModule } from './menu/menu.module';
 import { PrismaModule } from './prisma.module';
 import { ReviewModule } from './review/review.module';
 import { OptionModule } from './option/option.module';
+import { ScheduleModule } from './schedule/schedule.module';
 
 @Module({
-  imports: [MenuModule, PrismaModule, ReviewModule, OptionModule],
+  imports: [MenuModule, PrismaModule, ReviewModule, OptionModule, ScheduleModule],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })
