@@ -14,27 +14,5 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
       - name: Build Docker images
-        run: docker-compose build
-
-      - name: Start Docker Compose
-        run: docker-compose up -d
-
-      - name: Wait for services to be healthy
-        run: |
-          # List the services to check
-          SERVICES=("my-service")  # Replace with your service names
-
-          for SERVICE in "${SERVICES[@]}"; do
-            echo "Waiting for $SERVICE to be healthy..."
-            until [ "$$(docker inspect --format='{{.State.Health.Status}}' $(docker-compose ps -q $SERVICE))" = "healthy" ]; do
-              sleep 5
-            done
-            echo "$SERVICE is healthy."
-          done
-
-      - name: Clean up
-        run: docker-compose down
+        run: sudo docker-compose build -f deploy/production/docker-compose.production.yml
