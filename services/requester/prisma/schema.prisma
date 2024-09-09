@@ -256,7 +256,7 @@ model Report{
   reportDate DateTime
   title String
   description String
-  status Boolean
+  status String
 
   requester Requester @relation(fields: [requesterId], references: [requesterId])
   requesterId Int
