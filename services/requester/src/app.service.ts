@@ -26,7 +26,6 @@ export class AppService {
         profilePicture: true,
         address: {
           select: {
-            description: true,
             latitude: true,
             longitude: true,
           },
@@ -78,6 +77,7 @@ export class AppService {
             addressId: msg.addressId,
           },
         },
+        authId: null
       },
     });
 
