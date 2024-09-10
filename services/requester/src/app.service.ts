@@ -121,7 +121,8 @@ export class AppService {
           connect: {
             addressId: msg.addressId,
           },
-        } : undefined,
+        },
+        authId: null,
         debitCard: msg.debitCardId ? {
           connect: {
             debitCardId: msg.debitCardId,

@@ -5,6 +5,8 @@ import { Admin } from '@nestjs/microservices/external/kafka.interface';
 import { Kafka } from 'kafkajs';
 import { lastValueFrom, Observable } from 'rxjs';
 import { CreateCanteenRequestDto } from './dtos';
+import { CreateCanteenResponseDto } from './shop/dto/response.dto';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @Controller()
 export class AppController {
@@ -14,7 +16,10 @@ export class AppController {
   constructor(@Inject('KAFKA') private client: ClientKafka, private appService: AppService) { }
   private admin: Admin;
 
+  @ApiTags('SHOP')
   @Post('create-canteen')
+  @ApiOperation({ summary: 'Create new canteen to database' })
+  @ApiResponse({ status: 201, description: 'Create new canteen successes', type: CreateCanteenResponseDto })
   async createCanteen(@Body() createCanteenRequest: CreateCanteenRequestDto): Promise<string> {
       const result = await this.client.send('createCanteen', JSON.stringify(createCanteenRequest));
       const value = await lastValueFrom(result);

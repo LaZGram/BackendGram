@@ -1,0 +1,18 @@
+name: Docker Compose Build and Health Check
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: [KU]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker images
+        run: docker compose -f deploy/production/docker-compose.production.yml build
