@@ -15,12 +15,12 @@ export class RequesterController {
         return 'Requester';
     }
 
-    @Post('registration')
-    async requesterRegistration(@Body() body: any): Promise<string> {
-        const result = await this.client.send('requesterRegistration', body);
-        const value = await lastValueFrom(result);
-        return value;
-    }
+    // @Post('registration')
+    // async requesterRegistration(@Body() body: any): Promise<string> {
+    //     const result = await this.client.send('requesterRegistration', body);
+    //     const value = await lastValueFrom(result);
+    //     return value;
+    // }
 
     @Get('profile')
     async getProfile(@Body() body: any): Promise<string> {
@@ -43,9 +43,16 @@ export class RequesterController {
         return value;
     }
 
-    @Get('profile/debit-card')
+    @Get('debit-card')
     async getDebitcard(@Body() body: any): Promise<string> {
         const result = await this.client.send('getDebitcard', body);
+        const value = await lastValueFrom(result);
+        return value;
+    }
+
+    @Post('debit-card')
+    async createDebitcard(@Body() body: any): Promise<string> {
+        const result = await this.client.send('createDebitcard', body);
         const value = await lastValueFrom(result);
         return value;
     }

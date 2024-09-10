@@ -26,6 +26,7 @@ export class AppService {
         profilePicture: true,
         address: {
           select: {
+            name: true,
             latitude: true,
             longitude: true,
           },
@@ -64,7 +65,18 @@ export class AppService {
   }
 
   async requesterRegistration(msg: any): Promise<any> {
-    const requester = await this.prisma.requester.create({
+    let requesterId = this.prisma.requester.findUnique({
+      where: {
+        authId: msg.jwt.authId
+      },
+      select: {
+        requesterId: true
+      }
+    })["requesterId"]
+    const requester = await this.prisma.requester.update({
+      where: {
+        requesterId
+      },
       data: {
         username: msg.username,
         email: msg.email,
@@ -77,21 +89,14 @@ export class AppService {
             addressId: msg.addressId,
           },
         },
-        authId: null
+        authId: null,
+        debitCard: msg.debitCardId ? {
+          connect: {
+            debitCardId: msg.debitCardId,
+          }
+        } : undefined,
       },
     });
-
-    if (msg.debitCard) {
-      await this.prisma.debitCard.create({
-        data: {
-          cardNumber: msg.debitCard.cardNumber,
-          expiryDate: msg.debitCard.expiryDate,
-          cvv: msg.debitCard.cvv,
-          requesterId: requester.requesterId,
-        },
-      });
-    }
-
     return requester;
   }
 
@@ -107,6 +112,21 @@ export class AppService {
       },
     });
   }
+
+  async createDebitcard(msg: any): Promise<any> {
+    const { cardNumber, expiryDate, cvv, requesterId } = msg;
+
+    const debitCard = await this.prisma.debitCard.create({
+      data: {
+        cardNumber: cardNumber,
+        expiryDate: expiryDate,
+        cvv: cvv,
+        requesterId: requesterId,
+      },
+    });
+
+    return debitCard;
+}
 
   postChangeDebitCard(msg: any): Promise<any> {
     return this.prisma.debitCard.update({

@@ -18,12 +18,13 @@ function setupSwagger(app) {
     acc[path] = Object.keys(document.paths[path]).reduce((innerAcc, method) => {
       innerAcc[method] = {
         ...document.paths[path][method],
-        security: [{ bearerAuth: [] }],
+        security: [...(document.paths[path][method].security || []), { bearer: [] }],
       };
       return innerAcc;
     }, {});
     return acc;
   }, {});
+  
 
   SwaggerModule.setup('api', app, document);
 }
