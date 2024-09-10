@@ -10,19 +10,23 @@ export class AppService {
   }
 
   async walkerRegistration(msg: any): Promise<any> {
-    let walkerId = this.prisma.walker.findUnique({
+
+    let walker = await this.prisma.walker.findUnique({
       where: {
-        authId: msg.jwt.authId
+        authId: msg.authId,
       },
       select: {
-        walkerId: true
-      }
-    })["walkerId"]
-    const walker = await this.prisma.walker.update({
-      where: {
-        walkerId,
+        walkerId: true,
       },
+    });
+
+    if (walker) {
+      throw new Error('Walker found');
+    }
+
+    const updatedWalker = await this.prisma.walker.create({
       data: {
+        authId: msg.authId,
         username: msg.username,
         email: msg.email,
         phoneNumber: msg.phoneNumber,
@@ -31,21 +35,14 @@ export class AppService {
         bankAccountNo: msg.bankAccountNo,
       },
     });
-    return walker;
+  
+    return updatedWalker;
   }
 
   walkerGet(msg: any): Promise<any> {
-    let walkerId = this.prisma.walker.findUnique({
-      where: {
-        authId: msg.jwt.authId
-      },
-      select: {
-        walkerId: true
-      }
-    })["walkerId"]
     return this.prisma.walker.findUnique({
       where: {
-        walkerId,
+        authId: msg.authId,
       },
       select: {
         username: true,
@@ -54,30 +51,14 @@ export class AppService {
         profilePicture: true,
         bankAccountName: true,
         bankAccountNo: true,
-        order: {
-          select: {
-            orderId: true,
-            orderDate: true,
-            orderStatus: true,
-            amount: true,
-          },
-        },
       },
     });
   }
 
   getOrderList(msg: any): Promise<any> {
-    let walkerId = this.prisma.walker.findUnique({
-      where: {
-        authId: msg.jwt.authId
-      },
-      select: {
-        walkerId: true
-      }
-    })["walkerId"]
     return this.prisma.order.findMany({
       where: {
-        walkerId
+        orderId: msg.orderId,
       },
       select: {
         orderId: true,
@@ -103,7 +84,7 @@ export class AppService {
   async getOrderDetail(msg: any): Promise<any> {
     return this.prisma.order.findUnique({
       where: {
-        orderId: msg.orderId,
+        orderId: Number(msg.orderId),
       },
       select: {
         orderId: true,
@@ -121,8 +102,6 @@ export class AppService {
         canteen: {
           select: {
             name: true,
-            latitude: true,
-            longitude: true,
           },
         },
         walker: {
@@ -215,6 +194,19 @@ export class AppService {
     }
 
     return { requesterId: order.requesterId };
+  }
+
+  async updateOrderStatus(msg: any): Promise<any> {
+    const order = await this.prisma.order.update({
+      where: {
+        orderId: msg.orderId,
+      },
+      data: {
+        orderStatus: msg.status,
+      },
+    });
+
+    return order;
   }
   
 }

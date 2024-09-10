@@ -11,7 +11,7 @@ export class AppController {
     return this.appService.walkerRegistration(msg);
   }
 
-  @MessagePattern('getWalker')
+  @MessagePattern('walkerGet')
   walkerGet(msg: any): any {
     return this.appService.walkerGet(msg);
   }
@@ -39,5 +39,10 @@ export class AppController {
   @MessagePattern('getRequesterIdByOrder')
   getRequesterIdByOrder(msg: any): any {
     return this.appService.getRequesterIdByOrder(msg);
+  }
+
+  @MessagePattern('updateOrderStatus')
+  updateOrderStatus(msg: any): any {
+    return this.appService.updateOrderStatus(msg);
   }
 }
