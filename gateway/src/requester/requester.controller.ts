@@ -3,7 +3,7 @@ import { ClientKafka } from '@nestjs/microservices';
 import { PostChangeProfilePictureDto, GetDebitCardDto, PostChangeDebitCardDto, CreateOrderRequestDto, SearchMenuDto, CreateReportRequestDto, RequesterProfileDto, UpdateRequesterProfileDto, RequesterAddressDto, UpdateAddressRequestDto, CreateDebitCardDto, RequesterCreateDto } from './dto/requester.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { lastValueFrom, Observable } from 'rxjs';
-import { CreateAddressRequestDto, CreateOrderRequestDto, CreateReportRequestDto, UpdateAddressRequestDto } from 'src/dtos/';
+import { CreateAddressRequestDto } from 'src/dtos/';
 import { CancelOrderResponseDto, CreateAddressResponseDto, CreateOrderResponseDto, CreateReportResponseDto, DeleteAddressResponseDto, GetAddressInfoResponseDto, GetAddressResponseDto, UpdateAddressResponseDto } from './dto/response.dto';
 
 @ApiTags('REQUESTER')
