@@ -15,10 +15,15 @@ export class AppController {
   getCanteens(): Promise<any> {
     return this.appService.getCanteens();
   }
+  
+  @MessagePattern('searchMenu')
+  searchMenu(msg: any): Promise<any> {
+    return this.appService.searchMenu(msg);
+  }
 
   @MessagePattern('getProfile')
-  getProfile(): Promise<any> {
-    return this.appService.getProfile();
+  getProfile(msg: any): Promise<any> {
+    return this.appService.getProfile(msg);
   }
   
   @MessagePattern('postPersonalInfo')

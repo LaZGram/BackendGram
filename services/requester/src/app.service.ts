@@ -5,18 +5,45 @@ import { PrismaService } from './prisma.service';
 export class AppService {
   constructor(private prisma: PrismaService) {}
 
-  getCanteens(): Promise<any> {
+  async getCanteens(): Promise<any> {
     return this.prisma.canteen.findMany({
-      // include: {
-      //   address: true,
-      //   order: true,
-      //   shop: true,
-      // },
+      select: {
+        canteenId: true,
+        name: true,
+        latitude: true,
+        longitude: true,
+      }
     });
   }
 
-  getProfile(): Promise<any> {
-    return this.prisma.requester.findMany({
+  async searchMenu(msg: any): Promise<any> {
+    return this.prisma.menu.findMany({
+      where: {
+        name: {
+          contains: msg.name,
+        },
+        status: true,
+      },
+      select: {
+        menuId: true,
+        name: true,
+        price: true,
+        picture: true,
+        description: true,
+        shop: {
+          select: {
+            shopName: true,
+          }
+        }
+      }
+    });
+  }
+
+  getProfile(msg: any): Promise<any> {
+    return this.prisma.requester.findUnique({
+      where: {
+        authId: msg.authId,
+      },
       select: {
         username: true,
         email: true,
@@ -35,56 +62,62 @@ export class AppService {
           select: {
             cardNumber: true,
             expiryDate: true,
+            cvv: true
           },
         },
       },
     });
   }
 
-  postPersonalInfo(msg: any): Promise<any> {
-    return this.prisma.requester.update({
+  async postPersonalInfo(msg: any): Promise<any> {
+    const requester = await this.prisma.requester.update({
       where: {
-        requesterId: msg.requesterId,
+        authId: msg.authId,
       },
       data: {
         username: msg.username,
         phoneNumber: msg.phoneNumber,
       },
     });
+    return requester
   }
 
-  postChangeProfilePicture(msg: any): Promise<any> {
-    return this.prisma.requester.update({
+  async postChangeProfilePicture(msg: any): Promise<any> {
+    const requester = await this.prisma.requester.update({
       where: {
-        requesterId: msg.requesterId,
+        authId: msg.authId,
       },
       data: {
         profilePicture: msg.profilePicture,
       },
     });
+    return requester
   }
 
   async requesterRegistration(msg: any): Promise<any> {
-    let requesterId = this.prisma.requester.findUnique({
+    let req = await this.prisma.requester.findUnique({
       where: {
-        authId: msg.jwt.authId
+        authId: msg.authId,
       },
       select: {
-        requesterId: true
-      }
-    })["requesterId"]
-    const requester = await this.prisma.requester.update({
-      where: {
-        requesterId
+        requesterId: true,
       },
+    });
+
+    if (req) {
+      throw new Error('Requester already exists');
+    }
+
+    const requester = await this.prisma.requester.create({
       data: {
+        authId: msg.authId,
         username: msg.username,
         email: msg.email,
         firstName: msg.firstName,
         lastName: msg.lastName,
         phoneNumber: msg.phoneNumber,
         profilePicture: msg.profilePicture,
-        address: {
+        address: msg.addressId ? {
           connect: {
             addressId: msg.addressId,
           },
@@ -93,17 +126,19 @@ export class AppService {
         debitCard: msg.debitCardId ? {
           connect: {
             debitCardId: msg.debitCardId,
-          }
+          },
         } : undefined,
       },
     });
+
     return requester;
   }
+
 
   getDebitcard(msg: any): Promise<any> {
     return this.prisma.debitCard.findMany({
       where: {
-        requesterId: msg.authId,
+        debitCardId: msg.debitCardId,
       },
       select: {
         cardNumber: true,
@@ -116,16 +151,27 @@ export class AppService {
   async createDebitcard(msg: any): Promise<any> {
     const { cardNumber, expiryDate, cvv, requesterId } = msg;
 
-    const debitCard = await this.prisma.debitCard.create({
-      data: {
-        cardNumber: cardNumber,
-        expiryDate: expiryDate,
-        cvv: cvv,
-        requesterId: requesterId,
-      },
-    });
+    if (!cardNumber || !expiryDate || !cvv || !requesterId) {
+        throw new Error('Missing required fields: cardNumber, expiryDate, cvv, requesterId');
+    }
 
-    return debitCard;
+    try {
+        const debitCard = await this.prisma.debitCard.create({
+            data: {
+                cardNumber: cardNumber,
+                expiryDate: expiryDate,
+                cvv: cvv,
+                requester: {
+                    connect: {
+                        requesterId: requesterId,
+                    },
+                },
+            },
+        });
+        return debitCard;
+    } catch (error) {
+        throw new Error(`Failed to create debit card: ${error.message}`);
+    }
 }
 
   postChangeDebitCard(msg: any): Promise<any> {

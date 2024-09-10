@@ -1,16 +1,21 @@
-import { Controller, Get, Inject, Post, Body } from '@nestjs/common';;
+import { Controller, Get, Inject, Post, Body } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
-import { Admin } from '@nestjs/microservices/external/kafka.interface';
-import { Kafka } from 'kafkajs';
-import { lastValueFrom, Observable } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { GetCanteensDto } from './dto/canteen.dto';
 
+@ApiTags('Canteen')
 @Controller('canteen')
 export class CanteenController {
-    constructor(@Inject('KAFKA') private client: ClientKafka) { }
-    @Get()
-    async getCanteens(@Body() body: any): Promise<string> {
-        const result = await this.client.send('getCanteens', body);
-        const value = await lastValueFrom(result);
-        return value;
-    }
+  constructor(@Inject('KAFKA') private client: ClientKafka) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Get a list of canteens' })
+  @ApiResponse({ status: 200, description: 'Canteen list retrieved successfully.' })
+  @ApiResponse({ status: 400, description: 'Invalid request data.' })
+  async getCanteens(@Body() body: GetCanteensDto): Promise<string> {
+    const result = await this.client.send('getCanteens', body);
+    const value = await lastValueFrom(result);
+    return value;
+  }
 }
