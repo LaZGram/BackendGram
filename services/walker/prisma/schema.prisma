@@ -26,7 +26,7 @@ model Admin {
 }
 
 model Authorization {
-  authId      Int    @id
+  authId      String    @id
   tokenId     String
 
   requester Requester?
@@ -43,7 +43,7 @@ model Walker {
   bankAccountNo   String
   report Report[]
   auth   Authorization @relation(fields: [authId], references: [authId])
-  authId          Int           @unique
+  authId          String           @unique
   order Order[]
 }
 
@@ -57,9 +57,9 @@ model Requester {
   profilePicture String
   report Report[]
   auth   Authorization @relation(fields: [authId], references: [authId])
-  authId         Int    @unique
-  address Address @relation(fields: [addressId], references: [addressId])
-  addressId      Int    @unique
+  authId         String    @unique
+  address Address[]
+  defaultAddress Int?
   order Order[]
   review  Review[]
   debitCard    DebitCard[]
@@ -77,12 +77,14 @@ model DebitCard {
 
 model Address {
   addressId Int    @id @default(autoincrement())
-  description      String
+  name      String
+  detail      String?
+  note        String?
   latitude  Float
   longitude Float
 
-  requester Requester?
-  canteen Canteen?
+  requester Requester @relation(fields: [requesterId], references: [requesterId])
+  requesterId Int
   order Order[]
 }
 
@@ -133,9 +135,9 @@ model Transaction{
 model Canteen {
   canteenId Int    @id @default(autoincrement())
   name      String
+  latitude  Float
+  longitude Float
 
-  address Address @relation(fields: [addressId], references: [addressId])
-  addressId Int @unique
   order Order[]
   shop  Shop[]
 }
@@ -154,15 +156,25 @@ model Shop {
   menu  Menu[]
   canteen Canteen @relation(fields: [canteenId],  references: [canteenId])
   canteenId Int
-  schedule  Schedule[]
+  weeklySchedule  WeeklySchedule[]
+  specialOperatingHours  SpecialOperatingHours[]
 }
 
-model Schedule{
+model WeeklySchedule{
   scheduleId  Int @id @default(autoincrement())
   dayOfWeek String
-  startTime DateTime
-  endTime DateTime
-  status Boolean
+  open String
+  close String
+
+  shop  Shop  @relation(fields: [shopId], references: [shopId])
+  shopId  Int
+}
+
+model SpecialOperatingHours{
+  specialOperatingHoursId  Int @id @default(autoincrement())
+  date DateTime
+  open String
+  close String
 
   shop  Shop  @relation(fields: [shopId], references: [shopId])
   shopId  Int
@@ -244,7 +256,7 @@ model Report{
   reportDate DateTime
   title String
   description String
-  status Boolean
+  status String
 
   requester Requester @relation(fields: [requesterId], references: [requesterId])
   requesterId Int

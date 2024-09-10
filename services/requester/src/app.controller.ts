@@ -41,4 +41,9 @@ export class AppController {
     return this.appService.postChangeDebitCard(msg);
   }
 
+  @MessagePattern('createDebitcard')
+  createDebitcard(msg: any): any {
+    return this.appService.createDebitcard(msg);
+  }
+
 }

@@ -100,7 +100,7 @@ export class AppService {
     });
   }
 
-  getOrderDetail(msg: any): Promise<any> {
+  async getOrderDetail(msg: any): Promise<any> {
     return this.prisma.order.findUnique({
       where: {
         orderId: msg.orderId,
@@ -121,12 +121,8 @@ export class AppService {
         canteen: {
           select: {
             name: true,
-            address: {
-              select: {
-                latitude: true,
-                longitude: true,
-              },
-            },
+            latitude: true,
+            longitude: true,
           },
         },
         walker: {
