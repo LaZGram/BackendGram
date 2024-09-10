@@ -27,6 +27,12 @@ export class CreateWalkerDto {
   bankAccountNo: string;
 }
 
+export class OrderIdDto {
+  @ApiProperty({ description: 'Username of the walker', example: 'walker123', required: false })
+  @IsString()
+  orderId: number;
+}
+
 export class UpdateWalkerDto {
   @ApiProperty({ description: 'Username of the walker', example: 'walker123', required: false })
   @IsString()
@@ -149,8 +155,8 @@ class OrderItemDto {
 
 export class GetOrderListDto {
     @ApiProperty({ description: 'Order ID', example: '12345' })
-    @IsString()
-    orderId: string;
+    @IsNumber()
+    orderId: number;
   
     @ApiProperty({ description: 'Amount of items in the order', example: 3 })
     @IsNumber()
@@ -179,8 +185,8 @@ export class GetOrderListDto {
 
 export class GetOrderDetailDto {
   @ApiProperty({ description: 'Order ID', example: '12345' })
-  @IsString()
-  orderId: string;
+  @IsNumber()
+  orderId: number;
 
   @ApiProperty({ description: 'Order date', example: '2023-09-09' })
   @IsString()

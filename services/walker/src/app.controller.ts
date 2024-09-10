@@ -16,6 +16,11 @@ export class AppController {
     return this.appService.walkerGet(msg);
   }
   
+  @MessagePattern('updateWalkerProfile')
+  updateWalkerProfile(msg: any): any {
+    return this.appService.updateWalkerProfile(msg);
+  }
+  
   @MessagePattern('getOrderList')
   getOrderList(msg: any): any {
     return this.appService.getOrderList(msg);

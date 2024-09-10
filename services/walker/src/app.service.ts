@@ -39,6 +39,37 @@ export class AppService {
     return updatedWalker;
   }
 
+  async updateWalkerProfile(msg: any): Promise<any> {
+    const walker = await this.prisma.walker.findUnique({
+      where: {
+        authId: msg.authId,
+      },
+      select: {
+        walkerId: true,
+      },
+    });
+  
+    if (!walker) {
+      throw new Error('Walker not found');
+    }
+  
+    const updatedWalker = await this.prisma.walker.update({
+      where: {
+        authId: msg.authId,
+      },
+      data: {
+        username: msg.username,
+        email: msg.email,
+        phoneNumber: msg.phoneNumber,
+        profilePicture: msg.profilePicture,
+        bankAccountName: msg.bankAccountName,
+        bankAccountNo: msg.bankAccountNo,
+      },
+    });
+  
+    return updatedWalker;
+  }
+
   walkerGet(msg: any): Promise<any> {
     return this.prisma.walker.findUnique({
       where: {
