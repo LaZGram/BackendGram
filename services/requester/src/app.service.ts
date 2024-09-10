@@ -89,6 +89,7 @@ export class AppService {
             addressId: msg.addressId,
           },
         },
+        authId: null,
         debitCard: msg.debitCardId ? {
           connect: {
             debitCardId: msg.debitCardId,
