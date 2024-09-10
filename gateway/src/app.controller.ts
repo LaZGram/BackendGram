@@ -36,7 +36,9 @@ export class AppController {
     const walker_topic_list = ['createWalker', 'getWalker', 'updateWalker', 'deleteWalker', 'getWalkerInfo','postChangeProfilePicture', 'getDebitcard', 
       'postChangeDebitCard', 'walkerRegistration', 'walkerGet', 'getOrderList', 'getOrderDetail', 'confirmOrder', 'postReport'
     , 'getRequesterIdByOrder'];
-    const topic_list = ['hello', 'requesterRegistration', 'getCanteens', 'getProfile', 'googleAuth', ...shop_topic_list, ...requester_topic_list, ...walker_topic_list];
+    let topic_list = ['hello', 'requesterRegistration', 'getCanteens', 'getProfile', 'googleAuth', ...shop_topic_list, ...requester_topic_list, ...walker_topic_list];
+    // unique topic
+    topic_list = topic_list.filter((value, index, self) => self.indexOf(value) === index);
     topic_list.forEach(async (topic) => {
       await this.client.subscribeToResponseOf(topic);
     });
