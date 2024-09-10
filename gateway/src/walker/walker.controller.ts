@@ -89,8 +89,8 @@ export class WalkerController {
   @ApiResponse({ status: 200, description: 'Requester ID retrieved successfully.' })
   @ApiResponse({ status: 404, description: 'Requester not found.' })
   async getRequesterIdByOrder(@Param() params: GetRequesterIdByOrderDto): Promise<any> {
-    const result = this.client.send('getRequesterIdByOrder', params);
-    return (await lastValueFrom(result)).requesterId;
+    const result = this.client.send('getRequesterIdByOrder', {...params});
+    return (await lastValueFrom(result));
   }
 
   @Post('order-list/:orderId/status')

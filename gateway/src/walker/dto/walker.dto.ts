@@ -28,8 +28,8 @@ export class CreateWalkerDto {
 }
 
 export class OrderIdDto {
-  @ApiProperty({ description: 'Username of the walker', example: 'walker123', required: false })
-  @IsString()
+  @ApiProperty({ description: 'OrderId', example: '123', required: false })
+  @IsNumber()
   orderId: number;
 }
 
@@ -90,9 +90,25 @@ export class PostReportDto {
   @IsString()
   description: string;
 
-  @ApiProperty({ description: 'Status of the report', example: 'Open' })
+  @ApiProperty({ description: 'Status of the report', example: 'Cancel' })
   @IsString()
   status: string;
+
+  @ApiProperty({ description: 'Requester ID associated with the report', example: '1' })
+  @IsNumber()
+  requesterId: number;
+
+  @ApiProperty({ description: 'Walker ID associated with the report', example: '1' })
+  @IsNumber()
+  walkerId: number;
+
+  @ApiProperty({ description: 'Order ID associated with the report', example: '6' })
+  @IsNumber()
+  orderId: number;
+
+  @ApiProperty({ description: 'Admin ID associated with the report', example: '1' })
+  @IsNumber()
+  adminId: number;
 }
 
 class AddressDto {
@@ -226,9 +242,9 @@ export class GetOrderDetailDto {
 }
 
 export class GetRequesterIdByOrderDto {
-  @ApiProperty({ description: 'Requester ID', example: '12345' })
-  @IsString()
-  requesterId: string;
+  @ApiProperty({ description: 'OrderId', example: '1' })
+  @IsNumber()
+  orderId: number;
 }
 
 export class walkerGetDto {
