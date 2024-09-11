@@ -1,26 +1,49 @@
 import { Injectable } from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
+import { AppService } from 'src/app.service';
+import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class OrderService {
-  create(createOrderDto: CreateOrderDto) {
-    return 'This action adds a new order';
+  constructor(private prisma: PrismaService, private appService: AppService) {}
+
+  async acceptOrder(authId: string, orderId: number ) {
+    const order = await this.prisma.order.findUnique({
+      where: {
+        orderId: orderId,
+      },
+    });
+    await this.updateOrderStatus(orderId, 'inProgress');
+    await this.updateOrderItemStatus(orderId, 'inProgress');
+    await this.prisma.order.update({
+      where: {
+        orderId: orderId
+      },
+      data: {
+        walkerId: await this.appService.getWalkerId(authId)
+      }
+    });
+    return order;
+  }
+  
+  async updateOrderStatus(orderId: number, status: string) {
+    return this.prisma.order.update({
+      where: {
+        orderId: orderId
+      },
+      data: {
+        orderStatus: status
+      }
+    });
   }
 
-  findAll() {
-    return `This action returns all order`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
-  }
-
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+  async updateOrderItemStatus(orderId: number, status: string) {
+    return this.prisma.orderItem.updateMany({
+      where: {
+        orderId: orderId
+      },
+      data: {
+        orderItemStatus: status
+      }
+    });
   }
 }
