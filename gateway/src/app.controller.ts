@@ -32,10 +32,12 @@ export class AppController {
     const requester_topic_list = [...order_topic_list, ...address_topic_list, 'createDebitcard', 'searchMenu', 'postPersonalInfo', 'authIdCreate'];
     const menu_topic_list = ['createMenu', 'editMenu', 'deleteMenu', 'getMenu', 'getMenuInfo'];
     const option_topic_list = ['createOption', 'editOption', 'deleteOption', 'getOption', 'getOptionInfo'];
-    const shop_topic_list = ['createShop', 'searchShop', 'shopReview', 'createCanteen', ...menu_topic_list, ...option_topic_list,];
+    const shop_order_topic_list = ['getShopOrder', 'getShopOrderHistory', 'updateShopOrderStatus'];
+    const shop_topic_list = ['createShop', 'updateShopInfo', 'getShopInfo', 'searchShop', 'shopReview', 'createCanteen', ...menu_topic_list, ...option_topic_list, ...shop_order_topic_list];
+    const walker_order_topic_list = ['acceptOrder'];
     const walker_topic_list = ['createWalker', 'getWalker', 'updateWalker', 'deleteWalker', 'getWalkerInfo','postChangeProfilePicture', 'getDebitcard', 
       'postChangeDebitCard', 'walkerRegistration', 'walkerGet', 'getOrderList', 'getOrderDetail', 'confirmOrder', 'postReport'
-    , 'getRequesterIdByOrder', 'updateWalkerProfile', 'updateOrderStatus'];
+    , 'getRequesterIdByOrder', 'updateWalkerProfile', 'updateOrderStatus', ...walker_order_topic_list];
     let topic_list = ['hello', 'requesterRegistration', 'getCanteens', 'getProfile', 'googleAuth', ...shop_topic_list, ...requester_topic_list, ...walker_topic_list];
     // unique topic
     topic_list = topic_list.filter((value, index, self) => self.indexOf(value) === index);

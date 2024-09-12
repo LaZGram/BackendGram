@@ -1,16 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { AppService } from 'src/app.service';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class ReviewService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private appservice: AppService) {}
 
-  shopReview(id: number): any {
+  async shopReview(authId: string) {
     return this.prisma.review.findMany({
       where: {
-        shopId: {
-          equals: id
-        }
+        shopId: await this.appservice.getShopId(authId)
       },
       select: {
         reviewId: true,
