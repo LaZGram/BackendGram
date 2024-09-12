@@ -17,8 +17,6 @@ export class CreateAddressRequestDto {
     @ApiProperty()
     @IsNumber()
     longitude: number
-    @ApiProperty()
-    @IsString()
     authId: string
     @ApiProperty()
     @IsBoolean()

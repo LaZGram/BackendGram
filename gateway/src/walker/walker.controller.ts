@@ -111,10 +111,10 @@ export class WalkerController {
 
   @Post('order/accept')
   @ApiOperation({ summary: 'Walker accept an order' })
-  @ApiQuery({ name: 'authId', type: String })
   @ApiQuery({ name: 'orderId', type: Number })
   @ApiResponse({ status: 200, description: 'Order accepted successfully.', type: AcceptOrderResponseDto })
-  async acceptOrder(@Query() msg: object): Promise<any> {
+  async acceptOrder(@Query() msg: object, @Request() req): Promise<any> {
+    msg['authId'] = req.jwt.authId;
     const result = this.client.send('acceptOrder', msg);
     return await lastValueFrom(result);
   }

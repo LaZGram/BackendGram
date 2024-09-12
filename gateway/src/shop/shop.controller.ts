@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Inject, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Post, Query, Request } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { ApiOperation, ApiProperty, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { lastValueFrom } from 'rxjs';
 import { CreateMenuRequestDto, CreateShopRequestDto, SearchShopRequestDto, CreateOptionRequestDto, EditOptionRequestDto, EditMenuRequestDto, CreateScheduleRequestDto, CreateSpecialOperatingHoursRequestDto } from 'src/dtos';
 import { CreateMenuResponseDto, CreateOptionResponseDto, CreateScheduleResponseDto, CreateShopResponseDto, CreateSpecialOperatingHoursResponseDto, DeleteMenuResponseDto, DeleteOptionResponseDto, EditMenuResponseDto, EditOptionResponseDto, GetMenuInfoResponseDto, GetMenuResponseDto, GetOptionInfoResponseDto, GetOptionResponseDto, GetOrderHistoryResponseDto, GetOrderResponseDto, GetScheduleResponseDto, GetShopInfoResponseDto, GetShopReviewResponseDto, GetSpecialOperatingHoursResponseDto, SearchShopResponseDto, UpdateOrderStatusResponseDto, UpdateShopInfoResponseDto } from './dto/response.dto';
 import { UpdateOrderStatusRequestDto } from './dto/update-order-status-request.dto';
+import { UpdateShopInfoRequestDto } from './dto/update-shop-info-request.dto';
 
 @ApiTags('SHOP')
 @Controller('shop')
@@ -14,7 +15,8 @@ export class ShopController {
   @Post('create-shop')
   @ApiOperation({ summary: 'Create new shop to database' })
   @ApiResponse({ status: 201, description: 'Create new shop successes', type: CreateShopResponseDto })
-  async createShop(@Body() createShopRequest: CreateShopRequestDto): Promise<string> {
+  async createShop(@Body() createShopRequest: CreateShopRequestDto, @Request() req): Promise<string> {
+      createShopRequest.authId = req.jwt.authId;
       const result = await this.client.send('createShop', JSON.stringify(createShopRequest));
       const value = await lastValueFrom(result);
       return value;
@@ -23,7 +25,8 @@ export class ShopController {
   @Post('update-info')
   @ApiOperation({ summary: 'Update shop information in database' })
   @ApiResponse({ status: 201, description: 'Update shop information successes', type: UpdateShopInfoResponseDto })
-  async updateShopInfo(@Body() updateShopInfoRequest: CreateShopRequestDto): Promise<string> {
+  async updateShopInfo(@Body() updateShopInfoRequest: UpdateShopInfoRequestDto, @Request() req): Promise<string> {
+      updateShopInfoRequest.authId = req.jwt.authId;
       const result = await this.client.send('updateShopInfo', JSON.stringify(updateShopInfoRequest));
       const value = await lastValueFrom(result);
       return value;
@@ -31,10 +34,9 @@ export class ShopController {
 
   @Get('info')
   @ApiOperation({ summary: 'Get shop information from database' })
-  @ApiQuery({ name: 'authId', type: 'string' })
   @ApiResponse({ status: 200, description: 'Get shop information successes', type: GetShopInfoResponseDto })
-  async getShopInfo(@Query() authId: object): Promise<string> {
-    const result = await this.client.send('getShopInfo', JSON.stringify(authId));
+  async getShopInfo(@Request() req): Promise<string> {
+    const result = await this.client.send('getShopInfo', JSON.stringify({authId: req.jwt.authId}));
     const value = await lastValueFrom(result);
     return value;
   }
@@ -43,7 +45,8 @@ export class ShopController {
   @Post('create-menu')
   @ApiOperation({ summary: 'Create new menu to database' })
   @ApiResponse({ status: 201, description: 'Create new menu successes', type: CreateMenuResponseDto })
-  async createMenu(@Body() createMenuRequest: CreateMenuRequestDto): Promise<string> {
+  async createMenu(@Body() createMenuRequest: CreateMenuRequestDto, @Request() req): Promise<string> {
+      createMenuRequest.authId = req.jwt.authId;
       const result = await this.client.send('createMenu', JSON.stringify(createMenuRequest));
       const value = await lastValueFrom(result);
       return value;
@@ -70,11 +73,9 @@ export class ShopController {
 
   @Get('menu')
   @ApiOperation({ summary: 'Get list of menu from database' })
-  @ApiQuery({ name: 'authId', type: 'string' })
   @ApiResponse({ status: 200, description: 'Get menu successes', type: GetMenuResponseDto, isArray: true })
-  async getMenu(@Query() authId: object): Promise<string> {
-    console.log(authId);
-    const result = await this.client.send('getMenu', JSON.stringify(authId));
+  async getMenu(@Request() req): Promise<string> {
+    const result = await this.client.send('getMenu', JSON.stringify({authId: req.jwt.authId}));
     const value = await lastValueFrom(result);
     return value;
   }
@@ -149,10 +150,9 @@ export class ShopController {
   
   @Get('review')
   @ApiOperation({ summary: 'Get list of shop review' })
-  @ApiQuery({ name: 'authId', type: 'string' })
   @ApiResponse({ status: 200, description: 'Get shop review successes', type: GetShopReviewResponseDto, isArray: true })
-  async shopReview(@Query() authId: object): Promise<string> {
-    const result = await this.client.send('shopReview', JSON.stringify(authId));
+  async shopReview(@Request() req): Promise<string> {
+    const result = await this.client.send('shopReview', JSON.stringify({authId: req.jwt.authId}));
     const value = await lastValueFrom(result);
     return value;
   }
@@ -160,7 +160,8 @@ export class ShopController {
   @Post('create-weekly-schedule')
   @ApiOperation({ summary: 'Create weekly schedule' })
   @ApiResponse({ status: 201, description: 'Create weekly schedule successes', type: CreateScheduleResponseDto })
-  async createWeeklySchedule(@Body() createScheduleRequest: CreateScheduleRequestDto): Promise<string> {
+  async createWeeklySchedule(@Body() createScheduleRequest: CreateScheduleRequestDto, @Request() req): Promise<string> {
+    createScheduleRequest.authId = req.jwt.authId;
     const result = await this.client.send('createWeeklySchedule', JSON.stringify(createScheduleRequest));
     const value = await lastValueFrom(result);
     return value;
@@ -169,7 +170,8 @@ export class ShopController {
   @Post('create-special-operating-hours')
   @ApiOperation({ summary: 'Create special operating hours' })
   @ApiResponse({ status: 201, description: 'Create special operating hours successes', type: CreateSpecialOperatingHoursResponseDto })
-  async createSpecialOperatingHours(@Body() createSpecialOperatingHoursRequest: CreateSpecialOperatingHoursRequestDto): Promise<string> {
+  async createSpecialOperatingHours(@Body() createSpecialOperatingHoursRequest: CreateSpecialOperatingHoursRequestDto, @Request() req): Promise<string> {
+    createSpecialOperatingHoursRequest.authId = req.jwt.authId;
     const result = await this.client.send('createSpecialOperatingHours', JSON.stringify(createSpecialOperatingHoursRequest));
     const value = await lastValueFrom(result);
     return value;
@@ -197,20 +199,18 @@ export class ShopController {
 
   @Get('order')
   @ApiOperation({ summary: 'Get list of order' })
-  @ApiQuery({ name: 'authId', type: 'string' })
   @ApiResponse({ status: 200, description: 'Get order successes', type: GetOrderResponseDto, isArray: true })
-  async getOrder(@Query() authId: object): Promise<string> {
-    const result = await this.client.send('getShopOrder', JSON.stringify(authId));
+  async getOrder(@Request() req): Promise<string> {
+    const result = await this.client.send('getShopOrder', JSON.stringify({authId: req.jwt.authId}));
     const value = await lastValueFrom(result);
     return value;
   }
 
   @Get('order/history')
   @ApiOperation({ summary: 'Get list of order history' })
-  @ApiQuery({ name: 'authId', type: 'string' })
   @ApiResponse({ status: 200, description: 'Get order history successes', type: GetOrderHistoryResponseDto, isArray: true })
-  async getOrderHistory(@Query() authId: object): Promise<string> {
-    const result = await this.client.send('getShopOrderHistory', JSON.stringify(authId));
+  async getOrderHistory(@Request() req): Promise<string> {
+    const result = await this.client.send('getShopOrderHistory', JSON.stringify({authId: req.jwt.authId}));
     const value = await lastValueFrom(result);
     return value;
   }

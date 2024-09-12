@@ -16,7 +16,7 @@ export class AppController {
   constructor(@Inject('KAFKA') private client: ClientKafka, private appService: AppService) { }
   private admin: Admin;
 
-  @ApiTags('SHOP')
+  @ApiTags('CANTEEN')
   @Post('create-canteen')
   @ApiOperation({ summary: 'Create new canteen to database' })
   @ApiResponse({ status: 201, description: 'Create new canteen successes', type: CreateCanteenResponseDto })

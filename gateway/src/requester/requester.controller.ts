@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Query, Delete, Inject, Param, Request} from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
-import { PostChangeProfilePictureDto, GetDebitCardDto, PostChangeDebitCardDto, SearchMenuDto, CreateReportRequestDto, RequesterProfileDto, UpdateRequesterProfileDto, RequesterAddressDto, UpdateAddressRequestDto, CreateDebitCardDto, RequesterCreateDto } from './dto/requester.dto';
+import { PostChangeProfilePictureDto, GetDebitCardDto, PostChangeDebitCardDto, SearchMenuDto, RequesterProfileDto, UpdateRequesterProfileDto, RequesterAddressDto, CreateDebitCardDto, RequesterCreateDto } from './dto/requester.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { lastValueFrom, Observable } from 'rxjs';
-import { CreateAddressRequestDto, CreateOrderRequestDto } from 'src/dtos/';
+import { CreateAddressRequestDto, CreateOrderRequestDto, CreateReportRequestDto, UpdateAddressRequestDto } from 'src/dtos/';
 import { CancelOrderResponseDto, CreateAddressResponseDto, CreateOrderResponseDto, CreateReportResponseDto, DeleteAddressResponseDto, GetAddressInfoResponseDto, GetAddressResponseDto, UpdateAddressResponseDto } from './dto/response.dto';
 
 @ApiTags('REQUESTER')
@@ -85,7 +85,9 @@ export class RequesterController {
     @Post('create-order')
     @ApiOperation({ summary: 'Create new order to database' })
     @ApiResponse({ status: 201, description: 'Create new order successes', type: CreateOrderResponseDto })
-    async createOrder(@Body() createOrderRequest: CreateOrderRequestDto): Promise<string> {
+    async createOrder(@Body() createOrderRequest: CreateOrderRequestDto, @Request() req): Promise<string> {
+        createOrderRequest.authId = req.jwt.authId;
+        console.log(createOrderRequest.authId);
         const result = this.client.send('createOrder', createOrderRequest);
         return await lastValueFrom(result);
     }
@@ -121,7 +123,8 @@ export class RequesterController {
     @Post('order/create-report')
     @ApiOperation({ summary: 'Create new report to database' })
     @ApiResponse({ status: 201, description: 'Create new report successes', type: CreateReportResponseDto })
-    async createReport(@Body() createReportRequest: CreateReportRequestDto): Promise<string> {
+    async createReport(@Body() createReportRequest: CreateReportRequestDto, @Request() req): Promise<string> {
+        createReportRequest.authId = req.jwt.authId;
         const result = this.client.send('createReport', createReportRequest);
         return await lastValueFrom(result);
     }
@@ -146,7 +149,8 @@ export class RequesterController {
     @Post('create-address')
     @ApiOperation({ summary: 'Create new address to database' })
     @ApiResponse({ status: 201, description: 'Create new address successes', type: CreateAddressResponseDto })
-    async createAddress(@Body() body: CreateAddressRequestDto): Promise<string> {
+    async createAddress(@Body() body: CreateAddressRequestDto, @Request() req): Promise<string> {
+        body.authId = req.jwt.authId;
         const result = await this.client.send('createAddress', body);
         const value = await lastValueFrom(result);
         return value;
@@ -155,7 +159,8 @@ export class RequesterController {
     @Post('update-address')
     @ApiOperation({ summary: 'Update address in database' })
     @ApiResponse({ status: 201, description: 'Update address successes', type: UpdateAddressResponseDto })
-    async updateAddress(@Body() body: UpdateAddressRequestDto): Promise<string> {
+    async updateAddress(@Body() body: UpdateAddressRequestDto, @Request() req): Promise<string> {
+        body.authId = req.jwt.authId;
         const result = this.client.send('updateAddress', body);
         return await lastValueFrom(result);
     }
@@ -179,11 +184,10 @@ export class RequesterController {
     }
 
     @Get('address/info')
-    @ApiQuery({ name: 'authId', type: 'string' })
     @ApiOperation({ summary: 'Get address information from database' })
     @ApiResponse({ status: 200, description: 'Get address information successes', type: GetAddressInfoResponseDto })
-    async getAddressInfo(@Query() authId: object): Promise<string> {
-        const result = this.client.send('getAddressInfo', authId);
+    async getAddressInfo(@Request() req): Promise<string> {
+        const result = this.client.send('getAddressInfo', {authId: req.jwt.authId});
         return await lastValueFrom(result);
     }
 }
