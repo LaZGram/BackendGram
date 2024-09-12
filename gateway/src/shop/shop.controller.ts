@@ -20,7 +20,7 @@ export class ShopController {
       return value;
   }
 
-  @Post('shop/update-info')
+  @Post('update-info')
   @ApiOperation({ summary: 'Update shop information in database' })
   @ApiResponse({ status: 201, description: 'Update shop information successes', type: UpdateShopInfoResponseDto })
   async updateShopInfo(@Body() updateShopInfoRequest: CreateShopRequestDto): Promise<string> {
@@ -29,7 +29,7 @@ export class ShopController {
       return value;
   }
 
-  @Get('shop/info')
+  @Get('info')
   @ApiOperation({ summary: 'Get shop information from database' })
   @ApiQuery({ name: 'authId', type: 'string' })
   @ApiResponse({ status: 200, description: 'Get shop information successes', type: GetShopInfoResponseDto })
