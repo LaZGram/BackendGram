@@ -68,4 +68,14 @@ export class AuthService {
         });
         return requester;
     }
+
+    async createAuthId(msg: any) {
+        const authId = await this.prisma.authorization.create({
+            data: {
+                tokenId: msg.authId,
+                authId: msg.authId,
+            },
+        });
+        return authId;
+    }
 }

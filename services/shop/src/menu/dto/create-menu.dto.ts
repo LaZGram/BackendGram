@@ -1,5 +1,5 @@
 export class CreateMenuDto {
-  shopId: number
+  authId: string
   name: string
   picture: string
   price: number
