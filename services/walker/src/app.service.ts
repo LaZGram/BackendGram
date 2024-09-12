@@ -106,6 +106,8 @@ export class AppService {
         canteen: {
           select: {
             name: true,
+            latitude: true,
+            longitude: true,
           },
         },
       },
@@ -133,6 +135,8 @@ export class AppService {
         canteen: {
           select: {
             name: true,
+            latitude: true,
+            longitude: true,
           },
         },
         walker: {
@@ -162,17 +166,17 @@ export class AppService {
       data: {
         photoPath: msg.photoPath,
         order: {
-          connect: { orderId: msg.orderId },
+          connect: { orderId: Number(msg.orderId) },
         },
       },
     });
 
     const order = await this.prisma.order.update({
       where: {
-        orderId: msg.orderId,
+        orderId: Number(msg.orderId),
       },
       data: {
-        orderStatus: 'Confirmed',
+        orderStatus: 'จัดส่งเรียบร้อย',
         confirmedAt: new Date(),
         photoId: photo.photoId,
       },
@@ -214,9 +218,9 @@ export class AppService {
     return report;
   }
 
-  async getRequesterIdByOrder(orderId: string): Promise<{ requesterId: number }> {
+  async getRequesterIdByOrder(msg: any): Promise<any> {
     const order = await this.prisma.order.findUnique({
-      where: { orderId: Number(orderId) },
+      where: { orderId: Number(msg.orderId) },
       select: { requesterId: true },
     });
 
@@ -230,7 +234,7 @@ export class AppService {
   async updateOrderStatus(msg: any): Promise<any> {
     const order = await this.prisma.order.update({
       where: {
-        orderId: msg.orderId,
+        orderId: Number(msg.orderId),
       },
       data: {
         orderStatus: msg.status,
