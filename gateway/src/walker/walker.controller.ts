@@ -28,7 +28,7 @@ export class WalkerController {
 
   @Get('profile')
   @ApiOperation({ summary: 'Get walker profile' })
-  @ApiResponse({ status: 200, description: 'Walker profile retrieved successfully.', type: walkerGetDto })
+  @ApiResponse({ status: 200, description: 'Walker profile retrieved successfully.', type: WalkerGetDto })
   @ApiResponse({ status: 404, description: 'Walker not found.' })
   async walkerGet(@Body() body: any, @Request() req): Promise<string> {
     const result = await this.client.send('walkerGet', { ...body, authId: req.jwt.authId });

@@ -117,6 +117,7 @@ export class AppService {
         lastName: msg.lastName,
         phoneNumber: msg.phoneNumber,
         profilePicture: msg.profilePicture,
+        createAt: new Date(),
         address: msg.addressId ? {
           connect: {
             addressId: msg.addressId,

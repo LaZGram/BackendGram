@@ -27,6 +27,7 @@ export class AppController {
   }
 
   async onModuleInit() {
+    const admin_topic_list = ['walkerQueue' , 'verifyWalker' , 'showRequester' , 'showWalker' , 'showOrder' , 'postApproval'];
     const address_topic_list = ['createAddress', 'updateAddress', 'deleteAddress', 'getAddress', 'getAddressInfo'];
     const order_topic_list = ['createOrder', 'getStatus', 'cancelOrder', 'getWalker', 'createReport'];
     const requester_topic_list = [...order_topic_list, ...address_topic_list, 'createDebitcard', 'searchMenu', 'postPersonalInfo', 'authIdCreate'];
@@ -38,7 +39,7 @@ export class AppController {
     const walker_topic_list = ['createWalker', 'getWalker', 'updateWalker', 'deleteWalker', 'getWalkerInfo','postChangeProfilePicture', 'getDebitcard', 
       'postChangeDebitCard', 'walkerRegistration', 'walkerGet', 'getOrderList', 'getOrderDetail', 'confirmOrder', 'postReport'
     , 'getRequesterIdByOrder', 'updateWalkerProfile', 'updateOrderStatus', ...walker_order_topic_list];
-    let topic_list = ['hello', 'requesterRegistration', 'getCanteens', 'getProfile', 'googleAuth', ...shop_topic_list, ...requester_topic_list, ...walker_topic_list];
+    let topic_list = ['hello', 'requesterRegistration', 'getCanteens', 'getProfile', 'googleAuth', ...shop_topic_list, ...requester_topic_list, ...walker_topic_list, ...admin_topic_list];
     // unique topic
     topic_list = topic_list.filter((value, index, self) => self.indexOf(value) === index);
     topic_list.forEach(async (topic) => {
