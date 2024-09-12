@@ -3,7 +3,6 @@ import { IsString, IsOptional } from 'class-validator';
 
 export class GetCanteensDto {
   @ApiProperty({ description: 'Location filter for the canteens', example: 'Bangkok', required: false })
-  @IsOptional()
   @IsString()
   location?: string;
 

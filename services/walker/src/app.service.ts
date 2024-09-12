@@ -33,6 +33,8 @@ export class AppService {
         profilePicture: msg.profilePicture,
         bankAccountName: msg.bankAccountName,
         bankAccountNo: msg.bankAccountNo,
+        registerAt: new Date(),
+        status: false,
       },
     });
   
@@ -82,6 +84,8 @@ export class AppService {
         profilePicture: true,
         bankAccountName: true,
         bankAccountNo: true,
+        status: true,
+        registerAt: true,
       },
     });
   }
@@ -96,6 +100,7 @@ export class AppService {
         amount: true,
         totalPrice: true,
         shippingFee: true,
+        orderDate: true,
         orderStatus: true,
         address: {
           select: {

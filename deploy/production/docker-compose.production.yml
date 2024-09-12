@@ -75,6 +75,8 @@ services:
     volumes:
       - ../../services/requester/src:/usr/app/src
     # entrypoint: ["npm", "run", "start:dev"]
+
+
   
 # -----------------------------------------------
   # micro-shop:
