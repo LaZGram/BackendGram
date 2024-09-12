@@ -3,6 +3,9 @@ import { IsNumber, IsString } from "class-validator"
 
 export class CreateShopRequestDto {
   @ApiProperty()
+  @IsString()
+  authId: string
+  @ApiProperty()
   @IsNumber()
   canteenId: number
   @ApiProperty()

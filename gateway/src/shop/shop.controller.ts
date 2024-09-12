@@ -3,7 +3,8 @@ import { ClientKafka } from '@nestjs/microservices';
 import { ApiOperation, ApiProperty, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { lastValueFrom } from 'rxjs';
 import { CreateMenuRequestDto, CreateShopRequestDto, SearchShopRequestDto, CreateOptionRequestDto, EditOptionRequestDto, EditMenuRequestDto, CreateScheduleRequestDto, CreateSpecialOperatingHoursRequestDto } from 'src/dtos';
-import { CreateMenuResponseDto, CreateOptionResponseDto, CreateScheduleResponseDto, CreateShopResponseDto, CreateSpecialOperatingHoursResponseDto, DeleteMenuResponseDto, DeleteOptionResponseDto, EditMenuResponseDto, EditOptionResponseDto, GetMenuInfoResponseDto, GetMenuResponseDto, GetOptionInfoResponseDto, GetOptionResponseDto, GetScheduleResponseDto, GetShopReviewResponseDto, GetSpecialOperatingHoursResponseDto, SearchShopResponseDto } from './dto/response.dto';
+import { CreateMenuResponseDto, CreateOptionResponseDto, CreateScheduleResponseDto, CreateShopResponseDto, CreateSpecialOperatingHoursResponseDto, DeleteMenuResponseDto, DeleteOptionResponseDto, EditMenuResponseDto, EditOptionResponseDto, GetMenuInfoResponseDto, GetMenuResponseDto, GetOptionInfoResponseDto, GetOptionResponseDto, GetOrderHistoryResponseDto, GetOrderResponseDto, GetScheduleResponseDto, GetShopInfoResponseDto, GetShopReviewResponseDto, GetSpecialOperatingHoursResponseDto, SearchShopResponseDto, UpdateOrderStatusResponseDto, UpdateShopInfoResponseDto } from './dto/response.dto';
+import { UpdateOrderStatusRequestDto } from './dto/update-order-status-request.dto';
 
 @ApiTags('SHOP')
 @Controller('shop')
@@ -18,6 +19,26 @@ export class ShopController {
       const value = await lastValueFrom(result);
       return value;
   }
+
+  @Post('update-info')
+  @ApiOperation({ summary: 'Update shop information in database' })
+  @ApiResponse({ status: 201, description: 'Update shop information successes', type: UpdateShopInfoResponseDto })
+  async updateShopInfo(@Body() updateShopInfoRequest: CreateShopRequestDto): Promise<string> {
+      const result = await this.client.send('updateShopInfo', JSON.stringify(updateShopInfoRequest));
+      const value = await lastValueFrom(result);
+      return value;
+  }
+
+  @Get('info')
+  @ApiOperation({ summary: 'Get shop information from database' })
+  @ApiQuery({ name: 'authId', type: 'string' })
+  @ApiResponse({ status: 200, description: 'Get shop information successes', type: GetShopInfoResponseDto })
+  async getShopInfo(@Query() authId: object): Promise<string> {
+    const result = await this.client.send('getShopInfo', JSON.stringify(authId));
+    const value = await lastValueFrom(result);
+    return value;
+  }
+  
 
   @Post('create-menu')
   @ApiOperation({ summary: 'Create new menu to database' })
@@ -49,11 +70,11 @@ export class ShopController {
 
   @Get('menu')
   @ApiOperation({ summary: 'Get list of menu from database' })
-  @ApiQuery({ name: 'shopId', type: 'number' })
+  @ApiQuery({ name: 'authId', type: 'string' })
   @ApiResponse({ status: 200, description: 'Get menu successes', type: GetMenuResponseDto, isArray: true })
-  async getMenu(@Query() shopId: object): Promise<string> {
-    console.log(shopId);
-    const result = await this.client.send('getMenu', JSON.stringify(shopId));
+  async getMenu(@Query() authId: object): Promise<string> {
+    console.log(authId);
+    const result = await this.client.send('getMenu', JSON.stringify(authId));
     const value = await lastValueFrom(result);
     return value;
   }
@@ -128,10 +149,10 @@ export class ShopController {
   
   @Get('review')
   @ApiOperation({ summary: 'Get list of shop review' })
-  @ApiQuery({ name: 'shopId', type: 'number' })
+  @ApiQuery({ name: 'authId', type: 'string' })
   @ApiResponse({ status: 200, description: 'Get shop review successes', type: GetShopReviewResponseDto, isArray: true })
-  async shopReview(@Query() shopId: object): Promise<string> {
-    const result = await this.client.send('shopReview', JSON.stringify(shopId));
+  async shopReview(@Query() authId: object): Promise<string> {
+    const result = await this.client.send('shopReview', JSON.stringify(authId));
     const value = await lastValueFrom(result);
     return value;
   }
@@ -170,6 +191,35 @@ export class ShopController {
   @ApiResponse({ status: 200, description: 'Get special operating hours successes', type: GetSpecialOperatingHoursResponseDto, isArray: true })
   async getSpecialOperatingHours(@Query() shopId: object): Promise<string> {
     const result = await this.client.send('getSpecialOperatingHours', JSON.stringify(shopId));
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Get('order')
+  @ApiOperation({ summary: 'Get list of order' })
+  @ApiQuery({ name: 'authId', type: 'string' })
+  @ApiResponse({ status: 200, description: 'Get order successes', type: GetOrderResponseDto, isArray: true })
+  async getOrder(@Query() authId: object): Promise<string> {
+    const result = await this.client.send('getShopOrder', JSON.stringify(authId));
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Get('order/history')
+  @ApiOperation({ summary: 'Get list of order history' })
+  @ApiQuery({ name: 'authId', type: 'string' })
+  @ApiResponse({ status: 200, description: 'Get order history successes', type: GetOrderHistoryResponseDto, isArray: true })
+  async getOrderHistory(@Query() authId: object): Promise<string> {
+    const result = await this.client.send('getShopOrderHistory', JSON.stringify(authId));
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Post('order/update-status')
+  @ApiOperation({ summary: 'Update order status' })
+  @ApiResponse({ status: 201, description: 'Update order status successes', type: UpdateOrderStatusResponseDto })
+  async updateOrderStatus(@Body() updateOrderStatus: UpdateOrderStatusRequestDto): Promise<string> {
+    const result = await this.client.send('updateShopOrderStatus', JSON.stringify(updateOrderStatus));
     const value = await lastValueFrom(result);
     return value;
   }

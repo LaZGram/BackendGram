@@ -31,6 +31,7 @@ model Authorization {
 
   requester Requester?
   walker    Walker?
+  shop     Shop?
 }
 
 model Walker {
@@ -158,6 +159,8 @@ model Shop {
   canteenId Int
   weeklySchedule  WeeklySchedule[]
   specialOperatingHours  SpecialOperatingHours[]
+  authorization   Authorization @relation(fields: [authId], references: [authId])
+  authId          String           @unique
 }
 
 model WeeklySchedule{
@@ -232,7 +235,10 @@ model OrderItem {
   quantity            Int
   totalPrice          Float
   specialInstructions String
-  shopId  Int
+  shopId              Int
+  orderItemStatus     String
+  orderItemDate       DateTime
+  completedDate       DateTime?
 
   order Order @relation(fields: [orderId], references: [orderId])
   orderId             Int
@@ -263,7 +269,7 @@ model Report{
   walker Walker @relation(fields: [walkerId], references: [walkerId])
   walkerId Int
   order Order @relation(fields: [orderId], references: [orderId])
-  orderId Int
+  orderId Int @unique
   admin Admin @relation(fields: [adminId], references: [adminId])
   adminId Int
 }

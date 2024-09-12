@@ -6,5 +6,5 @@ export class DayOfWeek {
 
 export class CreateScheduleDto {
     dayOfWeek: DayOfWeek[]
-    shopId: number
+    authId: string
 }

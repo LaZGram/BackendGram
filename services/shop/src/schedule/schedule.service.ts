@@ -2,19 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { PrismaService } from 'src/prisma.service';
 import { CreateSpecialOperatingHoursDto } from './dto/create-special-operating-hours.dto';
+import { AppService } from 'src/app.service';
 
 
 @Injectable()
 export class ScheduleService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private appservice: AppService) {}
 
   async createSchedule(createScheduleDto: CreateScheduleDto) {
+    const shopId = await this.appservice.getShopId(createScheduleDto.authId)
     const oldSchedule = await this.prisma.weeklySchedule.findMany({
-      where: { shopId: createScheduleDto.shopId },
+      where: { shopId: shopId },
     })
     if (oldSchedule.length > 0) {
       await this.prisma.weeklySchedule.deleteMany({
-        where: { shopId: createScheduleDto.shopId },
+        where: { shopId: shopId },
       })
     }
     let schedule: any[] = [];
@@ -25,7 +27,7 @@ export class ScheduleService {
             dayOfWeek: day.day,
             open: day.open,
             close: day.close,
-            shop: { connect: { shopId: createScheduleDto.shopId } },
+            shop: { connect: { shopId: shopId } },
           },
         })
       )
@@ -34,9 +36,10 @@ export class ScheduleService {
   }
 
   async createSpecialOperatingHours(createSpecialOperatingHoursDto: CreateSpecialOperatingHoursDto) {
+    const shopId = await this.appservice.getShopId(createSpecialOperatingHoursDto.authId)
     const date = await this.prisma.specialOperatingHours.findMany({
       where: { 
-        shopId: createSpecialOperatingHoursDto.shopId,
+        shopId: shopId,
         date: createSpecialOperatingHoursDto.date
       },
     })
@@ -57,7 +60,7 @@ export class ScheduleService {
         date: createSpecialOperatingHoursDto.date,
         open: createSpecialOperatingHoursDto.open,
         close: createSpecialOperatingHoursDto.close,
-        shop: { connect: { shopId: createSpecialOperatingHoursDto.shopId }}
+        shop: { connect: { shopId: shopId }}
       },
     })
   }

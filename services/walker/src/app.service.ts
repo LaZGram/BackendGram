@@ -5,8 +5,14 @@ import { PrismaService } from './prisma.service';
 export class AppService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getHello(): Promise<string> {
-    return 'Hello World!';
+  getWalkerId(authId: string){
+    return this.prisma.walker.findUnique({
+      where: {
+        authId: authId
+      }
+    }).then(walker => {
+      return walker.walkerId;
+    });
   }
 
   async walkerRegistration(msg: any): Promise<any> {

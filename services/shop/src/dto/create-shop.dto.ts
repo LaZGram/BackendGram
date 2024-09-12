@@ -1,4 +1,5 @@
 export class CreateShopDto {
+  authId: string
   canteenId: number
   username: string
   password: string

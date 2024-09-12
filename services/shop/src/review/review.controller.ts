@@ -7,8 +7,8 @@ export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
   @MessagePattern('shopReview')
-  shopReview(msg: object): string {
-    const id = parseInt(msg["shopId"].toString());
-    return this.reviewService.shopReview(id);
+  shopReview(msg: object) {
+    const authId = msg["authId"].toString();
+    return this.reviewService.shopReview(authId);
   }
 }
