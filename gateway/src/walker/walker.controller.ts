@@ -2,7 +2,7 @@ import { Controller, Get, Inject, Post, Body, Param, Request, Query } from '@nes
 import { ClientKafka } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import { OrderIdDto, CreateWalkerDto, UpdateWalkerDto, walkerGetDto, UpdateOrderStatusDto, GetOrderListDto, ConfirmOrderDto, PostReportDto, GetOrderDetailDto, GetRequesterIdByOrderDto } from './dto/walker.dto';
+import { OrderIdDto, CreateWalkerDto, UpdateWalkerDto, WalkerGetDto, UpdateOrderStatusDto, GetOrderListDto, ConfirmOrderDto, PostReportDto, GetOrderDetailDto, GetRequesterIdByOrderDto } from './dto/walker.dto';
 import { AcceptOrderResponseDto } from './dto/response.dto';
 
 @ApiTags('Walker')
@@ -28,7 +28,7 @@ export class WalkerController {
 
   @Get('profile')
   @ApiOperation({ summary: 'Get walker profile' })
-  @ApiResponse({ status: 200, description: 'Walker profile retrieved successfully.', type: walkerGetDto })
+  @ApiResponse({ status: 200, description: 'Walker profile retrieved successfully.', type: WalkerGetDto })
   @ApiResponse({ status: 404, description: 'Walker not found.' })
   async walkerGet(@Body() body: any, @Request() req): Promise<string> {
     const result = await this.client.send('walkerGet', { ...body, authId: req.jwt.authId });
