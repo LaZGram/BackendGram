@@ -28,6 +28,7 @@ export class MenuService {
         price: msg.price,
         picture: msg.picture,
         description: msg.description,
+        status: msg.status,
       },
     });
   }

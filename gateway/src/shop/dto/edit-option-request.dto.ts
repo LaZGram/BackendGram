@@ -14,7 +14,7 @@ export class EditOptionRequestDto{
   name?: string
   @ApiPropertyOptional({description: 'true if customer can choose multiple option, false if customer can only choose one option'})
   @IsBoolean()
-  mushChoose?: boolean
+  mustChoose?: boolean
   @ApiPropertyOptional({description: 'maximum number of option that customer can choose'})
   @IsNumber()
   maxChoose?: number

@@ -3,9 +3,7 @@ import { CreateShopRequestDto } from './create-shop-request.dto';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 
-export class UpdateShopInfoDto extends PartialType(CreateShopRequestDto) {
-  @ApiProperty()
-  @IsString()
+export class UpdateShopInfoRequestDto extends PartialType(CreateShopRequestDto) {
   authId: string
   @ApiPropertyOptional()
   @IsNumber()

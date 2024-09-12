@@ -77,7 +77,7 @@ export class CreateOptionResponseDto {
   @ApiProperty()
   name: string
   @ApiProperty()
-  mushChoose: boolean
+  mustChoose: boolean
   @ApiProperty()
   maxChoose: number
   @ApiProperty()

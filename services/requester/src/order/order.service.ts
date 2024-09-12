@@ -1,20 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { PrismaService } from 'src/prisma.service';
+import { AppService } from 'src/app.service';
 
 @Injectable()
 export class OrderService {
-  constructor(private prisma: PrismaService) {}
-
-  getRequester(authId: string) {
-    return this.prisma.requester.findUnique({
-      where: {
-        authId: authId
-      }
-    }).then(requester => {
-      return requester.requesterId;
-    });
-  }
+  constructor(private prisma: PrismaService, private appService: AppService) {}
 
   async create(createOrderDto: CreateOrderDto) {
     const transaction = await this.prisma.transaction.create({
@@ -29,7 +20,7 @@ export class OrderService {
       data: {
         requester: {
           connect: {
-            requesterId: await this.getRequester(createOrderDto.authId)
+            requesterId: await this.appService.getRequesterId(createOrderDto.authId)
           }
         },
         canteen: {

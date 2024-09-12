@@ -1,20 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateReportDto } from './dto/create-report.dto';
 import { PrismaService } from 'src/prisma.service';
+import { AppService } from 'src/app.service';
 
 @Injectable()
 export class ReportService {
-  constructor(private prisma: PrismaService) {}
-
-  getRequester(authId: string) {
-    return this.prisma.requester.findUnique({
-      where: {
-        authId: authId
-      }
-    }).then(requester => {
-      return requester.requesterId;
-    });
-  }
+  constructor(private prisma: PrismaService, private appService: AppService) {}
 
   async create(createReportDto: CreateReportDto) {
     const report = await this.prisma.report.findUnique({
@@ -44,7 +35,7 @@ export class ReportService {
           status: "pending",
           requester: {
             connect: {
-              requesterId: await this.getRequester(createReportDto.authId)
+              requesterId: await this.appService.getRequesterId(createReportDto.authId)
             }
           },
           admin: {
