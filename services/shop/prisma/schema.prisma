@@ -36,6 +36,9 @@ model Authorization {
 
 model Walker {
   walkerId        Int    @id @default(autoincrement())
+  registerAt      DateTime
+  verifyAt        DateTime?
+  status          Boolean
   username        String
   email           String
   phoneNumber     String
@@ -50,6 +53,7 @@ model Walker {
 
 model Requester {
   requesterId    Int    @id @default(autoincrement())
+  createAt       DateTime
   username       String
   email          String
   firstName      String
@@ -263,7 +267,6 @@ model Report{
   title String
   description String
   status String
-
   requester Requester @relation(fields: [requesterId], references: [requesterId])
   requesterId Int
   walker Walker @relation(fields: [walkerId], references: [walkerId])

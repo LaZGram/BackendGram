@@ -29,7 +29,7 @@ export class AppController {
   async onModuleInit() {
     const admin_topic_list = ['walkerQueue' , 'verifyWalker' , 'showRequester' , 'showWalker' , 'showOrder' , 'postApproval'];
     const address_topic_list = ['createAddress', 'updateAddress', 'deleteAddress', 'getAddress', 'getAddressInfo'];
-    const order_topic_list = ['createOrder', 'getStatus', 'cancelOrder', 'getWalker', 'createReport'];
+    const order_topic_list = ['createOrder', 'getOrderStatus', 'cancelOrder', 'getOrderWalker', 'createOrderReport'];
     const requester_topic_list = [...order_topic_list, ...address_topic_list, 'createDebitcard', 'searchMenu', 'postPersonalInfo', 'authIdCreate'];
     const menu_topic_list = ['createMenu', 'editMenu', 'deleteMenu', 'getMenu', 'getMenuInfo'];
     const option_topic_list = ['createOption', 'editOption', 'deleteOption', 'getOption', 'getOptionInfo'];
