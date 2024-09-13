@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { Controller, Get, Inject, Post, Body, Param, Request, NotFoundException } from '@nestjs/common';
-=======
-import { Controller, Get, Inject, Post, Body, Param, Request, Query } from '@nestjs/common';
->>>>>>> 6408f569f086bbae90ee554269ca31ee1ea5baa8
+import { Controller, Get, Inject, Post, Body, Param, Request, Query , NotFoundException } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
