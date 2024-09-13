@@ -16,7 +16,5 @@ export class DayOfWeek {
 export class CreateScheduleRequestDto {
     @ApiProperty({type: [DayOfWeek]})
     dayOfWeek: DayOfWeek[]
-    @ApiProperty()
-    @IsString()
     authId: string
 }

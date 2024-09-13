@@ -6,9 +6,6 @@ export class EditMenuRequestDto{
   @ApiProperty()
   @IsNumber()
   menuId: number;
-  @ApiProperty()
-  @IsNumber()
-  shopId: number
   @ApiPropertyOptional()
   @IsString()
   name?: string
@@ -21,4 +18,7 @@ export class EditMenuRequestDto{
   @ApiPropertyOptional()
   @IsString()
   description?: string
+  @ApiPropertyOptional()
+  @IsString()
+  status?: boolean
 }

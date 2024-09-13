@@ -20,8 +20,6 @@ export class UpdateAddressRequestDto{
   @ApiPropertyOptional()
   @IsNumber()
   longitude?: number
-  @ApiPropertyOptional()
-  @IsString()
   authId?: string
   @ApiPropertyOptional()
   @IsBoolean()

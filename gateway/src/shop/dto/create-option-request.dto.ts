@@ -19,7 +19,7 @@ export class CreateOptionRequestDto {
   name: string
   @ApiProperty({description: 'true if customer can choose multiple option, false if customer can only choose one option'})
   @IsBoolean()
-  mushChoose: boolean
+  mustChoose: boolean
   @ApiProperty({description: 'maximum number of option that customer can choose'})
   @IsNumber()
   maxChoose: number

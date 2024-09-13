@@ -31,8 +31,6 @@ export class OrderItem {
 }
 
 export class CreateOrderRequestDto {
-  @ApiProperty({ example: "1"})
-  @IsString()
   authId: string;
   @ApiProperty({ example: 0 })
   @IsNumber()

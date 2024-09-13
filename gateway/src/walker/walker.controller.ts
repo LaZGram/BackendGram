@@ -6,7 +6,7 @@ import { Controller, Get, Inject, Post, Body, Param, Request, Query } from '@nes
 import { ClientKafka } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import { OrderIdDto, CreateWalkerDto, UpdateWalkerDto, walkerGetDto, UpdateOrderStatusDto, GetOrderListDto, ConfirmOrderDto, PostReportDto, GetOrderDetailDto, GetRequesterIdByOrderDto } from './dto/walker.dto';
+import { OrderIdDto, CreateWalkerDto, UpdateWalkerDto, WalkerGetDto, UpdateOrderStatusDto, GetOrderListDto, ConfirmOrderDto, PostReportDto, GetOrderDetailDto, GetRequesterIdByOrderDto } from './dto/walker.dto';
 import { AcceptOrderResponseDto } from './dto/response.dto';
 
 @ApiTags('Walker')
@@ -120,10 +120,10 @@ export class WalkerController {
 
   @Post('order/accept')
   @ApiOperation({ summary: 'Walker accept an order' })
-  @ApiQuery({ name: 'authId', type: String })
   @ApiQuery({ name: 'orderId', type: Number })
   @ApiResponse({ status: 200, description: 'Order accepted successfully.', type: AcceptOrderResponseDto })
-  async acceptOrder(@Query() msg: object): Promise<any> {
+  async acceptOrder(@Query() msg: object, @Request() req): Promise<any> {
+    msg['authId'] = req.jwt.authId;
     const result = this.client.send('acceptOrder', msg);
     return await lastValueFrom(result);
   }

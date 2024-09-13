@@ -5,6 +5,16 @@ import { PrismaService } from './prisma.service';
 export class AppService {
   constructor(private prisma: PrismaService) {}
 
+  async getRequesterId(authId: string) {
+    const requester = await this.prisma.requester.findUnique({
+      where: {
+        authId: authId
+      }
+    })
+    if (!requester) throw new Error("Requester not found");
+    else return requester.requesterId;
+  }
+
   async getCanteens(): Promise<any> {
     return this.prisma.canteen.findMany({
       select: {
