@@ -3,8 +3,8 @@ import { IsNumber, IsString } from "class-validator"
 
 export class CreateMenuRequestDto {
   @ApiProperty()
-  @IsNumber()
-  shopId: number
+  @IsString()
+  authId: string
   @ApiProperty()
   @IsString()
   name: string

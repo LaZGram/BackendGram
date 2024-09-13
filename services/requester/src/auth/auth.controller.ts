@@ -19,4 +19,15 @@ export class AuthController {
       return JSON.stringify({ error: 'Invalid token' });
     }
   }
+
+  @MessagePattern('authIdCreate')
+  async authIdCreate(@Payload() msg: any): Promise<string> {
+    try {
+      const authId = await this.authService.createAuthId(msg);
+      return JSON.stringify({ authId });
+    } catch (error) {
+      console.error('Error creating authId:', error);
+      return JSON.stringify({ error: 'Error creating authId' });
+    }
+  }
 }

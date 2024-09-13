@@ -3,6 +3,7 @@ import { AppService } from './app.service';
 import { ClientKafka, MessagePattern, Payload } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { CreateCanteenDto, CreateShopDto, SearchShopDto } from './dto/';
+import { UpdateShopInfoDto } from './dto/update-shop-info.dto';
 
 @Controller()
 export class AppController {
@@ -14,8 +15,19 @@ export class AppController {
   }
 
   @MessagePattern('createShop')
-  createShop(msg: CreateShopDto): string {
+  createShop(msg: CreateShopDto) {
     return this.appService.createShop(msg);
+  }
+
+  @MessagePattern('updateShopInfo')
+  updateShopInfo(msg: UpdateShopInfoDto) {
+    return this.appService.updateShopInfo(msg);
+  }
+
+  @MessagePattern('getShopInfo')
+  getShopInfo(msg: object) {
+    const authId = msg['authId'].toString();
+    return this.appService.getShopInfo(authId);
   }
   
   @MessagePattern('searchShop')

@@ -9,7 +9,7 @@ export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
   @MessagePattern('createMenu')
-  createMenu(msg: CreateMenuDto): string {
+  createMenu(msg: CreateMenuDto){
     return this.menuService.createMenu(msg);
   }
 
@@ -31,9 +31,9 @@ export class MenuController {
   }
 
   @MessagePattern('getMenu')
-  getMenu(msg: object): string {
+  getMenu(msg: object){
     console.log(msg);
-    const shopId = parseInt(msg["shopId"].toString());
-    return this.menuService.getMenu(shopId);
+    const authId = msg["authId"].toString();
+    return this.menuService.getMenu(authId);
   }
 }

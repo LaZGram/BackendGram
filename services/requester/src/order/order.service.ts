@@ -72,7 +72,10 @@ export class OrderService {
           specialInstructions: item.specialInstructions,
           menuId: item.menuId,
           orderId: order.orderId,
-          shopId: item.shopId
+          shopId: item.shopId,
+          orderItemStatus: "lookingForWalker",
+          orderItemDate: new Date(createOrderDto.orderDate),
+          completedDate: null
         }
       })
     })
@@ -111,7 +114,7 @@ export class OrderService {
   async cancleOrder(orderId: number) {
     const status = await this.getStatus(orderId);
     if (status === "lookingForWalker") {
-      await this.prisma.order.update({
+      const order = await this.prisma.order.update({
         where: {
           orderId: orderId
         },
@@ -119,6 +122,13 @@ export class OrderService {
           orderStatus: "canceled"
         }
       });
+      await this.prisma.orderItem.updateMany({
+        where: {
+          orderId: orderId
+        },
+        data: {
+          orderItemStatus: "canceled"
+      }});
       return `Update a #${orderId} order status to canceled`;
     }
     else if (status === "canceled") return "Order is already canceled";

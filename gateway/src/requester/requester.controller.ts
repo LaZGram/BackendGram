@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Query, Delete, Inject, Param, Request} from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
-import { PostChangeProfilePictureDto, GetDebitCardDto, PostChangeDebitCardDto, CreateOrderRequestDto, SearchMenuDto, CreateReportRequestDto, RequesterProfileDto, UpdateRequesterProfileDto, RequesterAddressDto, UpdateAddressRequestDto, CreateDebitCardDto, RequesterCreateDto } from './dto/requester.dto';
+import { PostChangeProfilePictureDto, GetDebitCardDto, PostChangeDebitCardDto, SearchMenuDto, CreateReportRequestDto, RequesterProfileDto, UpdateRequesterProfileDto, RequesterAddressDto, UpdateAddressRequestDto, CreateDebitCardDto, RequesterCreateDto } from './dto/requester.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { lastValueFrom, Observable } from 'rxjs';
-import { CreateAddressRequestDto } from 'src/dtos/';
+import { CreateAddressRequestDto, CreateOrderRequestDto } from 'src/dtos/';
 import { CancelOrderResponseDto, CreateAddressResponseDto, CreateOrderResponseDto, CreateReportResponseDto, DeleteAddressResponseDto, GetAddressInfoResponseDto, GetAddressResponseDto, UpdateAddressResponseDto } from './dto/response.dto';
 
 @ApiTags('REQUESTER')
@@ -92,6 +92,7 @@ export class RequesterController {
 
     @Get('order/status')
     @ApiOperation({ summary: 'Get order status from database' })
+    @ApiQuery({ name: 'orderId', type: 'number' })
     @ApiResponse({ status: 200, description: 'Get order status successes', type: String })
     async getStatus(@Query() orderId: object): Promise<string> {
         const result = this.client.send('getStatus', orderId);

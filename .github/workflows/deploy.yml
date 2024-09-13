@@ -1,0 +1,25 @@
+name: Deploy Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: [KU]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Stop and remove existing containers
+      run: |
+        docker compose -f deploy/production/docker-compose.production.yml down
+
+    - name: Build and start Docker containers
+      run: |
+        docker compose -f deploy/production/docker-compose.production.yml up --build -d
+
+    - name: Check running containers
+      run: docker ps

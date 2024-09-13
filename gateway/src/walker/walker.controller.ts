@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 import { Controller, Get, Inject, Post, Body, Param, Request, NotFoundException } from '@nestjs/common';
+=======
+import { Controller, Get, Inject, Post, Body, Param, Request, Query } from '@nestjs/common';
+>>>>>>> 6408f569f086bbae90ee554269ca31ee1ea5baa8
 import { ClientKafka } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { OrderIdDto, CreateWalkerDto, UpdateWalkerDto, WalkerGetDto, UpdateOrderStatusDto, GetOrderListDto, ConfirmOrderDto, PostReportDto, GetOrderDetailDto, GetRequesterIdByOrderDto } from './dto/walker.dto';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import { OrderIdDto, CreateWalkerDto, UpdateWalkerDto, walkerGetDto, UpdateOrderStatusDto, GetOrderListDto, ConfirmOrderDto, PostReportDto, GetOrderDetailDto, GetRequesterIdByOrderDto } from './dto/walker.dto';
+import { AcceptOrderResponseDto } from './dto/response.dto';
 
 @ApiTags('Walker')
 @Controller('walker')
@@ -110,6 +115,16 @@ export class WalkerController {
       orderId,
       status: updateOrderStatusDto.status,
     });
+    return await lastValueFrom(result);
+  }
+
+  @Post('order/accept')
+  @ApiOperation({ summary: 'Walker accept an order' })
+  @ApiQuery({ name: 'authId', type: String })
+  @ApiQuery({ name: 'orderId', type: Number })
+  @ApiResponse({ status: 200, description: 'Order accepted successfully.', type: AcceptOrderResponseDto })
+  async acceptOrder(@Query() msg: object): Promise<any> {
+    const result = this.client.send('acceptOrder', msg);
     return await lastValueFrom(result);
   }
 }

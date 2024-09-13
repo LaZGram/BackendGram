@@ -12,6 +12,8 @@ export class CreateCanteenResponseDto {
 }
 export class CreateShopResponseDto {
   @ApiProperty()
+  authId: string
+  @ApiProperty()
   shopId: number
   @ApiProperty()
   username: string
@@ -30,6 +32,10 @@ export class CreateShopResponseDto {
   @ApiProperty()
   canteenId: number
 }
+
+export class UpdateShopInfoResponseDto extends CreateShopResponseDto {}
+
+export class GetShopInfoResponseDto extends CreateShopResponseDto {}
 
 export class CreateMenuResponseDto {
   @ApiProperty()
@@ -148,3 +154,26 @@ export class CreateScheduleResponseDto {
 export class GetScheduleResponseDto extends CreateScheduleResponseDto {}
 
 export class GetSpecialOperatingHoursResponseDto extends CreateSpecialOperatingHoursResponseDto {}
+
+export class GetOrderResponseDto {
+  @ApiProperty()
+  orderItemId: number
+  @ApiProperty()
+  quantity: number
+  @ApiProperty()
+  totalPrice: number
+  @ApiProperty()
+  specialInstructions: string
+  @ApiProperty()
+  shopId: number
+  @ApiProperty({description: '"lookingForWalker", "inProgress", "completed", "cancelled"'})
+  orderItemStatus: string
+  @ApiProperty()
+  orderItemDate: Date
+  @ApiProperty()
+  completedDate: Date
+}
+
+export class GetOrderHistoryResponseDto extends GetOrderResponseDto {}
+
+export class UpdateOrderStatusResponseDto extends GetOrderResponseDto {}
