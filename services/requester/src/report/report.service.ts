@@ -26,7 +26,7 @@ export class ReportService {
       throw new RpcException({ statusCode: 404, message: 'Order not found' });
     }
     else if(order.orderStatus == "completed") {
-      const reportDate = new Date(createReportDto.reportDate);
+      const reportDate = new Date();
       const orderDate = new Date(order.orderDate);
       const validDate = new Date(order.orderDate);
       validDate.setDate(validDate.getDate() + 3);
@@ -58,7 +58,7 @@ export class ReportService {
                 walkerId: order.walkerId
               }
             },
-            reportDate: createReportDto.reportDate
+            reportDate: reportDate
           }
         });
       }
