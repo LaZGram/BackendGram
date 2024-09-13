@@ -13,8 +13,8 @@ export class CanteenController {
   @ApiOperation({ summary: 'Get a list of canteens' })
   @ApiResponse({ status: 200, description: 'Canteen list retrieved successfully.' })
   @ApiResponse({ status: 400, description: 'Invalid request data.' })
-  async getCanteens(@Body() body: GetCanteensDto): Promise<string> {
-    const result = await this.client.send('getCanteens', body);
+  async getCanteens(): Promise<string> {
+    const result = await this.client.send('getCanteens', {});
     const value = await lastValueFrom(result);
     return value;
   }

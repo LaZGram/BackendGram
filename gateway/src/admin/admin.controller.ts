@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Inject, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Inject, Request, SetMetadata } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -6,6 +6,7 @@ import { VerifyWalkerDto , PostApprovalDto} from './dto/admin.dto';
 
 @ApiTags('admin')
 @Controller('admin')
+@SetMetadata('isPublic', true)
 export class AdminController {
   constructor(@Inject('KAFKA') private client: ClientKafka) {}
 
@@ -25,11 +26,11 @@ export class AdminController {
     return value;
   }
 
-  @Post('verify/:id')
+  @Post('verify')
   @ApiOperation({ summary: 'Verify a walker by changing their status to true' })
   @ApiResponse({ status: 200, description: 'Walker status updated successfully.' })
-  async verifyWalker(@Body() verifyWalkerDto: VerifyWalkerDto,@Request() req): Promise<string> {
-    const result = await this.client.send('verifyWalker', { ...verifyWalkerDto, authId: req.jwt.authId });
+  async verifyWalker(@Body() verifyWalkerDto: VerifyWalkerDto): Promise<string> {
+    const result = await this.client.send('verifyWalker', { ...verifyWalkerDto });
     const value = await lastValueFrom(result);
     return value;
   }

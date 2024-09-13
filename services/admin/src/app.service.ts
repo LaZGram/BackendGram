@@ -11,6 +11,7 @@ export class AppService {
         status: false,
       },
       select: {
+        walkerId: true,
         username: true,
         email: true,
         phoneNumber: true,
@@ -26,7 +27,7 @@ export class AppService {
   async verifyWalker(msg: any): Promise<any> {
     return this.prisma.walker.update({
       where: {
-        authId: msg.authId,
+        walkerId: msg.walkerId,
       },
       data: {
         status: true,
@@ -141,8 +142,8 @@ export class AppService {
       },
     });
 
-    if (!order || order.orderStatus !== 'Waiting approval') {
-      throw new Error('Order not found or status is not "Waiting approval".');
+    if (!order || order.orderStatus !== "waitingAdmin") {
+      throw new Error('Order not found or status is not "waiting admin".');
     }
 
     return this.prisma.order.update({

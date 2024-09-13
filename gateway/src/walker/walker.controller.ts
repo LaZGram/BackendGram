@@ -1,4 +1,4 @@
-import { Controller, Get, Inject, Post, Body, Param, Request } from '@nestjs/common';
+import { Controller, Get, Inject, Post, Body, Param, Request, NotFoundException } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -29,8 +29,8 @@ export class WalkerController {
   @ApiOperation({ summary: 'Get walker profile' })
   @ApiResponse({ status: 200, description: 'Walker profile retrieved successfully.', type: WalkerGetDto })
   @ApiResponse({ status: 404, description: 'Walker not found.' })
-  async walkerGet(@Body() body: any, @Request() req): Promise<string> {
-    const result = await this.client.send('walkerGet', { ...body, authId: req.jwt.authId });
+  async walkerGet(@Body() body: any): Promise<string> {
+    const result = await this.client.send('walkerGet', { ...body});
     const value = await lastValueFrom(result);
     return value;
   }
@@ -54,11 +54,16 @@ export class WalkerController {
 
   @Get('order-list/:orderId')
   @ApiOperation({ summary: 'Get order detail by orderId' })
-  @ApiResponse({ status: 200, description: 'Order detail retrieved successfully.', type: [GetOrderDetailDto]})
+  @ApiResponse({ status: 200, description: 'Order detail retrieved successfully.', type: GetOrderDetailDto })
   @ApiResponse({ status: 404, description: 'Order not found.' })
-  async getOrderDetail(@Param() params: OrderIdDto): Promise<any> {
-    const result = await this.client.send('getOrderDetail', {...params});
-    return await lastValueFrom(result);
+  async getOrderDetail(@Param('orderId') orderId: string): Promise<GetOrderDetailDto> {
+    const result = await this.client.send('getOrderDetail', { orderId });
+    const orderDetail = await lastValueFrom(result);
+    
+    if (!orderDetail) {
+      throw new NotFoundException('Order not found');
+    }
+    return orderDetail;
   }
 
   @Post('order-list/:orderId/confirm-order')

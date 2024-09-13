@@ -2,13 +2,13 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsOptional, IsNumber, IsObject, IsArray , IsDateString } from 'class-validator';
 
 export class PostApprovalDto {
-  @ApiProperty({ description: 'New order status', example: 'approved' })
+  @ApiProperty({ description: 'New order status', example: 'cancelled' })
   @IsString()
   orderStatus: string;
 }
 
 export class VerifyWalkerDto {
-  @ApiProperty({ description: 'Authorization ID for the walker', example: '1' })
-  @IsString()
-  walkerId: string;
+  @ApiProperty({ description: 'Authorization ID for the walker', example: 1 })
+  @IsNumber()
+  walkerId: Number;
 }
