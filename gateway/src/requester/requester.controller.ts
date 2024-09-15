@@ -156,15 +156,6 @@ export class RequesterController {
         return await lastValueFrom(result);
     }
 
-    @Get('order/get-report')
-    @ApiOperation({ summary: 'Get report from database' })
-    @ApiQuery({ name: 'orderId', type: 'number' })
-    @ApiResponse({ status: 200, description: 'Get report successes', type: CreateReportResponseDto })   
-    async getReport(@Query() orderId: object): Promise<string> {
-        const result = this.client.send('getReport', orderId);
-        return await lastValueFrom(result);
-    }
-
     @Post('create-address')
     @ApiOperation({ summary: 'Create new address to database' })
     @ApiResponse({ status: 201, description: 'Create new address successes', type: CreateAddressResponseDto })

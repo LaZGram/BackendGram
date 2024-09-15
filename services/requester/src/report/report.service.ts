@@ -58,7 +58,8 @@ export class ReportService {
                 walkerId: order.walkerId
               }
             },
-            reportDate: reportDate
+            reportDate: reportDate,
+            reportBy: 'requester'
           }
         });
       }

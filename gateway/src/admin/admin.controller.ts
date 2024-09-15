@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Param, Inject, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Inject, Request, Query } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { VerifyWalkerDto , PostApprovalDto} from './dto/admin.dto';
+import { CanteenResponse, FilterOrderResponse, FilterReportResponse, GetOrderInfoResponse, GetReportInfoResponse, GetReportResponse, GetShopInCanteenResponse, GetShopInfoResponse, GetShopMenuResponse, GetShopOrderResponse, GetToDayOrderResponse, SearchOrderResponse, SearchReportResponse } from './dto/response.dto';
 
 @ApiTags('admin')
 @Controller('admin')
@@ -71,5 +72,141 @@ export class AdminController {
     });
 
     return await lastValueFrom(result);
+  }
+
+  @Get('order/today')
+  @ApiOperation({ summary: 'Show list of all orders that create today' })
+  @ApiResponse({ status: 200, description: 'Returns list of all orders that create today', type: GetToDayOrderResponse })
+  async getToDayOrder(): Promise<string> {
+    const result = await this.client.send('getToDayOrder', {});
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Get('order/info')
+  @ApiOperation({ summary: 'Get order information' })
+  @ApiQuery({ name: 'orderId', type: 'number' })
+  @ApiResponse({ status: 200, description: 'Returns order info', type: GetOrderInfoResponse })
+  async getOrderInfo(@Query() orderId: object): Promise<string> {
+    const result = await this.client.send('getOrderInfo', orderId);
+    const value = await lastValueFrom(result);
+    return value;
+  } 
+
+  @Get('order/search')
+  @ApiOperation({ summary: 'Search order by orderId, requesterId, walkerId' })
+  @ApiQuery({ name: 'orderId', type: 'number' , required: false})
+  @ApiQuery({ name: 'requesterId', type: 'number' , required: false})
+  @ApiQuery({ name: 'walkerId', type: 'number' , required: false})
+  @ApiResponse({ status: 200, description: 'Returns list of orders that match the search criteria', type: SearchOrderResponse })
+  async searchOrder(@Query() msg: object): Promise<string> {
+    const result = await this.client.send('searchOrder', msg);
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Get('order/filter')
+  @ApiOperation({ summary: 'Filter order by date, orderStatus, canteenId, shopId, sortPrice' })
+  @ApiQuery({ name: 'orderDate', type: 'string' , required: false})
+  @ApiQuery({ name: 'orderStatus', type: 'string' , required: false, description: 'lookingForWalker, inProgress, completed, cancelled, waitingAdmin'})
+  @ApiQuery({ name: 'canteenId', type: 'number' , required: false})
+  @ApiQuery({ name: 'shopId', type: 'number' , required: false})
+  @ApiQuery({ name: 'sortPrice', type: 'string' , required: false, description: 'asc or desc'})
+  @ApiResponse({ status: 200, description: 'Returns list of orders that match the filter criteria', type: FilterOrderResponse })
+  async filterOrder(@Query() msg: object): Promise<string> {
+    const result = await this.client.send('filterOrder', msg);
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Get('report')
+  @ApiOperation({ summary: 'Show list of all reports' })
+  @ApiResponse({ status: 200, description: 'Returns list of all reports.', type: GetReportResponse })
+  async showReport(): Promise<any> {
+    const result = this.client.send('getReport', {});
+    return await lastValueFrom(result);
+  }
+
+  @Get('report/info')
+  @ApiOperation({ summary: 'Get report information' })
+  @ApiQuery({ name: 'reportId', type: 'number' })
+  @ApiResponse({ status: 200, description: 'Returns report info', type: GetReportInfoResponse })
+  async getReportInfo(@Query() reportId: object): Promise<string> {
+    const result = await this.client.send('getReportInfo', reportId);
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Get('report/search')
+  @ApiOperation({ summary: 'Search report by orderId, requesterId, walkerId' })
+  @ApiQuery({ name: 'orderId', type: 'number' , required: false})
+  @ApiQuery({ name: 'requesterId', type: 'number' , required: false})
+  @ApiQuery({ name: 'walkerId', type: 'number' , required: false})
+  @ApiResponse({ status: 200, description: 'Returns list of reports that match the search criteria', type: SearchReportResponse })
+  async searchReport(@Query() msg: object): Promise<string> {
+    const result = await this.client.send('searchReport', msg);
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Get('report/filter')
+  @ApiOperation({ summary: 'Filter report by date, canteenId, shopId, reportBy' })
+  @ApiQuery({ name: 'reportDate', type: 'string' , required: false})
+  @ApiQuery({ name: 'canteenId', type: 'number' , required: false})
+  @ApiQuery({ name: 'shopId', type: 'number' , required: false})
+  @ApiQuery({ name: 'reportBy', type: 'string' , required: false, description: 'requester, walker'})
+  @ApiResponse({ status: 200, description: 'Returns list of reports that match the filter criteria', type: FilterReportResponse })
+  async filterReport(@Query() msg: object): Promise<string> {
+    const result = await this.client.send('filterReport', msg);
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Get('canteen')
+  @ApiOperation({ summary: 'Show list of all canteens' })
+  @ApiResponse({ status: 200, description: 'Returns list of canteens.', type: CanteenResponse })
+  async getCanteen(): Promise<any> {
+    const result = this.client.send('getCanteen', {});
+    return await lastValueFrom(result);
+  }
+
+  @Get('canteen/shop')
+  @ApiOperation({ summary: 'Show list of all shops in a canteen' })
+  @ApiQuery({ name: 'canteenId', type: 'number' })
+  @ApiResponse({ status: 200, description: 'Returns list of shops in a canteen.', type: GetShopInCanteenResponse })
+  async getShopInCanteen(@Query() canteenId: object): Promise<string> {
+    const result = await this.client.send('getShopInCanteen', canteenId);
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Get('canteen/shop/menu')
+  @ApiOperation({ summary: 'Show menu of a shop' })
+  @ApiQuery({ name: 'shopId', type: 'number' })
+  @ApiResponse({ status: 200, description: 'Returns menu of a shop.', type: GetShopMenuResponse })
+  async getShopMenu(@Query() shopId: object): Promise<string> {
+    const result = await this.client.send('getShopMenu', shopId);
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Get('canteen/shop/order')
+  @ApiOperation({ summary: 'Show order history of a shop' })
+  @ApiQuery({ name: 'shopId', type: 'number' })
+  @ApiResponse({ status: 200, description: 'Returns order history of a shop.', type: GetShopOrderResponse })
+  async adminGetShopOrderHistory(@Query() shopId: object): Promise<string> {
+    const result = await this.client.send('adminGetShopOrderHistory', shopId);
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Get('canteen/shop/info')
+  @ApiOperation({ summary: 'Show information of a shop' })
+  @ApiQuery({ name: 'shopId', type: 'number' })
+  @ApiResponse({ status: 200, description: 'Returns information of a shop.', type: GetShopInfoResponse })
+  async adminGetShopInfo(@Query() shopId: object): Promise<string> {
+    const result = await this.client.send('adminGetShopInfo', shopId);
+    const value = await lastValueFrom(result);
+    return value;
   }
 }

@@ -223,6 +223,7 @@ export class AppService {
             adminId: msg.adminId,
           },
         },
+        reportBy: 'walker',
       },
     });
   
