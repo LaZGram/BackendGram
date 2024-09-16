@@ -12,7 +12,4 @@ export class CreateReportRequestDto {
   @ApiProperty()
   @IsNumber()
   orderId: number;
-  @ApiProperty()
-  @IsDate()
-  reportDate: Date;
 }

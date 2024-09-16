@@ -179,20 +179,18 @@ export class ShopController {
 
   @Get('weekly-schedule')
   @ApiOperation({ summary: 'Get weekly schedule' })
-  @ApiQuery({ name: 'shopId', type: 'number' })
   @ApiResponse({ status: 200, description: 'Get weekly schedule successes', type: GetScheduleResponseDto, isArray: true })
-  async getWeeklySchedule(@Query() shopId: object): Promise<string> {
-    const result = await this.client.send('getWeeklySchedule', JSON.stringify(shopId));
+  async getWeeklySchedule(@Request() req): Promise<string> {
+    const result = await this.client.send('getWeeklySchedule', JSON.stringify({authId: req.jwt.authId}));
     const value = await lastValueFrom(result);
     return value;
   }
 
   @Get('special-operating-hours')
   @ApiOperation({ summary: 'Get special operating hours' })
-  @ApiQuery({ name: 'shopId', type: 'number' })
   @ApiResponse({ status: 200, description: 'Get special operating hours successes', type: GetSpecialOperatingHoursResponseDto, isArray: true })
-  async getSpecialOperatingHours(@Query() shopId: object): Promise<string> {
-    const result = await this.client.send('getSpecialOperatingHours', JSON.stringify(shopId));
+  async getSpecialOperatingHours(@Request() req): Promise<string> {
+    const result = await this.client.send('getSpecialOperatingHours', JSON.stringify({authId: req.jwt.authId}));
     const value = await lastValueFrom(result);
     return value;
   }

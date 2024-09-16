@@ -8,12 +8,39 @@ export class OrderService {
   constructor(private prisma: PrismaService, private appservice: AppService) {}
 
   async getOrders(authId: string) {
-    return this.prisma.orderItem.findMany({
+    const orderItems = await this.prisma.orderItem.findMany({
       where: {
         orderItemStatus: "inProgress",
         shopId: await this.appservice.getShopId(authId)
+      },
+      select: {
+        orderItemId: true,
+        quantity: true,
+        totalPrice: true,
+        specialInstructions: true,
+        shopId: true,
+        orderItemStatus: true,
+        orderItemDate: true,
+        completedDate: true,
+        menuId: true,
+        orderId: true,
+        orderItemExtra: {
+          where: {
+            selected: true
+          },
+          select: {
+            optionItem: {
+              select: {
+                optionItemId: true,
+                name: true,
+                price: true
+              }
+            }
+          }
+        }
       }
     });
+    return orderItems;
   }
 
   async getOrderHistory(authId: string) {
