@@ -73,6 +73,16 @@ export class AppService {
     return this.prisma.shop.findUnique({
       where: {
         authId: authId
+      },
+      select: {
+        shopId: true,
+        username: true,
+        shopName: true,
+        profilePicture: true,
+        tel: true,
+        shopNumber: true,
+        status: true,
+        canteenId: true
       }
     })
   }

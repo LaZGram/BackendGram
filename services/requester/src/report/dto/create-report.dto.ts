@@ -3,5 +3,4 @@ export class CreateReportDto {
   description: string;
   authId: string;
   orderId: number;
-  reportDate: Date;
 }

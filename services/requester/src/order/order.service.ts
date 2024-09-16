@@ -8,6 +8,7 @@ export class OrderService {
   constructor(private prisma: PrismaService, private appService: AppService) {}
 
   async create(createOrderDto: CreateOrderDto) {
+    const date = new Date();
     const transaction = await this.prisma.transaction.create({
       data: {
         type: createOrderDto.transactionType,
@@ -33,7 +34,7 @@ export class OrderService {
             addressId: createOrderDto.addressId
           }
         },
-        orderDate: new Date(createOrderDto.orderDate),
+        orderDate: date,
         orderStatus: "lookingForWalker",
         totalPrice: createOrderDto.totalPrice,
         shippingFee: createOrderDto.shippingFee,
@@ -65,29 +66,26 @@ export class OrderService {
           orderId: order.orderId,
           shopId: item.shopId,
           orderItemStatus: "lookingForWalker",
-          orderItemDate: new Date(createOrderDto.orderDate),
+          orderItemDate: date,
           completedDate: null
         }
       })
     })
-    for (const item of createOrderDto.orderItems) {
-      const orderItem = await this.prisma.orderItem.findFirst({
-        where: {
-          orderId: order.orderId,
-          menuId: item.menuId,
-          // Add other fields to uniquely identify the created order item if necessary
-        }
-      });
-      console.log(orderItem.menuId);
-      if (orderItem) {
-        await this.prisma.orderItemExtra.createMany({
-          data: item.orderItemExtras.map(extra => ({
-            optionItemId: extra.optionItemId,
-            selected: extra.selected,
-            orderItemId: orderItem.orderItemId // use the primary key of the created order item
-          }))
-        });
+    const orderItems = await this.prisma.orderItem.findMany({
+      where: {
+        orderId: order.orderId
       }
+    });
+    for(let i = 0; i < orderItems.length; i++) {
+      await this.prisma.orderItemExtra.createMany({
+        data: createOrderDto.orderItems[i].orderItemExtras.map(extra => {
+          return {
+            orderItemId: orderItems[i].orderItemId,
+            optionItemId: extra.optionItemId,
+            selected: extra.selected
+          }
+        })
+      });
     }
     return order;
   }

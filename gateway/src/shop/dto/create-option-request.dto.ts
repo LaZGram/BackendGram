@@ -26,6 +26,6 @@ export class CreateOptionRequestDto {
   @ApiProperty({description: 'minimum number of option that customer must choose'})
   @IsNumber()
   minChoose: number
-  @ApiProperty({description: 'list of option items'})
+  @ApiProperty({description: 'list of option items', type: [OptionItem]})
   optionItems: Array<OptionItem>
 }
