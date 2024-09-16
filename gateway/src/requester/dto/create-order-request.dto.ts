@@ -49,9 +49,6 @@ export class CreateOrderRequestDto {
   @ApiProperty({ example: 70 })
   @IsNumber()
   amount: number;
-  @ApiProperty({ example: "2022-10-31T09:00:00Z" })
-  @IsDate()
-  orderDate: Date;
   @ApiProperty({ example: "Debit-card" })
   @IsString()
   transactionType: string;

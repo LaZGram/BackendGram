@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Query, Delete, Inject, Param, Request} from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Delete, Inject, Param, Request, BadRequestException, NotFoundException} from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { PostChangeProfilePictureDto, GetDebitCardDto, PostChangeDebitCardDto, SearchMenuDto, RequesterProfileDto, UpdateRequesterProfileDto, RequesterAddressDto, CreateDebitCardDto, RequesterCreateDto } from './dto/requester.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { lastValueFrom, Observable } from 'rxjs';
+import { catchError, lastValueFrom, Observable } from 'rxjs';
 import { CreateAddressRequestDto, CreateOrderRequestDto, CreateReportRequestDto, UpdateAddressRequestDto } from 'src/dtos/';
 import { CancelOrderResponseDto, CreateAddressResponseDto, CreateOrderResponseDto, CreateReportResponseDto, DeleteAddressResponseDto, GetAddressInfoResponseDto, GetAddressResponseDto, UpdateAddressResponseDto } from './dto/response.dto';
 
@@ -97,7 +97,7 @@ export class RequesterController {
     @ApiQuery({ name: 'orderId', type: 'number' })
     @ApiResponse({ status: 200, description: 'Get order status successes', type: String })
     async getStatus(@Query() orderId: object): Promise<string> {
-        const result = this.client.send('getStatus', orderId);
+        const result = this.client.send('getOrderStatus', orderId);
         return await lastValueFrom(result);
     }
 
@@ -116,16 +116,35 @@ export class RequesterController {
     @ApiQuery({ name: 'orderId', type: 'number' })
     @ApiResponse({ status: 200, description: 'Get walker information successes', type: String })
     async getWalker(@Query() orderId: any): Promise<string> {
-        const result = this.client.send('getWalker', orderId);
+        const result = this.client.send('getOrderWalker', orderId);
         return await lastValueFrom(result);
     }
 
     @Post('order/create-report')
     @ApiOperation({ summary: 'Create new report to database' })
     @ApiResponse({ status: 201, description: 'Create new report successes', type: CreateReportResponseDto })
+    @ApiResponse({ status: 400, description: 'Report already exists' })
+    @ApiResponse({ status: 400, description: 'Order not completed yet' })
+    @ApiResponse({ status: 400, description: 'Order not found' })
+    @ApiResponse({ status: 400, description: 'Report date is not in range' })
     async createReport(@Body() createReportRequest: CreateReportRequestDto, @Request() req): Promise<string> {
         createReportRequest.authId = req.jwt.authId;
-        const result = this.client.send('createReport', createReportRequest);
+        const result = this.client.send('createOrderReport', createReportRequest)
+        .pipe(
+            catchError(error => {
+                // Extracting the error message and status code from the microservice response
+                const { statusCode, message } = error;
+      
+                // Throwing appropriate HTTP exceptions based on the microservice error
+                if (statusCode === 400) {
+                  throw new BadRequestException(message);
+                } else if (statusCode === 404) {
+                  throw new NotFoundException(message);
+                } else {
+                  throw new BadRequestException('Unexpected error occurred');
+                }
+              }),
+        );
         return await lastValueFrom(result);
     }
 
@@ -134,15 +153,6 @@ export class RequesterController {
     @ApiResponse({ status: 200, description: 'Menu items retrieved successfully.' })
     async searchMenu(@Body() body: SearchMenuDto): Promise<any> {
         const result = this.client.send('searchMenu', body);
-        return await lastValueFrom(result);
-    }
-
-    @Get('order/get-report')
-    @ApiOperation({ summary: 'Get report from database' })
-    @ApiQuery({ name: 'orderId', type: 'number' })
-    @ApiResponse({ status: 200, description: 'Get report successes', type: CreateReportResponseDto })   
-    async getReport(@Query() orderId: object): Promise<string> {
-        const result = this.client.send('getReport', orderId);
         return await lastValueFrom(result);
     }
 

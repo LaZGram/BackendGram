@@ -275,4 +275,5 @@ model Report{
   orderId Int @unique
   admin Admin @relation(fields: [adminId], references: [adminId])
   adminId Int
+  reportBy String
 }

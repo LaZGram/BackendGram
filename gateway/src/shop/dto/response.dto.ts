@@ -64,6 +64,8 @@ export class GetMenuInfoResponseDto extends CreateMenuResponseDto {}
 
 export class OptionItem {
   @ApiProperty()
+  optionItemId: number
+  @ApiProperty()
   name: string
   @ApiProperty()
   price: number
@@ -155,6 +157,11 @@ export class GetScheduleResponseDto extends CreateScheduleResponseDto {}
 
 export class GetSpecialOperatingHoursResponseDto extends CreateSpecialOperatingHoursResponseDto {}
 
+export class OrderItemExtra {
+  @ApiProperty()
+  optionItem: OptionItem
+}
+
 export class GetOrderResponseDto {
   @ApiProperty()
   orderItemId: number
@@ -172,6 +179,12 @@ export class GetOrderResponseDto {
   orderItemDate: Date
   @ApiProperty()
   completedDate: Date
+  @ApiProperty()
+  menuId: number
+  @ApiProperty()
+  orderId: number
+  @ApiProperty({type: [OrderItemExtra]})
+  orderItemExtras: OrderItemExtra[]
 }
 
 export class GetOrderHistoryResponseDto extends GetOrderResponseDto {}

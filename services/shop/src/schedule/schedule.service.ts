@@ -65,15 +65,15 @@ export class ScheduleService {
     })
   }
 
-  async getSchedule(shopId: number) {
+  async getSchedule(authId: string) {
     return this.prisma.weeklySchedule.findMany({
-      where: { shopId: shopId },
+      where: { shopId: await this.appservice.getShopId(authId) },
     })
   }
 
-  async getSpecialOperatingHours(shopId: number) {
+  async getSpecialOperatingHours(authId: string) {
     return this.prisma.specialOperatingHours.findMany({
-      where: { shopId: shopId },
+      where: { shopId: await this.appservice.getShopId(authId) },
     })
   }
 }

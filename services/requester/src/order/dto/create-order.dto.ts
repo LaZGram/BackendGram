@@ -20,7 +20,6 @@ export class CreateOrderDto {
   totalPrice: number;
   shippingFee: number;
   amount: number;
-  orderDate: Date;
   transactionType: string;
   transactionDate: Date;
 }
