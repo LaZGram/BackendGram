@@ -84,9 +84,6 @@ export class ConfirmOrderDto {
 }
 
 export class PostReportDto {
-  @ApiProperty({ description: 'Report date in ISO format', example: '2023-09-09T10:00:00Z' })
-  @IsDateString()
-  reportDate: string;
 
   @ApiProperty({ description: 'Title of the report', example: 'Order issue' })
   @IsString()
@@ -107,10 +104,6 @@ export class PostReportDto {
   @ApiProperty({ description: 'Walker ID associated with the report', example: '1' })
   @IsNumber()
   walkerId: number;
-
-  @ApiProperty({ description: 'Order ID associated with the report', example: '6' })
-  @IsNumber()
-  orderId: number;
 
   @ApiProperty({ description: 'Admin ID associated with the report', example: '1' })
   @IsNumber()

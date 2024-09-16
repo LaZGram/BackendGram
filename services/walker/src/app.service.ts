@@ -185,6 +185,10 @@ export class AppService {
         confirmedAt: new Date(),
         photoId: photo.photoId,
       },
+      select: {
+        orderId: true,
+        orderStatus: true
+      }
     });
 
     return order;
@@ -193,7 +197,7 @@ export class AppService {
   async postReport(msg: any): Promise<any> {
     const report = await this.prisma.report.create({
       data: {
-        reportDate: new Date(msg.reportDate),
+        reportDate: new Date(),
         title: msg.title,
         description: msg.description,
         status: msg.status,
@@ -209,7 +213,7 @@ export class AppService {
         },
         order: {
           connect: {
-            orderId: msg.orderId,
+            orderId: Number(msg.orderId),
           },
         },
         admin: {
