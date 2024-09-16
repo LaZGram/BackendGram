@@ -26,9 +26,6 @@ export class CreateWalkerDto {
   @IsString()
   bankAccountNo: string;
 
-  @ApiProperty({ description: 'Status of the walker', example: false })
-  @IsBoolean()
-  status: boolean;
 }
 
 export class OrderIdDto {

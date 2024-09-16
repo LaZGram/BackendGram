@@ -79,10 +79,7 @@ export class AppService {
   }
 
   walkerGet(msg: any): Promise<any> {
-    return this.prisma.walker.findUnique({
-      where: {
-        authId: msg.authId,
-      },
+    return this.prisma.walker.findMany({
       select: {
         username: true,
         email: true,
@@ -98,9 +95,6 @@ export class AppService {
 
   getOrderList(msg: any): Promise<any> {
     return this.prisma.order.findMany({
-      where: {
-        orderId: msg.orderId,
-      },
       select: {
         orderId: true,
         amount: true,
@@ -187,7 +181,7 @@ export class AppService {
         orderId: Number(msg.orderId),
       },
       data: {
-        orderStatus: 'จัดส่งเรียบร้อย',
+        orderStatus: 'completed',
         confirmedAt: new Date(),
         photoId: photo.photoId,
       },

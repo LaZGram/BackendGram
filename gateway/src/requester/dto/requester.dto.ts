@@ -148,7 +148,7 @@ export class CreateDebitCardDto {
 
   @ApiProperty({ description: 'Expiration date', example: '12/25' })
   @IsString()
-  expirationDate: string;
+  expiryDate: string;
 
   @ApiProperty({ description: 'CVV code', example: '123' })
   @IsString()
@@ -192,15 +192,15 @@ export class RequesterCreateDto {
   @IsString()
   profilePicture?: string;
 
-  @ApiProperty({ description: 'ID of the address associated with the requester', example: 1, required: false })
-  @IsOptional()
-  @IsNumber()
-  addressId?: number;
+  // @ApiProperty({ description: 'ID of the address associated with the requester', example: 1, required: false })
+  // @IsOptional()
+  // @IsNumber()
+  // addressId?: number;
 
-  @ApiProperty({ description: 'ID of the debit card associated with the requester', example: 1, required: false })
-  @IsOptional()
-  @IsNumber()
-  debitCardId?: number;
+  // @ApiProperty({ description: 'ID of the debit card associated with the requester', example: 1, required: false })
+  // @IsOptional()
+  // @IsNumber()
+  // debitCardId?: number;
 }
 
 // 10. PostChangeDebitCardDto

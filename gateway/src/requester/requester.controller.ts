@@ -53,16 +53,16 @@ export class RequesterController {
     @Get('debit-card')
     @ApiOperation({ summary: 'Get debit card information of the requester' })
     @ApiResponse({ status: 200, description: 'Debit card information retrieved successfully.' })
-    async getDebitcard(@Body() body: GetDebitCardDto): Promise<string> {
-        const result = this.client.send('getDebitcard', body);
+    async getDebitcard(): Promise<string> {
+        const result = this.client.send('getDebitcard', {});
         return await lastValueFrom(result);
     }
 
     @Post('debit-card')
     @ApiOperation({ summary: 'Create a debit card for the requester' })
     @ApiResponse({ status: 201, description: 'Debit card created successfully.', type: CreateDebitCardDto })
-    async createDebitcard(@Body() body: CreateDebitCardDto): Promise<string> {
-        const result = this.client.send('createDebitcard', {...body});
+    async createDebitcard(@Body() body: CreateDebitCardDto, @Request() req): Promise<string> {
+        const result = this.client.send('createDebitcard', {...body, authId: req.jwt.authId});
         return await lastValueFrom(result);
     }
 
@@ -148,7 +148,7 @@ export class RequesterController {
         return await lastValueFrom(result);
     }
 
-    @Post('search-menu')
+    @Get('search-menu')
     @ApiOperation({ summary: 'Search for menu items by name' })
     @ApiResponse({ status: 200, description: 'Menu items retrieved successfully.' })
     async searchMenu(@Body() body: SearchMenuDto): Promise<any> {
