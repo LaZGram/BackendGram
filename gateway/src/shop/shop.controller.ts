@@ -1,11 +1,12 @@
-import { Body, Controller, Delete, Get, Inject, Post, Query, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Patch, Post, Query, Request } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { ApiOperation, ApiProperty, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { lastValueFrom } from 'rxjs';
 import { CreateMenuRequestDto, CreateShopRequestDto, SearchShopRequestDto, CreateOptionRequestDto, EditOptionRequestDto, EditMenuRequestDto, CreateScheduleRequestDto, CreateSpecialOperatingHoursRequestDto } from 'src/dtos';
-import { CreateMenuResponseDto, CreateOptionResponseDto, CreateScheduleResponseDto, CreateShopResponseDto, CreateSpecialOperatingHoursResponseDto, DeleteMenuResponseDto, DeleteOptionResponseDto, EditMenuResponseDto, EditOptionResponseDto, GetMenuInfoResponseDto, GetMenuResponseDto, GetOptionInfoResponseDto, GetOptionResponseDto, GetOrderHistoryResponseDto, GetOrderResponseDto, GetScheduleResponseDto, GetShopInfoResponseDto, GetShopReviewResponseDto, GetSpecialOperatingHoursResponseDto, SearchShopResponseDto, UpdateOrderStatusResponseDto, UpdateShopInfoResponseDto } from './dto/response.dto';
+import { CreateMenuResponseDto, CreateOptionResponseDto, CreateScheduleResponseDto, CreateShopResponseDto, CreateSpecialOperatingHoursResponseDto, DeleteMenuResponseDto, DeleteOptionResponseDto, EditMenuResponseDto, EditOptionResponseDto, GetMenuInfoResponseDto, GetMenuResponseDto, GetOptionInfoResponseDto, GetOptionResponseDto, GetOrderHistoryResponseDto, GetOrderResponseDto, GetScheduleResponseDto, GetShopInfoResponseDto, GetShopReviewResponseDto, GetSpecialOperatingHoursResponseDto, SearchShopResponseDto, UpdateOrderStatusResponseDto, UpdateShopInfoResponseDto, UpdateShopStatusResponseDto } from './dto/response.dto';
 import { UpdateOrderStatusRequestDto } from './dto/update-order-status-request.dto';
 import { UpdateShopInfoRequestDto } from './dto/update-shop-info-request.dto';
+import { UpdateShopStatusRequestDto } from './dto/update-shop-status-request.dto';
 
 @ApiTags('SHOP')
 @Controller('shop')
@@ -41,6 +42,15 @@ export class ShopController {
     return value;
   }
   
+  @Patch('update-status')
+  @ApiOperation({ summary: 'Update shop status to open or close'})
+  @ApiResponse({ status: 201, description: 'Update status successes', type: UpdateShopStatusResponseDto })
+  async updateShopStatus(@Body() updateShopStatusRequest: UpdateShopStatusRequestDto, @Request() req): Promise<string> {
+    updateShopStatusRequest.authId = req.jwt.authId;
+    const result = await this.client.send('updateShopStatus', JSON.stringify(updateShopStatusRequest));
+    const value = await lastValueFrom(result);
+    return value;
+  }
 
   @Post('create-menu')
   @ApiOperation({ summary: 'Create new menu to database' })
@@ -206,9 +216,10 @@ export class ShopController {
 
   @Get('order/history')
   @ApiOperation({ summary: 'Get list of order history' })
+  @ApiQuery({ name: 'date', type: 'Date', required: false })
   @ApiResponse({ status: 200, description: 'Get order history successes', type: GetOrderHistoryResponseDto, isArray: true })
-  async getOrderHistory(@Request() req): Promise<string> {
-    const result = await this.client.send('getShopOrderHistory', JSON.stringify({authId: req.jwt.authId}));
+  async getOrderHistory(@Query() msg: object, @Request() req): Promise<string> {
+    const result = await this.client.send('getShopOrderHistory', JSON.stringify({...msg, authId: req.jwt.authId}));
     const value = await lastValueFrom(result);
     return value;
   }

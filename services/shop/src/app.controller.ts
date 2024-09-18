@@ -4,6 +4,7 @@ import { ClientKafka, MessagePattern, Payload } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { CreateCanteenDto, CreateShopDto, SearchShopDto } from './dto/';
 import { UpdateShopInfoDto } from './dto/update-shop-info.dto';
+import { UpdateShopStatusDto } from './dto/update-shop-status.dto';
 
 @Controller()
 export class AppController {
@@ -28,6 +29,11 @@ export class AppController {
   getShopInfo(msg: object) {
     const authId = msg['authId'].toString();
     return this.appService.getShopInfo(authId);
+  }
+
+  @MessagePattern('updateShopStatus')
+  updateShopStatus(msg: UpdateShopStatusDto) {
+    return this.appService.updateShopStatus(msg);
   }
   
   @MessagePattern('searchShop')

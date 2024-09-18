@@ -43,11 +43,18 @@ export class OrderService {
     return orderItems;
   }
 
-  async getOrderHistory(authId: string) {
+  async getOrderHistory(authId: string, date: string) {
+    const getDate = new Date(date);
     return this.prisma.orderItem.findMany({
       where: {
         shopId: await this.appservice.getShopId(authId),
-        orderItemStatus: "completed"
+        orderItemStatus: "completed",
+        order: {
+          orderDate: {
+            gte: new Date(getDate.setTime(0 * 0 * 0 * 0)),
+            lt: new Date(getDate.setTime(23 * 59 * 59 * 59))
+          }
+        }
       }
     });
   }

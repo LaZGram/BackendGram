@@ -3,6 +3,7 @@ import { PrismaService } from './prisma.service';
 import * as bcrypt from 'bcrypt';
 import { CreateCanteenDto, CreateShopDto, SearchShopDto } from './dto/';
 import { UpdateShopInfoDto } from './dto/update-shop-info.dto';
+import { UpdateShopStatusDto } from './dto/update-shop-status.dto';
 
 @Injectable()
 export class AppService {
@@ -83,6 +84,17 @@ export class AppService {
         shopNumber: true,
         status: true,
         canteenId: true
+      }
+    })
+  }
+
+  updateShopStatus(msg: UpdateShopStatusDto){
+    return this.prisma.shop.update({
+      where: {
+        authId: msg.authId
+      },
+      data: {
+        status: msg.status
       }
     })
   }

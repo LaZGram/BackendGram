@@ -8,7 +8,7 @@ import { AppService } from 'src/app.service';
 export class MenuService {
   constructor(private prisma: PrismaService, private appservice: AppService) {}
   async createMenu(msg: CreateMenuDto) {
-    return this.prisma.menu.create({
+    const menu = await this.prisma.menu.create({
       data: {
         name: msg.name,
         price: msg.price,
@@ -18,6 +18,27 @@ export class MenuService {
         shop: { connect: { shopId: await this.appservice.getShopId(msg.authId) } },
       },
     });
+    msg.option.forEach(async op => {
+      const option = await this.prisma.option.create({
+        data: {
+          menuId: menu.menuId,
+          name: op.name,
+          mustChoose: op.mustChoose,
+          maxChoose: op.maxChoose,
+          minChoose: op.minChoose,
+        },
+      });
+      await this.prisma.optionItem.createMany({
+        data: op.optionItems.map(optionItem => {
+          return {
+            optionId: option.optionId,
+            name: optionItem.name,
+            price: optionItem.price,
+          };
+        }),
+      });
+    });
+    return menu;
   }
 
   editMenu(msg: EditMenuDto): any {
@@ -38,10 +59,34 @@ export class MenuService {
   }
 
   getMenuInfo(id: number): any {
-    return this.prisma.menu.findUnique({ where: { menuId: id } });
+    return this.prisma.menu.findUnique({ 
+      where: { menuId: id }, 
+      select: {
+        menuId: true,
+        name: true,
+        price: true,
+        picture: true,
+        description: true,
+        status: true,
+        option: {
+          select: {
+            name: true,
+            mustChoose: true,
+            maxChoose: true,
+            minChoose: true,
+            optionItem: {
+              select: {
+                name: true,
+                price: true,
+              },
+            },
+          },
+        },
+      }
+    });
   }
 
   async getMenu(authId: string){
-    return this.prisma.menu.findMany({ where: { shopId: await this.appservice.getShopId(authId) } });
+    return (await this.prisma.menu.findMany({ where: { shopId: await this.appservice.getShopId(authId) } })).sort((a, b) => a.menuId - b.menuId);
   }
 }

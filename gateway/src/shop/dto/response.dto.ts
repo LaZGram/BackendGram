@@ -37,6 +37,8 @@ export class UpdateShopInfoResponseDto extends CreateShopResponseDto {}
 
 export class GetShopInfoResponseDto extends CreateShopResponseDto {}
 
+export class UpdateShopStatusResponseDto extends CreateShopResponseDto {}
+
 export class CreateMenuResponseDto {
   @ApiProperty()
   menuId: number
@@ -59,8 +61,6 @@ export class EditMenuResponseDto extends CreateMenuResponseDto {}
 export class DeleteMenuResponseDto extends CreateMenuResponseDto {}
 
 export class GetMenuResponseDto extends CreateMenuResponseDto {}
-
-export class GetMenuInfoResponseDto extends CreateMenuResponseDto {}
 
 export class OptionItem {
   @ApiProperty()
@@ -86,6 +86,11 @@ export class CreateOptionResponseDto {
   minChoose: number
   @ApiProperty({type: [OptionItem]})
   optionItems: OptionItem
+}
+
+export class GetMenuInfoResponseDto extends CreateMenuResponseDto {
+  @ApiProperty({type: [CreateOptionResponseDto]})
+  option: CreateOptionResponseDto[]
 }
 
 export class EditOptionResponseDto extends CreateOptionResponseDto {}
