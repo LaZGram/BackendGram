@@ -5,6 +5,7 @@ import { CreateCanteenDto, CreateShopDto, SearchShopDto } from './dto/';
 import { UpdateShopInfoDto } from './dto/update-shop-info.dto';
 import { UpdateShopStatusDto } from './dto/update-shop-status.dto';
 import { ShopLoginDto } from './dto/shop-login.dto';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class AppService {
@@ -67,7 +68,7 @@ export class AppService {
         return JSON.stringify({ authId: shop.authId });
       }
     }
-    return "Username/Password is incorrect";
+    throw new RpcException({ statusCode: 401, message: 'Invalid username or password' });
   }
 
   async updateShopInfo(msg: UpdateShopInfoDto){
