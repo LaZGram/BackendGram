@@ -149,7 +149,7 @@ model Canteen {
 
 model Shop {
   shopId    Int    @id @default(autoincrement())
-  username      String
+  username      String @unique
   password  String
   shopName  String
   profilePicture  String

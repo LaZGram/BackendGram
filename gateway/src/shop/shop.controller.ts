@@ -1,26 +1,47 @@
-import { Body, Controller, Delete, Get, Inject, Patch, Post, Query, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Patch, Post, Query, Request, SetMetadata } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { ApiOperation, ApiProperty, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { lastValueFrom } from 'rxjs';
 import { CreateMenuRequestDto, CreateShopRequestDto, SearchShopRequestDto, CreateOptionRequestDto, EditOptionRequestDto, EditMenuRequestDto, CreateScheduleRequestDto, CreateSpecialOperatingHoursRequestDto } from 'src/dtos';
-import { CreateMenuResponseDto, CreateOptionResponseDto, CreateScheduleResponseDto, CreateShopResponseDto, CreateSpecialOperatingHoursResponseDto, DeleteMenuResponseDto, DeleteOptionResponseDto, EditMenuResponseDto, EditOptionResponseDto, GetMenuInfoResponseDto, GetMenuResponseDto, GetOptionInfoResponseDto, GetOptionResponseDto, GetOrderHistoryResponseDto, GetOrderResponseDto, GetScheduleResponseDto, GetShopInfoResponseDto, GetShopReviewResponseDto, GetSpecialOperatingHoursResponseDto, SearchShopResponseDto, UpdateOrderStatusResponseDto, UpdateShopInfoResponseDto, UpdateShopStatusResponseDto } from './dto/response.dto';
+import { CreateMenuResponseDto, CreateOptionResponseDto, CreateScheduleResponseDto, CreateShopResponseDto, CreateSpecialOperatingHoursResponseDto, DeleteMenuResponseDto, DeleteOptionResponseDto, EditMenuResponseDto, EditOptionResponseDto, GetMenuInfoResponseDto, GetMenuResponseDto, GetOptionInfoResponseDto, GetOptionResponseDto, GetOrderHistoryResponseDto, GetOrderResponseDto, GetScheduleResponseDto, GetShopInfoResponseDto, GetShopReviewResponseDto, GetSpecialOperatingHoursResponseDto, SearchShopResponseDto, ShopLoginResponseDto, UpdateOrderStatusResponseDto, UpdateShopInfoResponseDto, UpdateShopStatusResponseDto } from './dto/response.dto';
 import { UpdateOrderStatusRequestDto } from './dto/update-order-status-request.dto';
 import { UpdateShopInfoRequestDto } from './dto/update-shop-info-request.dto';
 import { UpdateShopStatusRequestDto } from './dto/update-shop-status-request.dto';
+import { v4 as uuidv4 } from 'uuid';
+import { JwtService } from '@nestjs/jwt';
+import { ShopLoginRequestDto } from './dto/shop-login-request.dto';
 
 @ApiTags('SHOP')
 @Controller('shop')
 export class ShopController {
-  constructor(@Inject('KAFKA') private client: ClientKafka) { }
+  constructor(@Inject('KAFKA') private client: ClientKafka, private JwtService: JwtService) { }
 
+  @SetMetadata('isPublic', true)
   @Post('create-shop')
   @ApiOperation({ summary: 'Create new shop to database' })
   @ApiResponse({ status: 201, description: 'Create new shop successes', type: CreateShopResponseDto })
-  async createShop(@Body() createShopRequest: CreateShopRequestDto, @Request() req): Promise<string> {
-      createShopRequest.authId = req.jwt.authId;
-      const result = await this.client.send('createShop', JSON.stringify(createShopRequest));
+  async createShop(@Body() createShopRequest: CreateShopRequestDto, @Request() req): Promise<CreateShopResponseDto> {
+      const authId = `shop${uuidv4()}`;
+      const token = await this.JwtService.signAsync( { authId: authId });
+      createShopRequest.authId = authId;
+      const result = this.client.send('createShop', JSON.stringify(createShopRequest));
+      await lastValueFrom(result);
+      const tokenDto = new CreateShopResponseDto();
+      tokenDto.token = token;
+      return tokenDto;
+  }
+
+  @SetMetadata('isPublic', true)
+  @Post('login')
+  @ApiOperation({ summary: 'Login to shop' })
+  @ApiResponse({ status: 201, description: 'Login successes', type: ShopLoginResponseDto })
+  async login(@Body() shopLoginRequest: ShopLoginRequestDto): Promise<ShopLoginResponseDto> {
+      const result = await this.client.send('shopLogin', JSON.stringify(shopLoginRequest));
       const value = await lastValueFrom(result);
-      return value;
+      const token = await this.JwtService.signAsync( { authId: value.authId });
+      const tokenDto = new CreateShopResponseDto();
+      tokenDto.token = token;
+      return tokenDto;
   }
 
   @Post('update-info')
