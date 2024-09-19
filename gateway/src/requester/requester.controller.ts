@@ -186,18 +186,18 @@ export class RequesterController {
 
     @Get('address')
     @ApiOperation({ summary: 'Get list of address from database' })
-    @ApiQuery({ name: 'addressId', type: 'number' })
     @ApiResponse({ status: 200, description: 'Get address successes', type: GetAddressResponseDto, isArray: true })
-    async getAddress(@Query() addressId: object): Promise<string> {
-        const result = this.client.send('getAddress', addressId);
+    async getAddress(@Request() req): Promise<string> {
+        const result = this.client.send('getAddress', {authId: req.jwt.authId});
         return await lastValueFrom(result);
     }
 
     @Get('address/info')
     @ApiOperation({ summary: 'Get address information from database' })
+    @ApiQuery({ name: 'addressId', type: 'number' })
     @ApiResponse({ status: 200, description: 'Get address information successes', type: GetAddressInfoResponseDto })
-    async getAddressInfo(@Request() req): Promise<string> {
-        const result = this.client.send('getAddressInfo', {authId: req.jwt.authId});
+    async getAddressInfo(@Query() addressId: object): Promise<string> {
+        const result = this.client.send('getAddressInfo', addressId);
         return await lastValueFrom(result);
     }
 }
