@@ -12,13 +12,18 @@ export class CreateCanteenResponseDto {
 }
 export class CreateShopResponseDto {
   @ApiProperty()
+  token: string
+}
+
+export class ShopLoginResponseDto extends CreateShopResponseDto {}
+
+export class UpdateShopInfoResponseDto {
+  @ApiProperty()
   authId: string
   @ApiProperty()
   shopId: number
   @ApiProperty()
   username: string
-  @ApiProperty({description: 'password is hashed'})
-  password: string
   @ApiProperty()
   shopName: string
   @ApiProperty()
@@ -33,11 +38,9 @@ export class CreateShopResponseDto {
   canteenId: number
 }
 
-export class UpdateShopInfoResponseDto extends CreateShopResponseDto {}
+export class GetShopInfoResponseDto extends UpdateShopInfoResponseDto {}
 
-export class GetShopInfoResponseDto extends CreateShopResponseDto {}
-
-export class UpdateShopStatusResponseDto extends CreateShopResponseDto {}
+export class UpdateShopStatusResponseDto extends UpdateShopInfoResponseDto {}
 
 export class CreateMenuResponseDto {
   @ApiProperty()

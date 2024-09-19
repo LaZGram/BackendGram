@@ -20,6 +20,10 @@ export class AppController {
     return this.appService.createShop(msg);
   }
 
+  @MessagePattern('shopLogin')
+  loginShop(msg: CreateShopDto) {
+    return this.appService.loginShop(msg);
+  }
   @MessagePattern('updateShopInfo')
   updateShopInfo(msg: UpdateShopInfoDto) {
     return this.appService.updateShopInfo(msg);

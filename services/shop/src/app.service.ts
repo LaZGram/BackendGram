@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { CreateCanteenDto, CreateShopDto, SearchShopDto } from './dto/';
 import { UpdateShopInfoDto } from './dto/update-shop-info.dto';
 import { UpdateShopStatusDto } from './dto/update-shop-status.dto';
+import { ShopLoginDto } from './dto/shop-login.dto';
 
 @Injectable()
 export class AppService {
@@ -32,14 +33,12 @@ export class AppService {
   }
 
   async createShop(msg: CreateShopDto){
-    const shop = await this.prisma.shop.findUnique({
-      where: {
-        authId: msg.authId
+    await this.prisma.authorization.create({
+      data: {
+        authId: msg.authId,
+        tokenId: msg.authId
       }
-    });
-    if(shop){
-      return "Shop already exists";
-    }
+    })
     const hashPassword = bcrypt.hashSync(msg.password, this.saltOrRounds);
     return this.prisma.shop.create({
       data: {
@@ -56,6 +55,21 @@ export class AppService {
     })
   }
 
+  async loginShop(msg: ShopLoginDto){
+    const shop = await this.prisma.shop.findUnique({
+      where: {
+        username: msg.username
+      }
+    })
+    if(shop){
+      const isPasswordMatch = bcrypt.compareSync(msg.password, shop.password);
+      if(isPasswordMatch){
+        return JSON.stringify({ authId: shop.authId });
+      }
+    }
+    return "Username/Password is incorrect";
+  }
+
   async updateShopInfo(msg: UpdateShopInfoDto){
     return this.prisma.shop.update({
       where: {
@@ -66,6 +80,17 @@ export class AppService {
         profilePicture: msg.profilePicture,
         tel: msg.tel,
         shopNumber: msg.shopNumber
+      },
+      select: {
+        authId: true,
+        shopId: true,
+        username: true,
+        shopName: true,
+        profilePicture: true,
+        tel: true,
+        shopNumber: true,
+        status: true,
+        canteenId: true
       }
     })
   }
@@ -95,6 +120,16 @@ export class AppService {
       },
       data: {
         status: msg.status
+      },
+      select: {
+        shopId: true,
+        username: true,
+        shopName: true,
+        profilePicture: true,
+        tel: true,
+        shopNumber: true,
+        status: true,
+        canteenId: true
       }
     })
   }
