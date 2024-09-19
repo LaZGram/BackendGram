@@ -1,7 +1,7 @@
-import { Body, Controller, Delete, Get, Inject, Patch, Post, Query, Request, SetMetadata } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Inject, Patch, Post, Query, Request, SetMetadata } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { ApiOperation, ApiProperty, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { lastValueFrom } from 'rxjs';
+import { catchError, lastValueFrom } from 'rxjs';
 import { CreateMenuRequestDto, CreateShopRequestDto, SearchShopRequestDto, CreateOptionRequestDto, EditOptionRequestDto, EditMenuRequestDto, CreateScheduleRequestDto, CreateSpecialOperatingHoursRequestDto } from 'src/dtos';
 import { CreateMenuResponseDto, CreateOptionResponseDto, CreateScheduleResponseDto, CreateShopResponseDto, CreateSpecialOperatingHoursResponseDto, DeleteMenuResponseDto, DeleteOptionResponseDto, EditMenuResponseDto, EditOptionResponseDto, GetMenuInfoResponseDto, GetMenuResponseDto, GetOptionInfoResponseDto, GetOptionResponseDto, GetOrderHistoryResponseDto, GetOrderResponseDto, GetScheduleResponseDto, GetShopInfoResponseDto, GetShopReviewResponseDto, GetSpecialOperatingHoursResponseDto, SearchShopResponseDto, ShopLoginResponseDto, UpdateOrderStatusResponseDto, UpdateShopInfoResponseDto, UpdateShopStatusResponseDto } from './dto/response.dto';
 import { UpdateOrderStatusRequestDto } from './dto/update-order-status-request.dto';
@@ -10,6 +10,7 @@ import { UpdateShopStatusRequestDto } from './dto/update-shop-status-request.dto
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 import { ShopLoginRequestDto } from './dto/shop-login-request.dto';
+import e from 'express';
 
 @ApiTags('SHOP')
 @Controller('shop')
@@ -36,7 +37,15 @@ export class ShopController {
   @ApiOperation({ summary: 'Login to shop' })
   @ApiResponse({ status: 201, description: 'Login successes', type: ShopLoginResponseDto })
   async login(@Body() shopLoginRequest: ShopLoginRequestDto): Promise<ShopLoginResponseDto> {
-      const result = await this.client.send('shopLogin', JSON.stringify(shopLoginRequest));
+      const result = this.client.send('shopLogin', JSON.stringify(shopLoginRequest))
+      .pipe(
+        catchError(error => {
+          const { statusCode, message } = error;
+          if(statusCode === 401)
+            throw new BadRequestException(message);
+          else throw new BadRequestException('Unexpected error occurred');
+        }),
+      );
       const value = await lastValueFrom(result);
       const token = await this.JwtService.signAsync( { authId: value.authId });
       const tokenDto = new CreateShopResponseDto();
