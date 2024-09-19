@@ -82,7 +82,7 @@ services:
     <<: *node-base
     build:
       context: ../../services/walker
-      dockerfile: ../../deploy/test/service.Dockerfile
+      dockerfile: ../../deploy/production/service.Dockerfile
     environment:
       DATABASE_URL: postgres://postgres:postgres@db-postgres:5432/postgres
       SERVICE_NAME: micro-walker
@@ -94,7 +94,7 @@ services:
     <<: *node-base
     build:
       context: ../../services/admin
-      dockerfile: ../../deploy/test/service.Dockerfile
+      dockerfile: ../../deploy/production/service.Dockerfile
     environment:
       DATABASE_URL: postgres://postgres:postgres@db-postgres:5432/postgres
       SERVICE_NAME: micro-admin
