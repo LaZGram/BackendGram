@@ -88,7 +88,6 @@ services:
       SERVICE_NAME: micro-walker
     volumes:
       - ../../services/walker/src:/usr/app/src
-    entrypoint: ["npm", "run", "start:dev"]
   
 # -----------------------------------------------
   micro-admin:
@@ -101,7 +100,6 @@ services:
       SERVICE_NAME: micro-admin
     volumes:
       - ../../services/admin/src:/usr/app/src
-    entrypoint: ["npm", "run", "start:dev"]
   
 # -----------------------------------------------
   micro-shop:
