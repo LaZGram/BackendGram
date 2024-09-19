@@ -2,6 +2,7 @@ version: '3.8'
 x-node-common:
   &node-base
   environment:
+    NODE_ENV: test
     DATABASE_URL: postgres://postgres:postgres@db-postgres:5432/postgres
   depends_on:
     kafka:
