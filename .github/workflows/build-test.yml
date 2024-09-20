@@ -20,7 +20,7 @@ jobs:
       - name: Run Unit Tests
         id: run-tests  # Add an ID to this step for referencing
         run: |
-          docker compose -f deploy/production/docker-compose.production.yml up -p testing-build --exit-code-from unit-test --abort-on-container-exit
+          docker compose -f deploy/production/docker-compose.production.yml -p testing-build up --exit-code-from unit-test --abort-on-container-exit
           
       - name: Check Unit Test Result
         run: |
