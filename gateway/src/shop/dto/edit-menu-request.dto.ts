@@ -12,6 +12,9 @@ export class EditOptionItem {
 }
 
 export class EditOption {
+  @ApiPropertyOptional({description: 'id of option'})
+  @IsNumber()
+  optionId: number
   @ApiPropertyOptional({description: 'name of option'})
   @IsString()
   name: string
