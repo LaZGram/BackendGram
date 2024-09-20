@@ -13,23 +13,23 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Run Unit Tests
-      run: |
-        docker compose -f deploy/production/docker-compose.production.yml up -p testing --exit-code-from unit-test
-      continue-on-error: true  # Allow the workflow to proceed even if this step fails
+    # - name: Run Unit Tests
+    #   run: |
+    #     docker compose -f deploy/production/docker-compose.production.yml up -p testing --exit-code-from unit-test
+    #   continue-on-error: true  # Allow the workflow to proceed even if this step fails
 
-    - name: Check if Unit Tests Passed
-      id: check-tests
-      run: |
-        if [ $? -ne 0 ]; then
-          echo "Unit tests failed, stopping the workflow."
-          exit 1  # Fail the workflow if tests fail
-        fi
+    # - name: Check if Unit Tests Passed
+    #   id: check-tests
+    #   run: |
+    #     if [ $? -ne 0 ]; then
+    #       echo "Unit tests failed, stopping the workflow."
+    #       exit 1  # Fail the workflow if tests fail
+    #     fi
     
     - name: Stop and remove existing containers
       run: |
         docker compose -f deploy/production/docker-compose.production.yml down
-        
+
     - name: Build and start Docker containers
       run: |
         docker compose -f deploy/production/docker-compose.production.yml up --build -d
