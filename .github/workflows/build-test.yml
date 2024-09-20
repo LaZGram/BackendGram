@@ -18,14 +18,13 @@ jobs:
         run: docker compose -f deploy/production/docker-compose.production.yml build
 
       - name: Run Unit Tests
+        id: run-tests  # Add an ID to this step for referencing
         run: |
-          docker compose -f deploy/production/docker-compose.production.yml up --exit-code-from unit-test
-        continue-on-error: true  # Allow the workflow to continue even if tests fail
-
-      - name: Check if Unit Tests Passed
-        id: check-tests
+          docker compose -f deploy/production/docker-compose.production.yml up --exit-code-from unit-test --abort-on-container-exit
+          
+      - name: Check Unit Test Result
         run: |
-          if [ $? -ne 0 ]; then
+          if [ "${{ steps.run-tests.outcome }}" == "failure" ]; then
             echo "Unit tests failed, stopping the workflow."
             exit 1  # Fail the workflow if tests fail
           fi
