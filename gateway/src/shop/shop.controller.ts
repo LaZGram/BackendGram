@@ -93,7 +93,7 @@ export class ShopController {
   }
 
   @Post('edit-menu')
-  @ApiOperation({ summary: 'Edit menu in database' })
+  @ApiOperation({ summary: 'Edit menu in database. Send "optionId" with option that want to edit' })
   @ApiResponse({ status: 201, description: 'Edit menu successes', type: EditMenuResponseDto })
   async editMenu(@Body() editMenuRequest: EditMenuRequestDto): Promise<string> {
       const result = await this.client.send('editMenu', JSON.stringify(editMenuRequest));

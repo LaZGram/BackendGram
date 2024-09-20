@@ -41,8 +41,8 @@ export class MenuService {
     return menu;
   }
 
-  editMenu(msg: EditMenuDto): any {
-    return this.prisma.menu.update({
+  async editMenu(msg: EditMenuDto) {
+    const menu = await this.prisma.menu.update({
       where: { menuId: msg.menuId },
       data: {
         name: msg.name,
@@ -52,9 +52,61 @@ export class MenuService {
         status: msg.status,
       },
     });
+    msg.option.forEach(async op => {
+      if (op.optionId) {
+        await this.prisma.option.update({
+          where: { optionId: op.optionId },
+          data: {
+            name: op.name,
+            mustChoose: op.mustChoose,
+            maxChoose: op.maxChoose,
+            minChoose: op.minChoose,
+          },
+        });
+        await this.prisma.optionItem.deleteMany({ where: { optionId: op.optionId } });
+        await this.prisma.optionItem.createMany({
+          data: op.optionItems.map(optionItem => {
+            return {
+              optionId: op.optionId,
+              name: optionItem.name,
+              price: optionItem.price,
+            };
+          }),
+        });
+      } else {
+        const option = await this.prisma.option.create({
+          data: {
+            menuId: msg.menuId,
+            name: op.name,
+            mustChoose: op.mustChoose,
+            maxChoose: op.maxChoose,
+            minChoose: op.minChoose,
+          },
+        });
+        await this.prisma.optionItem.createMany({
+          data: op.optionItems.map(optionItem => {
+            return {
+              optionId: option.optionId,
+              name: optionItem.name,
+              price: optionItem.price,
+            };
+          }),
+        });
+      }
+    })
+    return menu;
   }
 
-  deleteMenu(id: number): any {
+  async deleteMenu(id: number) {
+    const option = await this.prisma.option.findMany({ where: { menuId: id } });
+    for (const op of option) {
+      await this.prisma.optionItem.deleteMany({
+        where: { optionId: op.optionId }
+      });
+    }
+    await this.prisma.option.deleteMany({
+      where: { optionId: { in: option.map(op => op.optionId) } }
+    });
     return this.prisma.menu.delete({ where: { menuId: id } });
   }
 

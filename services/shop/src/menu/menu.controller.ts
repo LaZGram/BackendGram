@@ -14,12 +14,12 @@ export class MenuController {
   }
 
   @MessagePattern('editMenu')
-  editMenu(msg: EditMenuDto): string {
+  editMenu(msg: EditMenuDto) {
     return this.menuService.editMenu(msg);
   }
 
   @MessagePattern('deleteMenu')
-  deleteMenu(msg: object): string {
+  deleteMenu(msg: object){
     const id = parseInt(msg["menuId"].toString());
     return this.menuService.deleteMenu(id);
   }
