@@ -12,7 +12,7 @@ export class OrderController {
     return this.orderService.create(createOrderDto);
   }
 
-  @MessagePattern('getStatus')
+  @MessagePattern('getOrderStatus')
   getStatus(@Payload() msg: object) {
     const orderId = parseInt(msg["orderId"].toString());
     return this.orderService.getStatus(orderId);
@@ -24,7 +24,7 @@ export class OrderController {
     return this.orderService.cancleOrder(orderId);
   }
 
-  @MessagePattern('getWalker')
+  @MessagePattern('getOrderWalker')
   getWalker(@Payload() msg: object) {
     const orderId = parseInt(msg["orderId"].toString());
     return this.orderService.getWalker(orderId);

@@ -11,7 +11,5 @@ export class CreateSpecialOperatingHoursRequestDto {
   @ApiProperty()
   @IsString()
   close: string
-  @ApiProperty()
-  @IsNumber()
-  shopId: number
+  authId: string
 }

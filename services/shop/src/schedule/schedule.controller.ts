@@ -20,13 +20,14 @@ export class ScheduleController {
 
   @MessagePattern('getWeeklySchedule')
   getWeeklySchedule(@Payload() msg: object) {
-    const shopId = parseInt(msg['shopId'].toString());
-    return this.scheduleService.getSchedule(shopId);
+    console.log(msg);
+    const authId = msg['authId'].toString();
+    return this.scheduleService.getSchedule(authId);
   }
 
   @MessagePattern('getSpecialOperatingHours')
   getSpecialOperatingHours(@Payload() msg: object) {
-    const shopId = parseInt(msg['shopId'].toString());
-    return this.scheduleService.getSpecialOperatingHours(shopId);
+    const authId = msg['authId'].toString();
+    return this.scheduleService.getSpecialOperatingHours(authId);
   }
 }

@@ -11,6 +11,7 @@ import { ShopController } from './shop/shop.controller';
 import { AuthModule } from './auth/auth.module';
 import { AuthGuard } from './auth/auth.guard';
 import { JwtModule } from '@nestjs/jwt';
+import { AdminController } from './admin/admin.controller';
 
 @Module({
   imports: [
@@ -40,7 +41,7 @@ import { JwtModule } from '@nestjs/jwt';
       signOptions: { expiresIn: '100d' },
     }),
   ],
-  controllers: [AppController, RequesterController, HelloController, ShopController, CanteenController, WalkerController],
+  controllers: [AppController, RequesterController, HelloController, ShopController, CanteenController, WalkerController, AdminController],
   providers: [AppService, ClientKafka, 
   {
     provide: 'APP_GUARD',

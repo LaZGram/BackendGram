@@ -2,6 +2,7 @@ version: '3.8'
 x-node-common:
   &node-base
   environment:
+    NODE_ENV: test
     DATABASE_URL: postgres://postgres:postgres@db-postgres:5432/postgres
   depends_on:
     kafka:
@@ -74,6 +75,30 @@ services:
     volumes:
       - ../../services/requester/src:/usr/app/src
     # entrypoint: ["npm", "run", "start:dev"]
+
+# -----------------------------------------------
+  micro-walker:
+    <<: *node-base
+    build:
+      context: ../../services/walker
+      dockerfile: ../../deploy/production/service.Dockerfile
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db-postgres:5432/postgres
+      SERVICE_NAME: micro-walker
+    volumes:
+      - ../../services/walker/src:/usr/app/src
+  
+# -----------------------------------------------
+  micro-admin:
+    <<: *node-base
+    build:
+      context: ../../services/admin
+      dockerfile: ../../deploy/production/service.Dockerfile
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db-postgres:5432/postgres
+      SERVICE_NAME: micro-admin
+    volumes:
+      - ../../services/admin/src:/usr/app/src
   
 # -----------------------------------------------
   micro-shop:

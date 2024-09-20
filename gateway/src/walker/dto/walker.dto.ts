@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, IsNumber, IsObject, IsArray , IsDateString } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsObject, IsArray, IsDateString, IsBoolean } from 'class-validator';
 
 export class CreateWalkerDto {
   @ApiProperty({ description: 'Username of the walker', example: 'walker123' })
@@ -25,11 +25,12 @@ export class CreateWalkerDto {
   @ApiProperty({ description: 'Bank account number', example: '12345678' })
   @IsString()
   bankAccountNo: string;
+
 }
 
 export class OrderIdDto {
-  @ApiProperty({ description: 'Username of the walker', example: 'walker123', required: false })
-  @IsString()
+  @ApiProperty({ description: 'OrderId', example: '123', required: false })
+  @IsNumber()
   orderId: number;
 }
 
@@ -63,6 +64,11 @@ export class UpdateWalkerDto {
   @IsString()
   @IsOptional()
   bankAccountNo?: string;
+
+  @ApiProperty({ description: 'Status of the walker', example: false, required: false })
+  @IsBoolean()
+  @IsOptional()
+  status?: boolean;
 }
 
 export class UpdateOrderStatusDto {
@@ -90,12 +96,32 @@ export class PostReportDto {
   @IsString()
   description: string;
 
-  @ApiProperty({ description: 'Status of the report', example: 'Open' })
+  @ApiProperty({ description: 'Status of the report', example: 'Cancel' })
   @IsString()
   status: string;
+
+  @ApiProperty({ description: 'Requester ID associated with the report', example: '1' })
+  @IsNumber()
+  requesterId: number;
+
+  @ApiProperty({ description: 'Walker ID associated with the report', example: '1' })
+  @IsNumber()
+  walkerId: number;
+
+  @ApiProperty({ description: 'Order ID associated with the report', example: '6' })
+  @IsNumber()
+  orderId: number;
+
+  @ApiProperty({ description: 'Admin ID associated with the report', example: '1' })
+  @IsNumber()
+  adminId: number;
 }
 
 class AddressDto {
+  @ApiProperty({ description: 'Name of the address', example: 'Home' })
+  @IsString()
+  name: string;
+
   @ApiProperty({ description: 'Latitude of the address', example: 13.7563 })
   @IsNumber()
   latitude: number;
@@ -154,34 +180,34 @@ class OrderItemDto {
 }
 
 export class GetOrderListDto {
-    @ApiProperty({ description: 'Order ID', example: '12345' })
-    @IsNumber()
-    orderId: number;
-  
-    @ApiProperty({ description: 'Amount of items in the order', example: 3 })
-    @IsNumber()
-    amount: number;
-  
-    @ApiProperty({ description: 'Total price of the order', example: 150.00 })
-    @IsNumber()
-    totalPrice: number;
-  
-    @ApiProperty({ description: 'Shipping fee', example: 20.00 })
-    @IsNumber()
-    shippingFee: number;
-  
-    @ApiProperty({ description: 'Order status', example: 'Delivered' })
-    @IsString()
-    orderStatus: string;
-  
-    @ApiProperty({ description: 'Address details' })
-    @IsObject()
-    address: AddressDto;
-  
-    @ApiProperty({ description: 'Canteen details' })
-    @IsObject()
-    canteen: CanteenDto;
-  }
+  @ApiProperty({ description: 'Order ID', example: '12345' })
+  @IsNumber()
+  orderId: number;
+
+  @ApiProperty({ description: 'Amount of items in the order', example: 3 })
+  @IsNumber()
+  amount: number;
+
+  @ApiProperty({ description: 'Total price of the order', example: 150.00 })
+  @IsNumber()
+  totalPrice: number;
+
+  @ApiProperty({ description: 'Shipping fee', example: 20.00 })
+  @IsNumber()
+  shippingFee: number;
+
+  @ApiProperty({ description: 'Order status', example: 'Delivered' })
+  @IsString()
+  orderStatus: string;
+
+  @ApiProperty({ description: 'Address details' })
+  @IsObject()
+  address: AddressDto;
+
+  @ApiProperty({ description: 'Canteen details' })
+  @IsObject()
+  canteen: CanteenDto;
+}
 
 export class GetOrderDetailDto {
   @ApiProperty({ description: 'Order ID', example: '12345' })
@@ -226,12 +252,12 @@ export class GetOrderDetailDto {
 }
 
 export class GetRequesterIdByOrderDto {
-  @ApiProperty({ description: 'Requester ID', example: '12345' })
-  @IsString()
-  requesterId: string;
+  @ApiProperty({ description: 'OrderId', example: '1' })
+  @IsNumber()
+  orderId: number;
 }
 
-export class walkerGetDto {
+export class WalkerGetDto {
   @ApiProperty({ description: 'Username of the walker', example: 'walker123' })
   @IsString()
   username: string;
@@ -255,4 +281,16 @@ export class walkerGetDto {
   @ApiProperty({ description: 'Bank account number', example: '12345678' })
   @IsString()
   bankAccountNo: string;
+
+  @ApiProperty({ description: 'Status of the walker', example: true })
+  @IsBoolean()
+  status: boolean;
+
+  @ApiProperty({ description: 'Registration date of the walker', example: '2023-09-09T10:00:00Z' })
+  @IsDateString()
+  registerAt: string;
+
+  @ApiProperty({ description: 'Verification date of the walker', example: '2023-09-10T10:00:00Z' })
+  @IsDateString()
+  verifyAt: string;
 }

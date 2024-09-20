@@ -5,6 +5,16 @@ import { PrismaService } from './prisma.service';
 export class AppService {
   constructor(private prisma: PrismaService) {}
 
+  async getRequesterId(authId: string) {
+    const requester = await this.prisma.requester.findUnique({
+      where: {
+        authId: authId
+      }
+    })
+    if (!requester) throw new Error("Requester not found");
+    else return requester.requesterId;
+  }
+
   async getCanteens(): Promise<any> {
     return this.prisma.canteen.findMany({
       select: {
@@ -45,6 +55,7 @@ export class AppService {
         authId: msg.authId,
       },
       select: {
+        requesterId: true,
         username: true,
         email: true,
         firstName: true,
@@ -117,6 +128,7 @@ export class AppService {
         lastName: msg.lastName,
         phoneNumber: msg.phoneNumber,
         profilePicture: msg.profilePicture,
+        createAt: new Date(),
         address: msg.addressId ? {
           connect: {
             addressId: msg.addressId,
@@ -143,35 +155,26 @@ export class AppService {
         cardNumber: true,
         expiryDate: true,
         cvv: true,
+        requesterId: true,
       },
     });
   }
 
   async createDebitcard(msg: any): Promise<any> {
-    const { cardNumber, expiryDate, cvv, requesterId } = msg;
-
-    if (!cardNumber || !expiryDate || !cvv || !requesterId) {
-        throw new Error('Missing required fields: cardNumber, expiryDate, cvv, requesterId');
-    }
-
-    try {
-        const debitCard = await this.prisma.debitCard.create({
-            data: {
-                cardNumber: cardNumber,
-                expiryDate: expiryDate,
-                cvv: cvv,
-                requester: {
-                    connect: {
-                        requesterId: requesterId,
-                    },
+    const debitCard = await this.prisma.debitCard.create({
+        data: {
+            cardNumber: msg.cardNumber,
+            expiryDate: msg.expiryDate,
+            cvv: msg.cvv,
+            requester: {
+                connect: {
+                    authId: msg.authId,
                 },
             },
-        });
-        return debitCard;
-    } catch (error) {
-        throw new Error(`Failed to create debit card: ${error.message}`);
-    }
-}
+        },
+    });
+    return debitCard;
+  }
 
   postChangeDebitCard(msg: any): Promise<any> {
     return this.prisma.debitCard.update({

@@ -31,10 +31,14 @@ model Authorization {
 
   requester Requester?
   walker    Walker?
+  shop     Shop?
 }
 
 model Walker {
   walkerId        Int    @id @default(autoincrement())
+  registerAt      DateTime
+  verifyAt        DateTime?
+  status          Boolean
   username        String
   email           String
   phoneNumber     String
@@ -49,6 +53,7 @@ model Walker {
 
 model Requester {
   requesterId    Int    @id @default(autoincrement())
+  createAt       DateTime
   username       String
   email          String
   firstName      String
@@ -144,7 +149,7 @@ model Canteen {
 
 model Shop {
   shopId    Int    @id @default(autoincrement())
-  username      String
+  username      String @unique
   password  String
   shopName  String
   profilePicture  String
@@ -158,6 +163,8 @@ model Shop {
   canteenId Int
   weeklySchedule  WeeklySchedule[]
   specialOperatingHours  SpecialOperatingHours[]
+  authorization   Authorization @relation(fields: [authId], references: [authId])
+  authId          String           @unique
 }
 
 model WeeklySchedule{
@@ -232,7 +239,10 @@ model OrderItem {
   quantity            Int
   totalPrice          Float
   specialInstructions String
-  shopId  Int
+  shopId              Int
+  orderItemStatus     String
+  orderItemDate       DateTime
+  completedDate       DateTime?
 
   order Order @relation(fields: [orderId], references: [orderId])
   orderId             Int
@@ -257,7 +267,6 @@ model Report{
   title String
   description String
   status String
-
   requester Requester @relation(fields: [requesterId], references: [requesterId])
   requesterId Int
   walker Walker @relation(fields: [walkerId], references: [walkerId])
@@ -266,4 +275,5 @@ model Report{
   orderId Int @unique
   admin Admin @relation(fields: [adminId], references: [adminId])
   adminId Int
+  reportBy String
 }

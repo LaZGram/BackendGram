@@ -60,26 +60,12 @@ export class RequesterProfileDto {
   @ApiProperty({ description: 'Profile picture URL', example: 'https://example.com/profile.jpg' })
   @IsString()
   profilePicture: string;
-  
-  @ApiProperty({ 
-    description: 'List of addresses associated with the requester', 
-    example: [
-      {
-        addressId: 1,
-        name: 'Home',
-        detail: '123 Main St',
-        note: 'Leave at the door',
-        latitude: 13.7563,
-        longitude: 100.5018
-      }
-    ]
-  })
+
+  @ApiProperty({ description: 'List of addresses associated with the requester', example: [{ addressId: 1, name: 'Home', detail: '123 Main St', note: 'Leave at the door', latitude: 13.7563, longitude: 100.5018 }] })
   @IsArray()
   address: [];
 
-  @ApiProperty({ description: 'List of debit cards associated with the requester', example: [
-    { cardNumber: '4321-5678-9876-5432', expiryDate: '06/28', cvv: '321' }
-  ] })
+  @ApiProperty({ description: 'List of debit cards associated with the requester', example: [{ cardNumber: '4321-5678-9876-5432', expiryDate: '06/28', cvv: '321' }] })
   @IsArray()
   debitCard: [];
 }
@@ -162,19 +148,21 @@ export class CreateDebitCardDto {
 
   @ApiProperty({ description: 'Expiration date', example: '12/25' })
   @IsString()
-  expirationDate: string;
+  expiryDate: string;
 
   @ApiProperty({ description: 'CVV code', example: '123' })
   @IsString()
   cvv: string;
 }
 
+// 8. SearchMenuDto
 export class SearchMenuDto {
   @ApiProperty({ description: 'Name of the menu item', example: 'Pad Thai' })
   @IsString()
   name: string;
 }
 
+// 9. RequesterCreateDto
 export class RequesterCreateDto {
   @IsString()
   authId: string;
@@ -204,17 +192,18 @@ export class RequesterCreateDto {
   @IsString()
   profilePicture?: string;
 
-  @ApiProperty({ description: 'ID of the address associated with the requester', example: 1, required: false })
-  @IsOptional()
-  @IsNumber()
-  addressId?: number;
+  // @ApiProperty({ description: 'ID of the address associated with the requester', example: 1, required: false })
+  // @IsOptional()
+  // @IsNumber()
+  // addressId?: number;
 
-  @ApiProperty({ description: 'ID of the debit card associated with the requester', example: 1, required: false })
-  @IsOptional()
-  @IsNumber()
-  debitCardId?: number;
+  // @ApiProperty({ description: 'ID of the debit card associated with the requester', example: 1, required: false })
+  // @IsOptional()
+  // @IsNumber()
+  // debitCardId?: number;
 }
 
+// 10. PostChangeDebitCardDto
 export class PostChangeDebitCardDto {
   @ApiProperty({ description: 'The ID of the debit card to update', example: 1 })
   @IsNumber()
@@ -233,6 +222,7 @@ export class PostChangeDebitCardDto {
   cvv: string;
 }
 
+// 11. GetDebitCardDto
 export class GetDebitCardDto {
   @ApiProperty({ description: 'The ID of the debit card to retrieve', example: 1 })
   @IsNumber()
@@ -251,6 +241,7 @@ export class GetDebitCardDto {
   cvv: string;
 }
 
+// 12. PostChangeProfilePictureDto
 export class PostChangeProfilePictureDto {
   @ApiProperty({ description: 'The new profile picture URL', example: 'https://example.com/profile-pic.jpg' })
   @IsString()

@@ -46,6 +46,12 @@ export class OrderItem {
   specialInstructions: string;
   @ApiProperty()
   menuId: number;
+  @ApiProperty()
+  orderItemStatus: string;
+  @ApiProperty()
+  orderItemDate: Date;
+  @ApiProperty()
+  completedDate: Date;
   @ApiProperty({type: [OrderItemExtra]})
   orderItemExtras: OrderItemExtra;
 }

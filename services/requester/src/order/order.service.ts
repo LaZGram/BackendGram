@@ -1,22 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { PrismaService } from 'src/prisma.service';
+import { AppService } from 'src/app.service';
 
 @Injectable()
 export class OrderService {
-  constructor(private prisma: PrismaService) {}
-
-  getRequester(authId: string) {
-    return this.prisma.requester.findUnique({
-      where: {
-        authId: authId
-      }
-    }).then(requester => {
-      return requester.requesterId;
-    });
-  }
+  constructor(private prisma: PrismaService, private appService: AppService) {}
 
   async create(createOrderDto: CreateOrderDto) {
+    const date = new Date();
     const transaction = await this.prisma.transaction.create({
       data: {
         type: createOrderDto.transactionType,
@@ -29,7 +21,7 @@ export class OrderService {
       data: {
         requester: {
           connect: {
-            requesterId: await this.getRequester(createOrderDto.authId)
+            requesterId: await this.appService.getRequesterId(createOrderDto.authId)
           }
         },
         canteen: {
@@ -42,7 +34,7 @@ export class OrderService {
             addressId: createOrderDto.addressId
           }
         },
-        orderDate: new Date(createOrderDto.orderDate),
+        orderDate: date,
         orderStatus: "lookingForWalker",
         totalPrice: createOrderDto.totalPrice,
         shippingFee: createOrderDto.shippingFee,
@@ -72,28 +64,28 @@ export class OrderService {
           specialInstructions: item.specialInstructions,
           menuId: item.menuId,
           orderId: order.orderId,
-          shopId: item.shopId
+          shopId: item.shopId,
+          orderItemStatus: "lookingForWalker",
+          orderItemDate: date,
+          completedDate: null
         }
       })
     })
-    for (const item of createOrderDto.orderItems) {
-      const orderItem = await this.prisma.orderItem.findFirst({
-        where: {
-          orderId: order.orderId,
-          menuId: item.menuId,
-          // Add other fields to uniquely identify the created order item if necessary
-        }
-      });
-      console.log(orderItem.menuId);
-      if (orderItem) {
-        await this.prisma.orderItemExtra.createMany({
-          data: item.orderItemExtras.map(extra => ({
-            optionItemId: extra.optionItemId,
-            selected: extra.selected,
-            orderItemId: orderItem.orderItemId // use the primary key of the created order item
-          }))
-        });
+    const orderItems = await this.prisma.orderItem.findMany({
+      where: {
+        orderId: order.orderId
       }
+    });
+    for(let i = 0; i < orderItems.length; i++) {
+      await this.prisma.orderItemExtra.createMany({
+        data: createOrderDto.orderItems[i].orderItemExtras.map(extra => {
+          return {
+            orderItemId: orderItems[i].orderItemId,
+            optionItemId: extra.optionItemId,
+            selected: extra.selected
+          }
+        })
+      });
     }
     return order;
   }
@@ -111,7 +103,7 @@ export class OrderService {
   async cancleOrder(orderId: number) {
     const status = await this.getStatus(orderId);
     if (status === "lookingForWalker") {
-      await this.prisma.order.update({
+      const order = await this.prisma.order.update({
         where: {
           orderId: orderId
         },
@@ -119,6 +111,13 @@ export class OrderService {
           orderStatus: "canceled"
         }
       });
+      await this.prisma.orderItem.updateMany({
+        where: {
+          orderId: orderId
+        },
+        data: {
+          orderItemStatus: "canceled"
+      }});
       return `Update a #${orderId} order status to canceled`;
     }
     else if (status === "canceled") return "Order is already canceled";

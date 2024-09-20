@@ -93,6 +93,19 @@ services:
     volumes:
       - ../../services/walker/src:/usr/app/src
     entrypoint: ["npm", "run", "start:dev"]
+
+# -----------------------------------------------
+  micro-admin:
+    <<: *node-base
+    build:
+      context: ../../services/admin
+      dockerfile: ../../deploy/test/service.Dockerfile
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db-postgres:5432/postgres
+      SERVICE_NAME: micro-admin
+    volumes:
+      - ../../services/admin/src:/usr/app/src
+    entrypoint: ["npm", "run", "start:dev"]
   
 # -----------------------------------------------
   micro-shop:

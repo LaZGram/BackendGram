@@ -5,8 +5,14 @@ import { PrismaService } from './prisma.service';
 export class AppService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getHello(): Promise<string> {
-    return 'Hello World!';
+  getWalkerId(authId: string){
+    return this.prisma.walker.findUnique({
+      where: {
+        authId: authId
+      }
+    }).then(walker => {
+      return walker.walkerId;
+    });
   }
 
   async walkerRegistration(msg: any): Promise<any> {
@@ -33,6 +39,8 @@ export class AppService {
         profilePicture: msg.profilePicture,
         bankAccountName: msg.bankAccountName,
         bankAccountNo: msg.bankAccountNo,
+        registerAt: new Date(),
+        status: false,
       },
     });
   
@@ -71,10 +79,7 @@ export class AppService {
   }
 
   walkerGet(msg: any): Promise<any> {
-    return this.prisma.walker.findUnique({
-      where: {
-        authId: msg.authId,
-      },
+    return this.prisma.walker.findMany({
       select: {
         username: true,
         email: true,
@@ -82,20 +87,20 @@ export class AppService {
         profilePicture: true,
         bankAccountName: true,
         bankAccountNo: true,
+        status: true,
+        registerAt: true,
       },
     });
   }
 
   getOrderList(msg: any): Promise<any> {
     return this.prisma.order.findMany({
-      where: {
-        orderId: msg.orderId,
-      },
       select: {
         orderId: true,
         amount: true,
         totalPrice: true,
         shippingFee: true,
+        orderDate: true,
         orderStatus: true,
         address: {
           select: {
@@ -106,6 +111,8 @@ export class AppService {
         canteen: {
           select: {
             name: true,
+            latitude: true,
+            longitude: true,
           },
         },
       },
@@ -133,6 +140,8 @@ export class AppService {
         canteen: {
           select: {
             name: true,
+            latitude: true,
+            longitude: true,
           },
         },
         walker: {
@@ -162,17 +171,17 @@ export class AppService {
       data: {
         photoPath: msg.photoPath,
         order: {
-          connect: { orderId: msg.orderId },
+          connect: { orderId: Number(msg.orderId) },
         },
       },
     });
 
     const order = await this.prisma.order.update({
       where: {
-        orderId: msg.orderId,
+        orderId: Number(msg.orderId),
       },
       data: {
-        orderStatus: 'Confirmed',
+        orderStatus: 'completed',
         confirmedAt: new Date(),
         photoId: photo.photoId,
       },
@@ -208,15 +217,16 @@ export class AppService {
             adminId: msg.adminId,
           },
         },
+        reportBy: 'walker',
       },
     });
   
     return report;
   }
 
-  async getRequesterIdByOrder(orderId: string): Promise<{ requesterId: number }> {
+  async getRequesterIdByOrder(msg: any): Promise<any> {
     const order = await this.prisma.order.findUnique({
-      where: { orderId: Number(orderId) },
+      where: { orderId: Number(msg.orderId) },
       select: { requesterId: true },
     });
 
@@ -230,7 +240,7 @@ export class AppService {
   async updateOrderStatus(msg: any): Promise<any> {
     const order = await this.prisma.order.update({
       where: {
-        orderId: msg.orderId,
+        orderId: Number(msg.orderId),
       },
       data: {
         orderStatus: msg.status,

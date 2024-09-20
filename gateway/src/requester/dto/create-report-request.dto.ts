@@ -8,13 +8,8 @@ export class CreateReportRequestDto {
   @ApiProperty()
   @IsString()
   description: string;
-  @ApiProperty()
-  @IsString()
   authId: string;
   @ApiProperty()
   @IsNumber()
   orderId: number;
-  @ApiProperty()
-  @IsDate()
-  reportDate: Date;
 }

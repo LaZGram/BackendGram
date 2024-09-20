@@ -12,11 +12,18 @@ export class CreateCanteenResponseDto {
 }
 export class CreateShopResponseDto {
   @ApiProperty()
+  token: string
+}
+
+export class ShopLoginResponseDto extends CreateShopResponseDto {}
+
+export class UpdateShopInfoResponseDto {
+  @ApiProperty()
+  authId: string
+  @ApiProperty()
   shopId: number
   @ApiProperty()
   username: string
-  @ApiProperty({description: 'password is hashed'})
-  password: string
   @ApiProperty()
   shopName: string
   @ApiProperty()
@@ -30,6 +37,10 @@ export class CreateShopResponseDto {
   @ApiProperty()
   canteenId: number
 }
+
+export class GetShopInfoResponseDto extends UpdateShopInfoResponseDto {}
+
+export class UpdateShopStatusResponseDto extends UpdateShopInfoResponseDto {}
 
 export class CreateMenuResponseDto {
   @ApiProperty()
@@ -54,9 +65,9 @@ export class DeleteMenuResponseDto extends CreateMenuResponseDto {}
 
 export class GetMenuResponseDto extends CreateMenuResponseDto {}
 
-export class GetMenuInfoResponseDto extends CreateMenuResponseDto {}
-
 export class OptionItem {
+  @ApiProperty()
+  optionItemId: number
   @ApiProperty()
   name: string
   @ApiProperty()
@@ -71,13 +82,18 @@ export class CreateOptionResponseDto {
   @ApiProperty()
   name: string
   @ApiProperty()
-  mushChoose: boolean
+  mustChoose: boolean
   @ApiProperty()
   maxChoose: number
   @ApiProperty()
   minChoose: number
   @ApiProperty({type: [OptionItem]})
   optionItems: OptionItem
+}
+
+export class GetMenuInfoResponseDto extends CreateMenuResponseDto {
+  @ApiProperty({type: [CreateOptionResponseDto]})
+  option: CreateOptionResponseDto[]
 }
 
 export class EditOptionResponseDto extends CreateOptionResponseDto {}
@@ -148,3 +164,37 @@ export class CreateScheduleResponseDto {
 export class GetScheduleResponseDto extends CreateScheduleResponseDto {}
 
 export class GetSpecialOperatingHoursResponseDto extends CreateSpecialOperatingHoursResponseDto {}
+
+export class OrderItemExtra {
+  @ApiProperty()
+  optionItem: OptionItem
+}
+
+export class GetOrderResponseDto {
+  @ApiProperty()
+  orderItemId: number
+  @ApiProperty()
+  quantity: number
+  @ApiProperty()
+  totalPrice: number
+  @ApiProperty()
+  specialInstructions: string
+  @ApiProperty()
+  shopId: number
+  @ApiProperty({description: '"lookingForWalker", "inProgress", "completed", "cancelled"'})
+  orderItemStatus: string
+  @ApiProperty()
+  orderItemDate: Date
+  @ApiProperty()
+  completedDate: Date
+  @ApiProperty()
+  menuId: number
+  @ApiProperty()
+  orderId: number
+  @ApiProperty({type: [OrderItemExtra]})
+  orderItemExtras: OrderItemExtra[]
+}
+
+export class GetOrderHistoryResponseDto extends GetOrderResponseDto {}
+
+export class UpdateOrderStatusResponseDto extends GetOrderResponseDto {}

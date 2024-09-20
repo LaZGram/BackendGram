@@ -2,28 +2,28 @@ import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsBoolean, IsDate, IsNumber, IsString } from "class-validator";
 
 export class OrderItemExtra {
-  @ApiProperty()
+  @ApiProperty({ example: 0 })
   @IsNumber()
   optionItemId: number;
-  @ApiProperty()
+  @ApiProperty({ example: true })
   @IsBoolean()
   selected: boolean;
 }
 
 export class OrderItem {
-  @ApiProperty()
+  @ApiProperty({ example: 0 })
   @IsNumber()
   shopId: number;
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @IsNumber()
   quantity: number;
-  @ApiProperty()
+  @ApiProperty({ example: 50 })
   @IsNumber()
   totalPrice: number;
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "ไม่ผัก" })
   @IsString()
   specialInstructions?: string;
-  @ApiProperty()
+  @ApiProperty({ example: 0 })
   @IsNumber()
   menuId: number;
   @ApiProperty({type: [OrderItemExtra]})
@@ -31,33 +31,28 @@ export class OrderItem {
 }
 
 export class CreateOrderRequestDto {
-  @ApiProperty()
-  @IsString()
   authId: string;
-  @ApiProperty()
+  @ApiProperty({ example: 0 })
   @IsNumber()
   canteenId: number;
-  @ApiProperty()
+  @ApiProperty({ example: 0 })
   @IsNumber()
   addressId: number;
   @ApiProperty({ type: [OrderItem] })
   orderItems: OrderItem[];
-  @ApiProperty()
+  @ApiProperty({ example: 60 })
   @IsNumber()
   totalPrice: number;
-  @ApiProperty()
+  @ApiProperty({ example: 10 })
   @IsNumber()
   shippingFee: number;
-  @ApiProperty()
+  @ApiProperty({ example: 70 })
   @IsNumber()
   amount: number;
-  @ApiProperty()
-  @IsDate()
-  orderDate: Date;
-  @ApiProperty()
+  @ApiProperty({ example: "Debit-card" })
   @IsString()
   transactionType: string;
-  @ApiProperty()
+  @ApiProperty({ example: "2022-10-31T09:00:00Z" })
   @IsDate()
   transactionDate: Date;
 }

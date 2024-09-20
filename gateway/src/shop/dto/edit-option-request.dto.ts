@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsNumber, IsString } from 'class-validator';
-import { OptionItem } from './create-option-request.dto';
+import { OptionItems } from './create-option-request.dto';
 
 export class EditOptionRequestDto{
   @ApiProperty()
@@ -14,13 +14,13 @@ export class EditOptionRequestDto{
   name?: string
   @ApiPropertyOptional({description: 'true if customer can choose multiple option, false if customer can only choose one option'})
   @IsBoolean()
-  mushChoose?: boolean
+  mustChoose?: boolean
   @ApiPropertyOptional({description: 'maximum number of option that customer can choose'})
   @IsNumber()
   maxChoose?: number
   @ApiPropertyOptional({description: 'minimum number of option that customer must choose'})
   @IsNumber()
   minChoose?: number
-  @ApiPropertyOptional({description: 'list of option items', type: [OptionItem]})
-  optionItems: Array<OptionItem>
+  @ApiPropertyOptional({description: 'list of option items', type: [OptionItems]})
+  optionItems: Array<OptionItems>
 }

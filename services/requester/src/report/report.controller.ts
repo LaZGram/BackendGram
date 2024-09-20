@@ -7,7 +7,7 @@ import { CreateReportDto } from './dto/create-report.dto';
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 
-  @MessagePattern('createReport')
+  @MessagePattern('createOrderReport')
   create(@Payload() createReportDto: CreateReportDto) {
     return this.reportService.create(createReportDto);
   }
