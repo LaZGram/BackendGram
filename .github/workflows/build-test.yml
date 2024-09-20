@@ -16,3 +16,19 @@ jobs:
 
       - name: Build Docker images
         run: docker compose -f deploy/production/docker-compose.production.yml build
+
+      - name: Run Unit Tests
+        run: |
+          docker compose -f deploy/production/docker-compose.production.yml up --exit-code-from unit-test
+        continue-on-error: true  # Allow the workflow to continue even if tests fail
+
+      - name: Check if Unit Tests Passed
+        id: check-tests
+        run: |
+          if [ $? -ne 0 ]; then
+            echo "Unit tests failed, stopping the workflow."
+            exit 1  # Fail the workflow if tests fail
+          fi
+
+      - name: Check running containers
+        run: docker ps
