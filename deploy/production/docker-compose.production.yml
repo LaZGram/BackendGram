@@ -116,7 +116,6 @@ services:
       SERVICE_NAME: micro-shop
     volumes:
       - ../../services/shop/src:/usr/app/src
-    command: ["sh", "-c", "npx prisma migrate dev"]
     # entrypoint: ["npm", "run", "start:dev"]
 # -----------------------------------------------
   kafdrop:
