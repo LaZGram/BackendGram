@@ -65,6 +65,8 @@ services:
     environment:
       DATABASE_URL: postgres://postgres:postgres@db-postgres:5432/postgres
       SERVICE_NAME: micro-base
+      PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK: true
+    command: ["npx", "prisma", "db", "push"]
     volumes:
       - ../../services/base_service/src:/usr/app/src
 
