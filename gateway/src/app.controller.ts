@@ -35,7 +35,7 @@ export class AppController {
     const order_topic_list = ['createOrder', 'getOrderStatus', 'cancelOrder', 'getOrderWalker', 'createOrderReport'];
     const requester_topic_list = [...order_topic_list, ...address_topic_list, 'createDebitcard', 'searchMenu', 'postPersonalInfo', 'authIdCreate'];
     const schedule_topic_list = ['createWeeklySchedule', 'createSpecialOperatingHours', 'getWeeklySchedule', 'getSpecialOperatingHours'];
-    const menu_topic_list = ['createMenu', 'editMenu', 'deleteMenu', 'getMenu', 'getMenuInfo'];
+    const menu_topic_list = ['createMenu', 'editMenu', 'updateMenuStatus', 'deleteMenu', 'getMenu', 'getMenuInfo'];
     const option_topic_list = ['createOption', 'editOption', 'deleteOption', 'getOption', 'getOptionInfo'];
     const shop_order_topic_list = ['getShopOrder', 'getShopOrderHistory', 'updateShopOrderStatus'];
     const shop_topic_list = ['createShop', 'shopLogin', 'updateShopInfo', 'getShopInfo', 'updateShopStatus', 'searchShop', 'shopReview', 'createCanteen', ...menu_topic_list, ...option_topic_list, ...shop_order_topic_list, ...schedule_topic_list];

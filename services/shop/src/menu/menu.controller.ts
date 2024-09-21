@@ -18,6 +18,12 @@ export class MenuController {
     return this.menuService.editMenu(msg);
   }
 
+  @MessagePattern('updateMenuStatus')
+  updateMenuStatus(msg: object){
+    const menuId = parseInt(msg["menuId"].toString());
+    return this.menuService.updateMenuStatus(menuId);
+  }
+
   @MessagePattern('deleteMenu')
   deleteMenu(msg: object){
     const id = parseInt(msg["menuId"].toString());
@@ -25,7 +31,7 @@ export class MenuController {
   }
 
   @MessagePattern('getMenuInfo')
-  getMenuInfo(msg: object): string {
+  getMenuInfo(msg: object){
     const id = parseInt(msg["menuId"].toString());
     return this.menuService.getMenuInfo(id);
   }
