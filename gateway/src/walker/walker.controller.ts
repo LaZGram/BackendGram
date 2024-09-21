@@ -30,8 +30,18 @@ export class WalkerController {
   @ApiOperation({ summary: 'Get walker profile' })
   @ApiResponse({ status: 200, description: 'Walker profile retrieved successfully.', type: WalkerGetDto })
   @ApiResponse({ status: 404, description: 'Walker not found.' })
-  async walkerGet(@Body() body: any): Promise<string> {
-    const result = await this.client.send('walkerGet', { ...body});
+  async walkerGet(@Body() body: any, @Request() req): Promise<string> {
+    const result = await this.client.send('walkerGet', { ...body, authId: req.jwt.authId});
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Get('history')
+  @ApiOperation({ summary: 'Get walker order history' })
+  @ApiResponse({ status: 200, description: 'Order history retrieved successfully.' })
+  @ApiResponse({ status: 404, description: 'Order history not found.' })
+  async orderHistory(@Body() body: any, @Request() req): Promise<string> {
+    const result = await this.client.send('orderHistory', { ...body, authId: req.jwt.authId });
     const value = await lastValueFrom(result);
     return value;
   }
@@ -47,8 +57,8 @@ export class WalkerController {
 
   @Get('order-list')
   @ApiOperation({ summary: 'Get walker order list' })
-  @ApiResponse({ status: 200, description: 'Order list retrieved successfully.', type: [GetOrderListDto] })
-  async getOrderList(@Param() params: any): Promise<any> {
+  @ApiResponse({ status: 200, description: 'Order list retrieved successfully.'})
+  async getOrderList(@Param() params: GetOrderListDto): Promise<any> {
     const result = await this.client.send('getOrderList', {...params});
     return await lastValueFrom(result);
   }

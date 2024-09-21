@@ -40,9 +40,9 @@ export class AppController {
     const shop_order_topic_list = ['getShopOrder', 'getShopOrderHistory', 'updateShopOrderStatus'];
     const shop_topic_list = ['createShop', 'updateShopInfo', 'getShopInfo', 'searchShop', 'shopReview', 'createCanteen', ...menu_topic_list, ...option_topic_list, ...shop_order_topic_list, ...schedule_topic_list];
     const walker_order_topic_list = ['acceptOrder'];
-    const walker_topic_list = ['createWalker', 'getWalker', 'updateWalker', 'deleteWalker', 'getWalkerInfo','postChangeProfilePicture', 'getDebitcard', 
+    const walker_topic_list = ['orderHistory','createWalker', 'getWalker', 'updateWalker', 'deleteWalker', 'getWalkerInfo','postChangeProfilePicture', 'getDebitcard', 
       'postChangeDebitCard', 'walkerRegistration', 'walkerGet', 'getOrderList', 'getOrderDetail', 'confirmOrder', 'postReport'
-    , 'getRequesterIdByOrder', 'updateWalkerProfile', 'updateOrderStatus', ...walker_order_topic_list];
+    , 'getRequesterIdByOrder', 'updateWalkerProfile', 'updateOrderStatus', ...walker_order_topic_list, 'deleteWalker'];
     let topic_list = ['hello', 'requesterRegistration', 'getCanteens', 'getProfile', 'googleAuth', ...shop_topic_list, ...requester_topic_list, ...walker_topic_list, ...admin_topic_list];
     // unique topic
     topic_list = topic_list.filter((value, index, self) => self.indexOf(value) === index);

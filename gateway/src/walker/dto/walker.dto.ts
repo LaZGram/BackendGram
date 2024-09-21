@@ -173,33 +173,9 @@ class OrderItemDto {
 }
 
 export class GetOrderListDto {
-  @ApiProperty({ description: 'Order ID', example: '12345' })
-  @IsNumber()
-  orderId: number;
-
-  @ApiProperty({ description: 'Amount of items in the order', example: 3 })
-  @IsNumber()
-  amount: number;
-
-  @ApiProperty({ description: 'Total price of the order', example: 150.00 })
-  @IsNumber()
-  totalPrice: number;
-
-  @ApiProperty({ description: 'Shipping fee', example: 20.00 })
-  @IsNumber()
-  shippingFee: number;
-
-  @ApiProperty({ description: 'Order status', example: 'Delivered' })
+  @ApiProperty({ description: 'Order status', example: '"lookingForWalker", "inProgress", "completed", "cancelled","waitingAdmin"' })
   @IsString()
   orderStatus: string;
-
-  @ApiProperty({ description: 'Address details' })
-  @IsObject()
-  address: AddressDto;
-
-  @ApiProperty({ description: 'Canteen details' })
-  @IsObject()
-  canteen: CanteenDto;
 }
 
 export class GetOrderDetailDto {
