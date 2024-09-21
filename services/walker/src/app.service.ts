@@ -40,7 +40,7 @@ export class AppService {
         bankAccountName: msg.bankAccountName,
         bankAccountNo: msg.bankAccountNo,
         registerAt: new Date(),
-        status: false,
+        status: 'waitingVerify',
       },
     });
   
@@ -49,37 +49,43 @@ export class AppService {
 
   async updateWalkerProfile(msg: any): Promise<any> {
     const walker = await this.prisma.walker.findUnique({
-      where: {
-        authId: msg.authId,
-      },
-      select: {
-        walkerId: true,
-      },
+        where: {
+            authId: msg.authId,
+        },
+        select: {
+            walkerId: true,
+        },
     });
-  
+
     if (!walker) {
-      throw new Error('Walker not found');
+        throw new Error('Walker not found');
     }
-  
+
+    const updateData: any = {};
+    
+    if (msg.username !== undefined) updateData.username = msg.username;
+    if (msg.email !== undefined) updateData.email = msg.email;
+    if (msg.phoneNumber !== undefined) updateData.phoneNumber = msg.phoneNumber;
+    if (msg.profilePicture !== undefined) updateData.profilePicture = msg.profilePicture;
+    if (msg.bankAccountName !== undefined) updateData.bankAccountName = msg.bankAccountName;
+    if (msg.bankAccountNo !== undefined) updateData.bankAccountNo = msg.bankAccountNo;
+    if (msg.status !== undefined) updateData.status = msg.status;
+
     const updatedWalker = await this.prisma.walker.update({
-      where: {
-        authId: msg.authId,
-      },
-      data: {
-        username: msg.username,
-        email: msg.email,
-        phoneNumber: msg.phoneNumber,
-        profilePicture: msg.profilePicture,
-        bankAccountName: msg.bankAccountName,
-        bankAccountNo: msg.bankAccountNo,
-      },
+        where: {
+            authId: msg.authId,
+        },
+        data: updateData,
     });
-  
+
     return updatedWalker;
   }
 
   walkerGet(msg: any): Promise<any> {
     return this.prisma.walker.findMany({
+      where: {
+        authId: msg.authId,
+      },
       select: {
         username: true,
         email: true,
@@ -93,8 +99,46 @@ export class AppService {
     });
   }
 
+  orderHistory(msg: any): Promise<any> {
+    return this.prisma.walker.findMany({
+      where: {
+        authId: msg.authId
+      },
+      select: {
+        order: {
+          select: {
+            orderId: true,
+            orderDate: true,
+            orderStatus: true,
+            totalPrice: true,
+            shippingFee: true,
+            amount: true,
+            confirmedAt: true,
+            canteen: {
+              select: {
+                name: true,
+                latitude: true,
+                longitude: true
+              }
+            },
+            requester: {
+              select: {
+                username: true,
+                phoneNumber: true
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+  
+
   getOrderList(msg: any): Promise<any> {
     return this.prisma.order.findMany({
+      where: {
+        orderStatus: msg.orderStatus,
+      },
       select: {
         orderId: true,
         amount: true,
@@ -185,6 +229,10 @@ export class AppService {
         confirmedAt: new Date(),
         photoId: photo.photoId,
       },
+      select: {
+        orderId: true,
+        orderStatus: true
+      }
     });
 
     return order;
@@ -193,7 +241,7 @@ export class AppService {
   async postReport(msg: any): Promise<any> {
     const report = await this.prisma.report.create({
       data: {
-        reportDate: new Date(msg.reportDate),
+        reportDate: new Date(),
         title: msg.title,
         description: msg.description,
         status: msg.status,
@@ -209,7 +257,7 @@ export class AppService {
         },
         order: {
           connect: {
-            orderId: msg.orderId,
+            orderId: Number(msg.orderId),
           },
         },
         admin: {
