@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { PrismaService } from 'src/prisma.service';
 import { AppService } from 'src/app.service';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class OrderService {
@@ -131,6 +132,29 @@ export class OrderService {
       }
     }).then(order => {
       return order.walkerId;
+    });
+  }
+
+  async getOrders(authId: string) {
+    try {
+      return this.prisma.order.findMany({
+        where: {
+          requester: {
+            requesterId: await this.appService.getRequesterId(authId)
+          }
+        }
+      });
+    }
+    catch(e) {
+      throw  new RpcException({ statusCode: 404, message: "Order not found" });
+    }
+  }
+
+  async getOrder(authId: string) {
+    return this.prisma.order.findUnique({
+      where: {
+        orderId: await this.appService.getRequesterId(authId)
+      }
     });
   }
 }

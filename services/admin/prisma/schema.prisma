@@ -135,6 +135,15 @@ model Transaction{
   amount  Float
 
   order Order?
+  transactionSCB TransactionSCB[]
+}
+
+model TransactionSCB{
+  transactionSCBId Int @id @default(autoincrement())
+  transactionId_SCB String
+
+  transaction Transaction @relation(fields: [transactionId], references: [transactionId])
+  transactionId Int
 }
 
 model Canteen {

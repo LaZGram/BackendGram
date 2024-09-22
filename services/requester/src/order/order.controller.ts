@@ -29,4 +29,9 @@ export class OrderController {
     const orderId = parseInt(msg["orderId"].toString());
     return this.orderService.getWalker(orderId);
   }
+
+  @MessagePattern('reqGetOrder')
+  getOrder(@Payload() msg: any) {
+    return this.orderService.getOrders(msg);
+  }
 }

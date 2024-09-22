@@ -9,6 +9,7 @@ import { OrderModule } from './order/order.module';
 import { ReportModule } from './report/report.module';
 import { AddressModule } from './address/address.module';
 import { PaymentModule } from './payment/payment.module';
+import { DevtoolsModule } from '@nestjs/devtools-integration';
 
 @Module({
   imports: [CanteenModule, CanteenModule, ProfileModule, AuthModule, PrismaModule, OrderModule, ReportModule, AddressModule, PaymentModule],
