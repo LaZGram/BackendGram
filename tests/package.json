@@ -1,0 +1,22 @@
+{
+  "name": "tests",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "unit tests for ku-man API",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx mocha --recursive ./tests"
+  },
+  "author": "VimForLaNie",
+  "license": "ISC",
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "chai": "^5.1.1",
+    "chai-http": "^5.0.0",
+    "supertest": "^7.0.0"
+  },
+  "devDependencies": {
+    "mocha": "^10.7.3"
+  }
+}

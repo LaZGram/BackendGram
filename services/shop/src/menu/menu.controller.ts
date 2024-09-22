@@ -14,18 +14,24 @@ export class MenuController {
   }
 
   @MessagePattern('editMenu')
-  editMenu(msg: EditMenuDto): string {
+  editMenu(msg: EditMenuDto) {
     return this.menuService.editMenu(msg);
   }
 
+  @MessagePattern('updateMenuStatus')
+  updateMenuStatus(msg: object){
+    const menuId = parseInt(msg["menuId"].toString());
+    return this.menuService.updateMenuStatus(menuId);
+  }
+
   @MessagePattern('deleteMenu')
-  deleteMenu(msg: object): string {
+  deleteMenu(msg: object){
     const id = parseInt(msg["menuId"].toString());
     return this.menuService.deleteMenu(id);
   }
 
   @MessagePattern('getMenuInfo')
-  getMenuInfo(msg: object): string {
+  getMenuInfo(msg: object){
     const id = parseInt(msg["menuId"].toString());
     return this.menuService.getMenuInfo(id);
   }

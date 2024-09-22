@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Inject, Request, SetMetadata, Query  } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Inject, Request, SetMetadata, Query, Delete  } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
@@ -19,7 +19,7 @@ export class AdminController {
   }
 
   @Get('verify')
-  @ApiOperation({ summary: 'Show list of walkers with status false' })
+  @ApiOperation({ summary: 'Show list of walkers with status watingVerify' })
   @ApiResponse({ status: 200, description: 'Returns list of walkers pending approval.' })
   async walkerQueue(): Promise<string> {
     const result = await this.client.send('walkerQueue', {});
@@ -36,6 +36,16 @@ export class AdminController {
     return value;
   }
 
+  @Delete('verify')
+  @ApiOperation({ summary: 'Delete a walker by ID' })
+  @ApiResponse({ status: 200, description: 'Walker deleted successfully.' })
+  @ApiResponse({ status: 404, description: 'Walker not found.' })
+  async deleteWalker(@Body() delWalkerDto: VerifyWalkerDto): Promise<any> {
+    const result = this.client.send('deleteWalker', { ...delWalkerDto });
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
   @Get('requester')
   @ApiOperation({ summary: 'Show list of all requesters' })
   @ApiResponse({ status: 200, description: 'Returns list of requesters.' })
@@ -45,8 +55,8 @@ export class AdminController {
   }
 
   @Get('walker')
-  @ApiOperation({ summary: 'Show list of walkers with status true' })
-  @ApiResponse({ status: 200, description: 'Returns list of verified walkers.' })
+  @ApiOperation({ summary: 'Show list of walkers with status Active' })
+  @ApiResponse({ status: 200, description: 'Returns list of Active walkers.' })
   async showWalker(): Promise<any> {
     const result = this.client.send('showWalker', {});
     return await lastValueFrom(result);
