@@ -61,6 +61,8 @@ export class CreateMenuResponseDto {
 
 export class EditMenuResponseDto extends CreateMenuResponseDto {}
 
+export class UpdateMenuStatusResponseDto extends CreateMenuResponseDto {}
+
 export class DeleteMenuResponseDto extends CreateMenuResponseDto {}
 
 export class GetMenuResponseDto extends CreateMenuResponseDto {}

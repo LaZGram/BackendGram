@@ -35,4 +35,9 @@ export class AppController {
   verifyWalker(msg: any): any {
     return this.appService.verifyWalker(msg);
   }
+
+  @MessagePattern('deleteWalker')
+  deleteWalker(msg: any): any {
+    return this.appService.deleteWalker(msg);
+  }
 }

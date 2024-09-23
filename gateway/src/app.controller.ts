@@ -35,14 +35,14 @@ export class AppController {
     const order_topic_list = ['createOrder', 'getOrderStatus', 'cancelOrder', 'getOrderWalker', 'createOrderReport'];
     const requester_topic_list = [...order_topic_list, ...address_topic_list, 'createDebitcard', 'searchMenu', 'postPersonalInfo', 'authIdCreate'];
     const schedule_topic_list = ['createWeeklySchedule', 'createSpecialOperatingHours', 'getWeeklySchedule', 'getSpecialOperatingHours'];
-    const menu_topic_list = ['createMenu', 'editMenu', 'deleteMenu', 'getMenu', 'getMenuInfo'];
+    const menu_topic_list = ['createMenu', 'editMenu', 'updateMenuStatus', 'deleteMenu', 'getMenu', 'getMenuInfo'];
     const option_topic_list = ['createOption', 'editOption', 'deleteOption', 'getOption', 'getOptionInfo'];
     const shop_order_topic_list = ['getShopOrder', 'getShopOrderHistory', 'updateShopOrderStatus'];
     const shop_topic_list = ['createShop', 'shopLogin', 'updateShopInfo', 'getShopInfo', 'updateShopStatus', 'searchShop', 'shopReview', 'createCanteen', ...menu_topic_list, ...option_topic_list, ...shop_order_topic_list, ...schedule_topic_list];
     const walker_order_topic_list = ['acceptOrder'];
-    const walker_topic_list = ['createWalker', 'getWalker', 'updateWalker', 'deleteWalker', 'getWalkerInfo','postChangeProfilePicture', 'getDebitcard', 
+    const walker_topic_list = ['orderHistory','createWalker', 'getWalker', 'updateWalker', 'deleteWalker', 'getWalkerInfo','postChangeProfilePicture', 'getDebitcard', 
       'postChangeDebitCard', 'walkerRegistration', 'walkerGet', 'getOrderList', 'getOrderDetail', 'confirmOrder', 'postReport'
-    , 'getRequesterIdByOrder', 'updateWalkerProfile', 'updateOrderStatus', ...walker_order_topic_list];
+      , 'getRequesterIdByOrder', 'updateWalkerProfile', 'updateOrderStatus', ...walker_order_topic_list, 'deleteWalker'];
     const requester_payment_topic_list = ['getPaymentToken', 'reqGetOrder', 'getPaymentDeeplink'];
     let topic_list = ['hello', 'requesterRegistration', 'getCanteens', 'getProfile', 'googleAuth', ...shop_topic_list, ...requester_topic_list, ...walker_topic_list, ...admin_topic_list, ...requester_payment_topic_list];
     // unique topic

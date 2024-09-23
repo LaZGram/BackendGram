@@ -8,7 +8,7 @@ export class PostApprovalDto {
 }
 
 export class VerifyWalkerDto {
-  @ApiProperty({ description: 'Authorization ID for the walker', example: 1 })
+  @ApiProperty({ description: 'WalkerID for the walker', example: 1 })
   @IsNumber()
   walkerId: Number;
 }
