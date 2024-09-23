@@ -135,15 +135,21 @@ export class PaymentService {
         }
     }
 
+    async getTransactionSCB(transactionId: number) {
+        try{
+            return await this.prismaService.transactionSCB.findMany({
+                where: {
+                    transactionId: transactionId
+                }
+            });
+        }
+        catch(e) {
+            throw new Error(e);
+        }
+    }
+
     async getPaymentStatus(transactionId: number) : Promise<boolean> {
-        const transactionIdSCB = await this.prismaService.transactionSCB.findMany({
-            where: {
-                transactionId: transactionId
-            },
-            select: {
-                transactionId_SCB: true
-            }
-        });
+        const transactionIdSCB = await this.getTransactionSCB(transactionId);
         let status = 0;
         for (let i = 0; i < transactionIdSCB.length; i++) {
             const token = await this.getToken()
