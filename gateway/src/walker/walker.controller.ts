@@ -1,4 +1,4 @@
-import { Controller, Get, Inject, Post, Body, Param, Request, Query , NotFoundException } from '@nestjs/common';
+import { Controller, Get, Inject, Post, Body, Param, Request, Query , NotFoundException, Put } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
@@ -46,7 +46,7 @@ export class WalkerController {
     return value;
   }
 
-  @Post('profile/update')
+  @Put('profile/update')
   @ApiOperation({ summary: 'Update walker profile' })
   @ApiResponse({ status: 200, description: 'Walker profile updated successfully.', type: UpdateWalkerDto })
   @ApiResponse({ status: 400, description: 'Invalid update data.' })
@@ -77,7 +77,7 @@ export class WalkerController {
     return orderDetail;
   }
 
-  @Post('order-list/:orderId/confirm-order')
+  @Put('order-list/:orderId/confirm-order')
   @ApiOperation({ summary: 'Confirm an order by orderId' })
   @ApiResponse({ status: 200, description: 'Order confirmed successfully.' })
   @ApiResponse({ status: 400, description: 'Invalid order confirmation data.' })
@@ -109,7 +109,7 @@ export class WalkerController {
     return (await lastValueFrom(result));
   }
 
-  @Post('order-list/:orderId/status')
+  @Put('order-list/:orderId/status')
   @ApiOperation({ summary: 'Update the status of an order by orderId' })
   @ApiResponse({ status: 200, description: 'Order status updated successfully.' })
   @ApiResponse({ status: 400, description: 'Invalid order status data.' })
@@ -124,7 +124,7 @@ export class WalkerController {
     return await lastValueFrom(result);
   }
 
-  @Post('order/accept')
+  @Put('order/accept')
   @ApiOperation({ summary: 'Walker accept an order' })
   @ApiQuery({ name: 'orderId', type: Number })
   @ApiResponse({ status: 200, description: 'Order accepted successfully.', type: AcceptOrderResponseDto })
