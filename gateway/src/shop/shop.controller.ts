@@ -23,7 +23,7 @@ export class ShopController {
   @ApiOperation({ summary: 'Create new shop to database' })
   @ApiResponse({ status: 201, description: 'Create new shop successes', type: CreateShopResponseDto })
   async createShop(@Body() createShopRequest: CreateShopRequestDto, @Request() req): Promise<CreateShopResponseDto> {
-      const authId = `shop${uuidv4()}`;
+      const authId = `shop-${uuidv4()}`;
       const token = await this.JwtService.signAsync( { authId: authId });
       createShopRequest.authId = authId;
       const result = this.client.send('createShop', JSON.stringify(createShopRequest));
