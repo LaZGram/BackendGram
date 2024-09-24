@@ -287,7 +287,7 @@ model Report{
   walker Walker @relation(fields: [walkerId], references: [walkerId])
   walkerId Int
   order Order @relation(fields: [orderId], references: [orderId])
-  orderId Int @unique
+  orderId Int
   admin Admin @relation(fields: [adminId], references: [adminId])
   adminId Int
   reportBy String
