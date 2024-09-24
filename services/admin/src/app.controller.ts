@@ -1,10 +1,21 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { AdminLoginDto, CreateAdminDto } from './dto/admin.dto';
 
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
+
+  @MessagePattern('createAdmin')
+  createAdmin(msg: CreateAdminDto){
+    return this.appService.createAdmin(msg);
+  }
+
+  @MessagePattern('adminLogin')
+  adminLogin(msg: AdminLoginDto){
+    return this.appService.loginAdmin(msg);
+  }
 
   @MessagePattern('walkerQueue')
   walkerQueue(): Promise<any> {

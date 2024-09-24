@@ -25,6 +25,6 @@ export class OrderController {
 
   @MessagePattern('updateShopOrderStatus')
   updateShopOrderStatus(msg: UpdateOrderStatusDto) {
-    return this.orderService.updateOrderStatus(msg);
+    return this.orderService.shopUpdateOrderStatus(msg);
   }
 }

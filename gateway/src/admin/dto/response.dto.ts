@@ -1,5 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
 
+export class CreateAdminResponseDto {
+  @ApiProperty()
+  token: string;
+}
+
+export class AdminLoginResponseDto {
+  @ApiProperty()
+  token: string;
+}
+
 export class Order{
   @ApiProperty()
   orderId: number;

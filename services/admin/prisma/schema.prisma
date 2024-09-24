@@ -17,12 +17,16 @@ datasource db {
 
 model Admin {
   adminId     Int    @id @default(autoincrement())
-  name        String
-  email       String
+  registerAt  DateTime
+  username    String  @unique
+  email       String  @unique
   password    String
   phoneNumber String
   report Report[]
   order Order[]
+
+  authorization   Authorization @relation(fields: [authId], references: [authId])
+  authId          String           @unique
 }
 
 model Authorization {
@@ -32,6 +36,7 @@ model Authorization {
   requester Requester?
   walker    Walker?
   shop     Shop?
+  admin    Admin?
 }
 
 model Walker {
@@ -158,6 +163,7 @@ model Canteen {
 
 model Shop {
   shopId    Int    @id @default(autoincrement())
+  registerAt  DateTime
   username      String @unique
   password  String
   shopName  String
