@@ -24,6 +24,7 @@ model Admin {
   phoneNumber String
   report Report[]
   order Order[]
+  chat  Chat[]
 
   authorization   Authorization @relation(fields: [authId], references: [authId])
   authId          String           @unique
@@ -54,6 +55,7 @@ model Walker {
   auth   Authorization @relation(fields: [authId], references: [authId])
   authId          String           @unique
   order Order[]
+  chat  Chat[]
 }
 
 model Requester {
@@ -73,6 +75,7 @@ model Requester {
   order Order[]
   review  Review[]
   debitCard    DebitCard[]
+  chat  Chat[]
 }
 
 model DebitCard {
@@ -129,6 +132,7 @@ model Order {
   Photo        Photo?   @relation(fields: [photoId], references: [photoId])
   photoId      Int? @unique
   orderItem OrderItem[]
+  chat  Chat[]
 }
 
 
@@ -291,4 +295,26 @@ model Report{
   admin Admin @relation(fields: [adminId], references: [adminId])
   adminId Int
   reportBy String
+}
+
+model Chat {
+  id            Int       @id @default(autoincrement())
+  chatId        String    // Unique identifier for each chat room (e.g., 'order-1234-0')
+  orderId       Int?
+  order         Order?     @relation(fields: [orderId], references: [orderId])
+  
+  walkerId      Int?      // Optional walkerId (nullable if the sender is not a walker)
+  walker        Walker?   @relation(fields: [walkerId], references: [walkerId])
+
+  adminId       Int?      // Optional adminId (nullable if the sender is not an admin)
+  admin         Admin?    @relation(fields: [adminId], references: [adminId])
+
+  requesterId   Int?      // Optional requesterId (nullable if the sender is not a requester)
+  requester     Requester? @relation(fields: [requesterId], references: [requesterId])
+
+  message       String    // The actual chat message
+  senderRole    String    // The role of the sender (e.g., 'customer', 'driver', 'admin')
+  timestamp     DateTime  @default(now())  // Timestamp of when the message was sent
+
+  @@index([chatId])   // Index for optimizing queries by chatId
 }

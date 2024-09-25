@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -25,7 +26,6 @@ model Admin {
   report Report[]
   order Order[]
   chat  Chat[]
-
   authorization   Authorization @relation(fields: [authId], references: [authId])
   authId          String           @unique
 }

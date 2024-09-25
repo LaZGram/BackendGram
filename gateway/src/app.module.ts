@@ -12,6 +12,7 @@ import { AuthModule } from './auth/auth.module';
 import { AuthGuard } from './auth/auth.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { AdminController } from './admin/admin.controller';
+import { ChatController } from './chat/chat.controller';
 
 @Module({
   imports: [
@@ -41,7 +42,7 @@ import { AdminController } from './admin/admin.controller';
       signOptions: { expiresIn: '100d' },
     }),
   ],
-  controllers: [AppController, RequesterController, HelloController, ShopController, CanteenController, WalkerController, AdminController],
+  controllers: [AppController, RequesterController, HelloController, ShopController, CanteenController, WalkerController, AdminController, ChatController],
   providers: [AppService, ClientKafka, 
   {
     provide: 'APP_GUARD',
