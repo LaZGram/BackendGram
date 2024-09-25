@@ -21,4 +21,5 @@ EXPOSE 3000
 
 # Step 8: Define the command to run the application
 RUN [ -d "./prisma" ] && echo "Prisma folder found. Running npx prisma generate..." && npx prisma generate || echo "Prisma folder not found. Skipping npx prisma generate."
+
 CMD [ "npm", "run", "start:prod" ]

@@ -125,7 +125,7 @@ services:
     <<: *node-base
     build:
       context: ../../services/chat
-      dockerfile: ../../deploy/test/chat.Dockerfile
+      dockerfile: ../../deploy/production/chat.Dockerfile
     ports:
       - '3001:3000'
     environment:
