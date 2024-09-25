@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { IsBoolean, IsNumber, IsString } from "class-validator"
 
-export class OptionItem {
+export class OptionItems {
   @ApiProperty({description: 'name of option item'})
   @IsString()
   name: string
@@ -26,6 +26,6 @@ export class CreateOptionRequestDto {
   @ApiProperty({description: 'minimum number of option that customer must choose'})
   @IsNumber()
   minChoose: number
-  @ApiProperty({description: 'list of option items', type: [OptionItem]})
-  optionItems: Array<OptionItem>
+  @ApiProperty({description: 'list of option items', type: [OptionItems]})
+  optionItems: Array<OptionItems>
 }

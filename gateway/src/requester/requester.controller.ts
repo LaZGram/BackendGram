@@ -186,18 +186,58 @@ export class RequesterController {
 
     @Get('address')
     @ApiOperation({ summary: 'Get list of address from database' })
-    @ApiQuery({ name: 'addressId', type: 'number' })
     @ApiResponse({ status: 200, description: 'Get address successes', type: GetAddressResponseDto, isArray: true })
-    async getAddress(@Query() addressId: object): Promise<string> {
-        const result = this.client.send('getAddress', addressId);
+    async getAddress(@Request() req): Promise<string> {
+        const result = this.client.send('getAddress', {authId: req.jwt.authId});
         return await lastValueFrom(result);
     }
 
     @Get('address/info')
     @ApiOperation({ summary: 'Get address information from database' })
+    @ApiQuery({ name: 'addressId', type: 'number' })
     @ApiResponse({ status: 200, description: 'Get address information successes', type: GetAddressInfoResponseDto })
-    async getAddressInfo(@Request() req): Promise<string> {
-        const result = this.client.send('getAddressInfo', {authId: req.jwt.authId});
+    async getAddressInfo(@Query() addressId: object): Promise<string> {
+        const result = this.client.send('getAddressInfo', addressId);
+        return await lastValueFrom(result);
+    }
+
+    @Get('payment/token')
+    async getPaymentToken(): Promise<string> {
+        const result = this.client.send('getPaymentToken', {});
+        return await lastValueFrom(result);
+    }
+
+    @Get('order')
+    @ApiOperation({ summary: 'Get list of orders from database' })
+    @ApiResponse({ status: 200, description: 'Get order successes', type: String })
+    async reqGetOrder(@Request() req): Promise<string> {
+        const result = this.client.send('reqGetOrder', {authId: req.jwt.authId});
+        result.pipe(
+            catchError(error => {
+                const { statusCode, message } = error;
+                if (statusCode === 404) {
+                  throw new NotFoundException(message);
+                } else {
+                  throw new BadRequestException('Unexpected error occurred');
+                }
+        }));
+        return await lastValueFrom(result);
+    }
+
+    @Get('payment/deeplink/:orderId')
+    @ApiOperation({ summary: 'Get payment deeplink for an order' })
+    @ApiResponse({ status: 200, description: 'Payment deeplink retrieved successfully.' })
+    async getPaymentDeeplink(@Param('orderId') orderId: string, @Request() req): Promise<string> {
+        const result = this.client.send('getPaymentDeeplink', { orderId, authId: req.jwt.authId });
+        return await lastValueFrom(result);
+    }
+
+    @Get('payment/status')
+    @ApiOperation({ summary: 'Get payment status from database' })
+    @ApiQuery({ name: 'transactionIdSCB', type: 'string' })
+    @ApiResponse({ status: 200, description: 'Get payment status successes', type: String })
+    async getPaymentStatus(@Query() transactionIdSCB: object): Promise<string> {
+        const result = this.client.send('getPaymentStatus', transactionIdSCB);
         return await lastValueFrom(result);
     }
 }

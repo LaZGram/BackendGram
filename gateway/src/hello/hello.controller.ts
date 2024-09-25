@@ -39,7 +39,7 @@ export class HelloController {
         }
         const token = await this.JwtService.signAsync( { authId: body.authId });
         let tokenDto = new TokenDto();
-        await this.client.send('authIdCreate', JSON.stringify({ authId: body.authId }));
+        await lastValueFrom(await this.client.send('authIdCreate', JSON.stringify({ authId: body.authId })));
         tokenDto.token = token;
         return tokenDto;
     }

@@ -16,11 +16,15 @@ export class OrderController {
   @MessagePattern('getShopOrderHistory')
   getShopOrderHistory(msg: object) {
     const authId = msg['authId'].toString();
-    return this.orderService.getOrderHistory(authId);
+    if (!msg['date']) {
+      return this.orderService.getOrderHistory(authId, new Date().toString());
+    }
+    const date = msg['date'].toString();
+    return this.orderService.getOrderHistory(authId, date);
   }
 
   @MessagePattern('updateShopOrderStatus')
   updateShopOrderStatus(msg: UpdateOrderStatusDto) {
-    return this.orderService.updateOrderStatus(msg);
+    return this.orderService.shopUpdateOrderStatus(msg);
   }
 }

@@ -25,6 +25,7 @@ model Admin {
   report Report[]
   order Order[]
   chat  Chat[]
+
   authorization   Authorization @relation(fields: [authId], references: [authId])
   authId          String           @unique
 }
