@@ -120,6 +120,21 @@ services:
       - ../../services/shop/src:/usr/app/src
     # entrypoint: ["npm", "run", "start:dev"]
 # -----------------------------------------------
+
+  micro-chat:
+    <<: *node-base
+    build:
+      context: ../../services/chat
+      dockerfile: ../../deploy/test/chat.Dockerfile
+    ports:
+      - '3001:3000'
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db-postgres:5432/postgres
+      SERVICE_NAME: micro-chat
+    volumes:
+      - ../../services/chat/src:/usr/app/src
+
+# -----------------------------------------------
   kafdrop:
     image: obsidiandynamics/kafdrop
     restart: "no"
