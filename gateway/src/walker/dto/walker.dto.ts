@@ -65,10 +65,10 @@ export class UpdateWalkerDto {
   @IsOptional()
   bankAccountNo?: string;
 
-  @ApiProperty({ description: 'Status of the walker', example: false, required: false })
+  @ApiProperty({ description: 'Status of the walker', example: 'Inactive', required: false })
   @IsBoolean()
   @IsOptional()
-  status?: boolean;
+  status?: string;
 }
 
 export class UpdateOrderStatusDto {
@@ -251,9 +251,9 @@ export class WalkerGetDto {
   @IsString()
   bankAccountNo: string;
 
-  @ApiProperty({ description: 'Status of the walker', example: true })
+  @ApiProperty({ description: 'Status of the walker', example: 'Inactive' })
   @IsBoolean()
-  status: boolean;
+  status: string;
 
   @ApiProperty({ description: 'Registration date of the walker', example: '2023-09-09T10:00:00Z' })
   @IsDateString()
