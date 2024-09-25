@@ -9,7 +9,7 @@ export class ReportService {
   constructor(private prisma: PrismaService, private appService: AppService) {}
 
   async create(createReportDto: CreateReportDto) {
-    const report = await this.prisma.report.findUnique({
+    const report = await this.prisma.report.findMany({
       where: {
         orderId: createReportDto.orderId
       }
