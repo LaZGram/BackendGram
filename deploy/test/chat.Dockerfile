@@ -13,12 +13,9 @@ RUN npm install
 # Step 5: Copy the rest of the application code to the working directory
 COPY . .
 
-# Step 6: Build the NestJS application
-RUN npm run build
-
-# Step 7: Expose the application port
 EXPOSE 3000
 
 # Step 8: Define the command to run the application
 RUN [ -d "./prisma" ] && echo "Prisma folder found. Running npx prisma generate..." && npx prisma generate || echo "Prisma folder not found. Skipping npx prisma generate."
+RUN npm run build
 CMD ["npm", "run", "start:prod"]
