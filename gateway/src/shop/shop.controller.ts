@@ -3,7 +3,7 @@ import { ClientKafka } from '@nestjs/microservices';
 import { ApiOperation, ApiProperty, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { catchError, lastValueFrom } from 'rxjs';
 import { CreateMenuRequestDto, CreateShopRequestDto, SearchShopRequestDto, CreateOptionRequestDto, EditOptionRequestDto, EditMenuRequestDto, CreateScheduleRequestDto, CreateSpecialOperatingHoursRequestDto } from 'src/dtos';
-import { CreateMenuResponseDto, CreateOptionResponseDto, CreateScheduleResponseDto, CreateShopResponseDto, CreateSpecialOperatingHoursResponseDto, DeleteMenuResponseDto, DeleteOptionResponseDto, EditMenuResponseDto, EditOptionResponseDto, GetMenuInfoResponseDto, GetMenuResponseDto, GetOptionInfoResponseDto, GetOptionResponseDto, GetOrderHistoryResponseDto, GetOrderResponseDto, GetScheduleResponseDto, GetShopInfoResponseDto, GetShopReviewResponseDto, GetSpecialOperatingHoursResponseDto, SearchShopResponseDto, ShopLoginResponseDto, UpdateOrderStatusResponseDto, UpdateShopInfoResponseDto, UpdateShopStatusResponseDto } from './dto/response.dto';
+import { CreateMenuResponseDto, CreateOptionResponseDto, CreateScheduleResponseDto, CreateShopResponseDto, CreateSpecialOperatingHoursResponseDto, DeleteMenuResponseDto, DeleteOptionResponseDto, EditMenuResponseDto, EditOptionResponseDto, GetMenuInfoResponseDto, GetMenuResponseDto, GetOptionInfoResponseDto, GetOptionResponseDto, GetOrderHistoryResponseDto, GetOrderResponseDto, GetScheduleResponseDto, GetShopInfoResponseDto, GetShopReviewResponseDto, GetSpecialOperatingHoursResponseDto, SearchShopResponseDto, ShopLoginResponseDto, UpdateMenuStatusResponseDto, UpdateOrderStatusResponseDto, UpdateShopInfoResponseDto, UpdateShopStatusResponseDto } from './dto/response.dto';
 import { UpdateOrderStatusRequestDto } from './dto/update-order-status-request.dto';
 import { UpdateShopInfoRequestDto } from './dto/update-shop-info-request.dto';
 import { UpdateShopStatusRequestDto } from './dto/update-shop-status-request.dto';
@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 import { ShopLoginRequestDto } from './dto/shop-login-request.dto';
 import e from 'express';
+import { UpdateMenuStatusRequestDto } from './dto/request.dto';
 
 @ApiTags('SHOP')
 @Controller('shop')
@@ -22,7 +23,7 @@ export class ShopController {
   @ApiOperation({ summary: 'Create new shop to database' })
   @ApiResponse({ status: 201, description: 'Create new shop successes', type: CreateShopResponseDto })
   async createShop(@Body() createShopRequest: CreateShopRequestDto, @Request() req): Promise<CreateShopResponseDto> {
-      const authId = `shop${uuidv4()}`;
+      const authId = `shop-${uuidv4()}`;
       const token = await this.JwtService.signAsync( { authId: authId });
       createShopRequest.authId = authId;
       const result = this.client.send('createShop', JSON.stringify(createShopRequest));
@@ -53,7 +54,7 @@ export class ShopController {
       return tokenDto;
   }
 
-  @Post('update-info')
+  @Patch('update-info')
   @ApiOperation({ summary: 'Update shop information in database' })
   @ApiResponse({ status: 201, description: 'Update shop information successes', type: UpdateShopInfoResponseDto })
   async updateShopInfo(@Body() updateShopInfoRequest: UpdateShopInfoRequestDto, @Request() req): Promise<string> {
@@ -92,13 +93,38 @@ export class ShopController {
       return value;
   }
 
-  @Post('edit-menu')
-  @ApiOperation({ summary: 'Edit menu in database. Send "optionId" with option that want to edit' })
+  @Patch('edit-menu')
+  @ApiOperation({ summary: 'Edit menu in database' })
   @ApiResponse({ status: 201, description: 'Edit menu successes', type: EditMenuResponseDto })
   async editMenu(@Body() editMenuRequest: EditMenuRequestDto): Promise<string> {
-      const result = await this.client.send('editMenu', JSON.stringify(editMenuRequest));
+      const result = await this.client.send('editMenu', JSON.stringify(editMenuRequest))
+      .pipe(
+        catchError(error => {
+          const { statusCode, message } = error;
+          if(statusCode === 401)
+            throw new BadRequestException(message);
+          else throw new BadRequestException(error);
+        }),
+      );
       const value = await lastValueFrom(result);
       return value;
+  }
+
+  @Patch('menu/update-status')
+  @ApiOperation({ summary: 'Update menu status to open or close'})
+  @ApiResponse({ status: 201, description: 'Update status successes', type: UpdateMenuStatusResponseDto })
+  async updateMenuStatus(@Body() updateMenuStatusRequest: UpdateMenuStatusRequestDto): Promise<string> {
+    const result = await this.client.send('updateMenuStatus', JSON.stringify(updateMenuStatusRequest))
+    .pipe(
+      catchError(error => {
+        const { statusCode, message } = error;
+        if(statusCode === 401)
+          throw new BadRequestException(message);
+        else throw new BadRequestException(error);
+      }),
+    );
+    const value = await lastValueFrom(result);
+    return value;
   }
 
   @Delete('delete-menu')
@@ -106,7 +132,15 @@ export class ShopController {
   @ApiQuery({ name: 'menuId', type: 'number' })
   @ApiResponse({ status: 201, description: 'Delete menu successes', type: DeleteMenuResponseDto })
   async deleteMenu(@Query() menuId: object): Promise<string> {
-    const result = await this.client.send('deleteMenu', JSON.stringify(menuId));
+    const result = await this.client.send('deleteMenu', JSON.stringify(menuId))
+    .pipe(
+      catchError(error => {
+        const { statusCode, message } = error;
+        if(statusCode === 401)
+          throw new BadRequestException(message);
+        else throw new BadRequestException(error);
+      }),
+    );
     const value = await lastValueFrom(result);
     return value;
   }
@@ -125,7 +159,15 @@ export class ShopController {
   @ApiQuery({ name: 'menuId', type: 'number' })
   @ApiResponse({ status: 200, description: 'Get menu information successes', type: GetMenuInfoResponseDto })
   async getMenus(@Query() menuId: object): Promise<string> {
-    const result = await this.client.send('getMenuInfo', JSON.stringify(menuId));
+    const result = await this.client.send('getMenuInfo', JSON.stringify(menuId))
+    .pipe(
+      catchError(error => {
+        const { statusCode, message } = error;
+        if(statusCode === 401)
+          throw new BadRequestException(message);
+        else throw new BadRequestException(error);
+      }),
+    );
     const value = await lastValueFrom(result);
     return value;
   }
@@ -139,7 +181,7 @@ export class ShopController {
       return value;
   }
 
-  @Post('menu/edit-option')
+  @Patch('menu/edit-option')
   @ApiOperation({ summary: 'Edit option in database' })
   @ApiResponse({ status: 201, description: 'Edit option successes', type: EditOptionResponseDto })
   async editOption(@Body() editOptionRequest: EditOptionRequestDto): Promise<string> {
@@ -254,7 +296,7 @@ export class ShopController {
     return value;
   }
 
-  @Post('order/update-status')
+  @Patch('order/update-status')
   @ApiOperation({ summary: 'Update order status' })
   @ApiResponse({ status: 201, description: 'Update order status successes', type: UpdateOrderStatusResponseDto })
   async updateOrderStatus(@Body() updateOrderStatus: UpdateOrderStatusRequestDto): Promise<string> {

@@ -65,10 +65,10 @@ export class UpdateWalkerDto {
   @IsOptional()
   bankAccountNo?: string;
 
-  @ApiProperty({ description: 'Status of the walker', example: false, required: false })
+  @ApiProperty({ description: 'Status of the walker', example: 'Inactive', required: false })
   @IsBoolean()
   @IsOptional()
-  status?: boolean;
+  status?: string;
 }
 
 export class UpdateOrderStatusDto {
@@ -84,9 +84,6 @@ export class ConfirmOrderDto {
 }
 
 export class PostReportDto {
-  @ApiProperty({ description: 'Report date in ISO format', example: '2023-09-09T10:00:00Z' })
-  @IsDateString()
-  reportDate: string;
 
   @ApiProperty({ description: 'Title of the report', example: 'Order issue' })
   @IsString()
@@ -107,10 +104,6 @@ export class PostReportDto {
   @ApiProperty({ description: 'Walker ID associated with the report', example: '1' })
   @IsNumber()
   walkerId: number;
-
-  @ApiProperty({ description: 'Order ID associated with the report', example: '6' })
-  @IsNumber()
-  orderId: number;
 
   @ApiProperty({ description: 'Admin ID associated with the report', example: '1' })
   @IsNumber()
@@ -180,33 +173,9 @@ class OrderItemDto {
 }
 
 export class GetOrderListDto {
-  @ApiProperty({ description: 'Order ID', example: '12345' })
-  @IsNumber()
-  orderId: number;
-
-  @ApiProperty({ description: 'Amount of items in the order', example: 3 })
-  @IsNumber()
-  amount: number;
-
-  @ApiProperty({ description: 'Total price of the order', example: 150.00 })
-  @IsNumber()
-  totalPrice: number;
-
-  @ApiProperty({ description: 'Shipping fee', example: 20.00 })
-  @IsNumber()
-  shippingFee: number;
-
-  @ApiProperty({ description: 'Order status', example: 'Delivered' })
+  @ApiProperty({ description: 'Order status', example: '"lookingForWalker", "inProgress", "completed", "cancelled","waitingAdmin"' })
   @IsString()
   orderStatus: string;
-
-  @ApiProperty({ description: 'Address details' })
-  @IsObject()
-  address: AddressDto;
-
-  @ApiProperty({ description: 'Canteen details' })
-  @IsObject()
-  canteen: CanteenDto;
 }
 
 export class GetOrderDetailDto {
@@ -282,9 +251,9 @@ export class WalkerGetDto {
   @IsString()
   bankAccountNo: string;
 
-  @ApiProperty({ description: 'Status of the walker', example: true })
+  @ApiProperty({ description: 'Status of the walker', example: 'Inactive' })
   @IsBoolean()
-  status: boolean;
+  status: string;
 
   @ApiProperty({ description: 'Registration date of the walker', example: '2023-09-09T10:00:00Z' })
   @IsDateString()

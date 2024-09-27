@@ -1,14 +1,51 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
+import { AdminLoginDto, CreateAdminDto } from './dto/admin.dto';
+import { RpcException } from '@nestjs/microservices';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AppService {
   constructor(private prisma: PrismaService) {}
 
+  async createAdmin(msg: CreateAdminDto){
+    await this.prisma.authorization.create({
+      data: {
+        authId: msg.authId,
+        tokenId: msg.authId
+      }
+    })
+    return this.prisma.admin.create({
+      data: {
+        authorization: {connect: {authId : msg.authId}},
+        registerAt: new Date(),
+        username: msg.username,
+        email: msg.email,
+        password: msg.password,
+        phoneNumber: msg.phoneNumber,
+      }
+    })
+  }
+
+  async loginAdmin(msg: AdminLoginDto){
+    const admin = await this.prisma.admin.findUnique({
+      where: {
+        username: msg.username
+      }
+    })
+    if(admin){
+      const isPasswordMatch = (msg.password === admin.password);
+      if(isPasswordMatch){
+        return JSON.stringify({ authId: admin.authId });
+      }
+    }
+    throw new RpcException({ statusCode: 401, message: 'Invalid username or password' });
+  }
+
   async walkerQueue(): Promise<any> {
     return this.prisma.walker.findMany({
       where: {
-        status: false,
+        status: 'waitingVerify',
       },
       select: {
         walkerId: true,
@@ -24,13 +61,41 @@ export class AppService {
     });
   }
 
+  async deleteWalker(msg: any): Promise<any> {
+    const walker = await this.prisma.walker.findUnique({
+      where: {
+        walkerId: msg.walkerId,
+      },
+      select: {
+        walkerId: true,
+        username: true,
+        email: true,
+      },
+    });
+
+    if (!walker) {
+      throw new Error('Walker not found');
+    }
+
+    return this.prisma.walker.delete({
+      where: {
+        walkerId: msg.walkerId,
+      },
+      select: {
+        walkerId: true,
+        username: true,
+        email: true,
+      },
+    });
+  }
+
   async verifyWalker(msg: any): Promise<any> {
     return this.prisma.walker.update({
       where: {
         walkerId: msg.walkerId,
       },
       data: {
-        status: true,
+        status: 'Active',
         verifyAt: new Date(),
       },
       select: {
@@ -78,7 +143,7 @@ export class AppService {
   async showWalker(): Promise<any> {
     return this.prisma.walker.findMany({
       where: {
-        status: true,
+        status: 'Active',
       },
       select: {
         walkerId: true,
@@ -142,7 +207,7 @@ export class AppService {
       },
     });
 
-    if (!order || order.orderStatus !== "waitingAdmin") {
+    if (!order || order.orderStatus !== 'waitingAdmin') {
       throw new Error('Order not found or status is not "waiting admin".');
     }
 

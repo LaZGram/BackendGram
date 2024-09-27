@@ -1,4 +1,4 @@
-import { Controller, Get, Inject, Post, Body, Param, Request, Query , NotFoundException } from '@nestjs/common';
+import { Controller, Get, Inject, Post, Body, Param, Request, Query , NotFoundException, Put } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
@@ -30,13 +30,23 @@ export class WalkerController {
   @ApiOperation({ summary: 'Get walker profile' })
   @ApiResponse({ status: 200, description: 'Walker profile retrieved successfully.', type: WalkerGetDto })
   @ApiResponse({ status: 404, description: 'Walker not found.' })
-  async walkerGet(@Body() body: any): Promise<string> {
-    const result = await this.client.send('walkerGet', { ...body});
+  async walkerGet(@Body() body: any, @Request() req): Promise<string> {
+    const result = await this.client.send('walkerGet', { ...body, authId: req.jwt.authId});
     const value = await lastValueFrom(result);
     return value;
   }
 
-  @Post('profile/update')
+  @Get('history')
+  @ApiOperation({ summary: 'Get walker order history' })
+  @ApiResponse({ status: 200, description: 'Order history retrieved successfully.' })
+  @ApiResponse({ status: 404, description: 'Order history not found.' })
+  async orderHistory(@Body() body: any, @Request() req): Promise<string> {
+    const result = await this.client.send('orderHistory', { ...body, authId: req.jwt.authId });
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Put('profile/update')
   @ApiOperation({ summary: 'Update walker profile' })
   @ApiResponse({ status: 200, description: 'Walker profile updated successfully.', type: UpdateWalkerDto })
   @ApiResponse({ status: 400, description: 'Invalid update data.' })
@@ -47,8 +57,8 @@ export class WalkerController {
 
   @Get('order-list')
   @ApiOperation({ summary: 'Get walker order list' })
-  @ApiResponse({ status: 200, description: 'Order list retrieved successfully.', type: [GetOrderListDto] })
-  async getOrderList(@Param() params: any): Promise<any> {
+  @ApiResponse({ status: 200, description: 'Order list retrieved successfully.'})
+  async getOrderList(@Param() params: GetOrderListDto): Promise<any> {
     const result = await this.client.send('getOrderList', {...params});
     return await lastValueFrom(result);
   }
@@ -67,7 +77,7 @@ export class WalkerController {
     return orderDetail;
   }
 
-  @Post('order-list/:orderId/confirm-order')
+  @Put('order-list/:orderId/confirm-order')
   @ApiOperation({ summary: 'Confirm an order by orderId' })
   @ApiResponse({ status: 200, description: 'Order confirmed successfully.' })
   @ApiResponse({ status: 400, description: 'Invalid order confirmation data.' })
@@ -99,7 +109,7 @@ export class WalkerController {
     return (await lastValueFrom(result));
   }
 
-  @Post('order-list/:orderId/status')
+  @Put('order-list/:orderId/status')
   @ApiOperation({ summary: 'Update the status of an order by orderId' })
   @ApiResponse({ status: 200, description: 'Order status updated successfully.' })
   @ApiResponse({ status: 400, description: 'Invalid order status data.' })
@@ -114,7 +124,7 @@ export class WalkerController {
     return await lastValueFrom(result);
   }
 
-  @Post('order/accept')
+  @Put('order/accept')
   @ApiOperation({ summary: 'Walker accept an order' })
   @ApiQuery({ name: 'orderId', type: Number })
   @ApiResponse({ status: 200, description: 'Order accepted successfully.', type: AcceptOrderResponseDto })

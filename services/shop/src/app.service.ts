@@ -44,6 +44,7 @@ export class AppService {
     return this.prisma.shop.create({
       data: {
         authorization: {connect: {authId : msg.authId}},
+        registerAt: new Date(),
         username: msg.username,
         password: hashPassword,
         shopName: msg.shopName,

@@ -50,4 +50,9 @@ export class AppController {
   updateOrderStatus(msg: any): any {
     return this.appService.updateOrderStatus(msg);
   }
+
+  @MessagePattern('orderHistory')
+  orderHistory(msg: any): any {
+    return this.appService.orderHistory(msg);
+  }
 }

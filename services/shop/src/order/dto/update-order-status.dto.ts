@@ -1,3 +1,3 @@
 export class UpdateOrderStatusDto{
-    orderItemId: number;
+    orderId: number;
 }

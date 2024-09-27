@@ -1,0 +1,320 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//  --------------------------------------------------------------------------
+
+model Admin {
+  adminId     Int    @id @default(autoincrement())
+  registerAt  DateTime
+  username    String  @unique
+  email       String  @unique
+  password    String
+  phoneNumber String
+  report Report[]
+  order Order[]
+  chat  Chat[]
+  authorization   Authorization @relation(fields: [authId], references: [authId])
+  authId          String           @unique
+}
+
+model Authorization {
+  authId      String    @id
+  tokenId     String
+
+  requester Requester?
+  walker    Walker?
+  shop     Shop?
+  admin    Admin?
+}
+
+model Walker {
+  walkerId        Int    @id @default(autoincrement())
+  registerAt      DateTime
+  verifyAt        DateTime?
+  status          String
+  username        String
+  email           String
+  phoneNumber     String
+  profilePicture  String
+  bankAccountName String
+  bankAccountNo   String
+  report Report[]
+  auth   Authorization @relation(fields: [authId], references: [authId])
+  authId          String           @unique
+  order Order[]
+  chat  Chat[]
+}
+
+model Requester {
+  requesterId    Int    @id @default(autoincrement())
+  createAt       DateTime
+  username       String
+  email          String
+  firstName      String
+  lastName       String
+  phoneNumber    String
+  profilePicture String
+  report Report[]
+  auth   Authorization @relation(fields: [authId], references: [authId])
+  authId         String    @unique
+  address Address[]
+  defaultAddress Int?
+  order Order[]
+  review  Review[]
+  debitCard    DebitCard[]
+  chat  Chat[]
+}
+
+model DebitCard {
+  debitCardId Int @id @default(autoincrement())
+  cardNumber  String
+  expiryDate  String
+  cvv String
+
+  requester Requester @relation(fields: [requesterId], references: [requesterId])
+  requesterId Int
+}
+
+model Address {
+  addressId Int    @id @default(autoincrement())
+  name      String
+  detail      String?
+  note        String?
+  latitude  Float
+  longitude Float
+
+  requester Requester @relation(fields: [requesterId], references: [requesterId])
+  requesterId Int
+  order Order[]
+}
+
+model Photo {
+  photoId     Int      @id @default(autoincrement())
+  photoPath   String
+  uploadedAt  DateTime @default(now())
+  order       Order? 
+}
+
+model Order {
+  orderId       Int      @id @default(autoincrement())
+  orderDate     DateTime
+  orderStatus   String
+  totalPrice    Float
+  shippingFee   Float
+  amount        Float
+  confirmedAt   DateTime?
+  report Report[]
+  admin Admin @relation(fields: [adminId], references: [adminId])
+  adminId     Int
+  address Address @relation(fields: [addressId], references: [addressId])
+  addressId     Int
+  requester Requester @relation(fields: [requesterId], references: [requesterId])
+  requesterId   Int
+  walker  Walker  @relation(fields: [walkerId], references: [walkerId])
+  walkerId      Int
+  canteen Canteen @relation(fields: [canteenId], references: [canteenId])
+  canteenId     Int
+  transaction Transaction @relation(fields: [transactionId], references: [transactionId])
+  transactionId Int @unique
+  Photo        Photo?   @relation(fields: [photoId], references: [photoId])
+  photoId      Int? @unique
+  orderItem OrderItem[]
+  chat  Chat[]
+}
+
+
+model Transaction{
+  transactionId Int @id @default(autoincrement())
+  type String
+  date  DateTime
+  status  String
+  amount  Float
+
+  order Order?
+  transactionSCB TransactionSCB[]
+}
+
+model TransactionSCB{
+  transactionSCBId Int @id @default(autoincrement())
+  transactionId_SCB String
+
+  transaction Transaction @relation(fields: [transactionId], references: [transactionId])
+  transactionId Int
+}
+
+model Canteen {
+  canteenId Int    @id @default(autoincrement())
+  name      String
+  latitude  Float
+  longitude Float
+
+  order Order[]
+  shop  Shop[]
+}
+
+model Shop {
+  shopId    Int    @id @default(autoincrement())
+  registerAt  DateTime
+  username      String @unique
+  password  String
+  shopName  String
+  profilePicture  String
+  tel   String
+  shopNumber  String
+  status    Boolean
+  
+  review  Review[]
+  menu  Menu[]
+  canteen Canteen @relation(fields: [canteenId],  references: [canteenId])
+  canteenId Int
+  weeklySchedule  WeeklySchedule[]
+  specialOperatingHours  SpecialOperatingHours[]
+  authorization   Authorization @relation(fields: [authId], references: [authId])
+  authId          String           @unique
+}
+
+model WeeklySchedule{
+  scheduleId  Int @id @default(autoincrement())
+  dayOfWeek String
+  open String
+  close String
+
+  shop  Shop  @relation(fields: [shopId], references: [shopId])
+  shopId  Int
+}
+
+model SpecialOperatingHours{
+  specialOperatingHoursId  Int @id @default(autoincrement())
+  date DateTime
+  open String
+  close String
+
+  shop  Shop  @relation(fields: [shopId], references: [shopId])
+  shopId  Int
+}
+
+model Review{
+  reviewId  Int @id  @default(autoincrement())
+  rating  Float
+  comment String
+
+  shop  Shop  @relation(fields: [shopId], references: [shopId])
+  shopId  Int
+  requester Requester @relation(fields: [requesterId], references: [requesterId])
+  requesterId Int
+}
+
+model Menu {
+  menuId      Int    @id @default(autoincrement())
+  name        String
+  price       Float
+  picture     String
+  description String
+  status      Boolean
+
+  shop  Shop  @relation(fields: [shopId], references: [shopId])
+  shopId  Int
+  option  Option[]
+  orderItem OrderItem[]
+}
+
+model Option{
+  optionId Int @id @default(autoincrement())
+  name String
+  mustChoose Boolean
+  maxChoose Int
+  minChoose Int
+
+  menu  Menu  @relation(fields: [menuId], references: [menuId])
+  menuId  Int
+  optionItem OptionItem[]
+}
+
+model OptionItem{
+  optionItemId Int @id @default(autoincrement())
+  name String
+  price Float
+
+  option Option @relation(fields: [optionId], references: [optionId])
+  optionId Int
+  orderItemExtra  OrderItemExtra[]
+}
+
+model OrderItem {
+  orderItemId         Int    @id @default(autoincrement())
+  quantity            Int
+  totalPrice          Float
+  specialInstructions String
+  shopId              Int
+  orderItemStatus     String
+  orderItemDate       DateTime
+  completedDate       DateTime?
+
+  order Order @relation(fields: [orderId], references: [orderId])
+  orderId             Int
+  orderItemExtra  OrderItemExtra[]
+  menu  Menu  @relation(fields: [menuId], references: [menuId])
+  menuId  Int
+}
+
+model OrderItemExtra{
+  OrderItemExtraId Int @id @default(autoincrement())
+  selected Boolean
+
+  orderItem OrderItem @relation(fields: [orderItemId], references: [orderItemId])
+  orderItemId Int
+  optionItem OptionItem @relation(fields: [optionItemId], references: [optionItemId])
+  optionItemId Int
+}
+
+model Report{
+  reportId Int @id @default(autoincrement())
+  reportDate DateTime
+  title String
+  description String
+  status String
+  requester Requester @relation(fields: [requesterId], references: [requesterId])
+  requesterId Int
+  walker Walker @relation(fields: [walkerId], references: [walkerId])
+  walkerId Int
+  order Order @relation(fields: [orderId], references: [orderId])
+  orderId Int
+  admin Admin @relation(fields: [adminId], references: [adminId])
+  adminId Int
+  reportBy String
+}
+
+model Chat {
+  id            Int       @id @default(autoincrement())
+  chatId        String    // Unique identifier for each chat room (e.g., 'order-1234-0')
+  orderId       Int?
+  order         Order?     @relation(fields: [orderId], references: [orderId])
+  
+  walkerId      Int?      // Optional walkerId (nullable if the sender is not a walker)
+  walker        Walker?   @relation(fields: [walkerId], references: [walkerId])
+
+  adminId       Int?      // Optional adminId (nullable if the sender is not an admin)
+  admin         Admin?    @relation(fields: [adminId], references: [adminId])
+
+  requesterId   Int?      // Optional requesterId (nullable if the sender is not a requester)
+  requester     Requester? @relation(fields: [requesterId], references: [requesterId])
+
+  message       String    // The actual chat message
+  senderRole    String    // The role of the sender (e.g., 'customer', 'driver', 'admin')
+  timestamp     DateTime  @default(now())  // Timestamp of when the message was sent
+
+  @@index([chatId])   // Index for optimizing queries by chatId
+}

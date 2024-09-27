@@ -9,9 +9,10 @@ export class ReportService {
   constructor(private prisma: PrismaService, private appService: AppService) {}
 
   async create(createReportDto: CreateReportDto) {
-    const report = await this.prisma.report.findUnique({
+    const report = await this.prisma.report.findMany({
       where: {
-        orderId: createReportDto.orderId
+        orderId: createReportDto.orderId,
+        reportBy: 'requester'
       }
     });
     const order = await this.prisma.order.findUnique({
@@ -19,7 +20,7 @@ export class ReportService {
         orderId: createReportDto.orderId
       }
     });
-    if (report) {
+    if (report.length > 0) {
       throw new RpcException({ statusCode: 400, message: 'Report already exists' });
     }
     else if (!order) {

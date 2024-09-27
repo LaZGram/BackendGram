@@ -1,15 +1,54 @@
-import { Controller, Get, Post, Body, Param, Inject, Request, SetMetadata, Query  } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Inject, Request, SetMetadata, Query, Delete, BadRequestException  } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
-import { lastValueFrom } from 'rxjs';
+import { catchError, lastValueFrom } from 'rxjs';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { VerifyWalkerDto , PostApprovalDto} from './dto/admin.dto';
-import { CanteenResponse, FilterOrderResponse, FilterReportResponse, GetOrderInfoResponse, GetReportInfoResponse, GetReportResponse, GetShopInCanteenResponse, GetShopInfoResponse, GetShopMenuResponse, GetShopOrderResponse, GetToDayOrderResponse, SearchOrderResponse, SearchReportResponse } from './dto/response.dto';
+import { AdminLoginResponseDto, CanteenResponse, CreateAdminResponseDto, FilterOrderResponse, FilterReportResponse, GetOrderInfoResponse, GetReportInfoResponse, GetReportResponse, GetShopInCanteenResponse, GetShopInfoResponse, GetShopMenuResponse, GetShopOrderResponse, GetToDayOrderResponse, SearchOrderResponse, SearchReportResponse } from './dto/response.dto';
+import { v4 as uuidv4 } from 'uuid';
+import { JwtService } from '@nestjs/jwt';
+import { AdminLoginRequestDto, CreateAdminRequestDto } from './dto/request.dto';
 
 @ApiTags('admin')
 @Controller('admin')
 @SetMetadata('isPublic', true)
 export class AdminController {
-  constructor(@Inject('KAFKA') private client: ClientKafka) {}
+  constructor(@Inject('KAFKA') private client: ClientKafka, private JwtService: JwtService) {}
+
+  @SetMetadata('isPublic', true)
+  @Post('create-admin')
+  @ApiOperation({ summary: 'Create new admin to database' })
+  @ApiResponse({ status: 201, description: 'Create new admin successes', type: CreateAdminResponseDto })
+  async createAdmin(@Body() createAdminRequest: CreateAdminRequestDto, @Request() req): Promise<CreateAdminResponseDto> {
+      const authId = `admin-${uuidv4()}`;
+      const token = await this.JwtService.signAsync( { authId: authId });
+      createAdminRequest.authId = authId;
+      const result = this.client.send('createAdmin', JSON.stringify(createAdminRequest));
+      await lastValueFrom(result);
+      const tokenDto = new CreateAdminResponseDto();
+      tokenDto.token = token;
+      return tokenDto;
+  }
+
+  @SetMetadata('isPublic', true)
+  @Post('login')
+  @ApiOperation({ summary: 'Login to admin' })
+  @ApiResponse({ status: 201, description: 'Login successes', type: AdminLoginResponseDto })
+  async login(@Body() adminLoginRequest: AdminLoginRequestDto): Promise<AdminLoginResponseDto> {
+      const result = this.client.send('adminLogin', JSON.stringify(adminLoginRequest))
+      .pipe(
+        catchError(error => {
+          const { statusCode, message } = error;
+          if(statusCode === 401)
+            throw new BadRequestException(message);
+          else throw new BadRequestException(error);
+        }),
+      );
+      const value = await lastValueFrom(result);
+      const token = await this.JwtService.signAsync( { authId: value.authId });
+      const tokenDto = new CreateAdminResponseDto();
+      tokenDto.token = token;
+      return tokenDto;
+  }
 
   @Get()
   @ApiOperation({ summary: 'Get walker information' })
@@ -19,7 +58,7 @@ export class AdminController {
   }
 
   @Get('verify')
-  @ApiOperation({ summary: 'Show list of walkers with status false' })
+  @ApiOperation({ summary: 'Show list of walkers with status watingVerify' })
   @ApiResponse({ status: 200, description: 'Returns list of walkers pending approval.' })
   async walkerQueue(): Promise<string> {
     const result = await this.client.send('walkerQueue', {});
@@ -36,6 +75,16 @@ export class AdminController {
     return value;
   }
 
+  @Delete('verify')
+  @ApiOperation({ summary: 'Delete a walker by ID' })
+  @ApiResponse({ status: 200, description: 'Walker deleted successfully.' })
+  @ApiResponse({ status: 404, description: 'Walker not found.' })
+  async deleteWalker(@Body() delWalkerDto: VerifyWalkerDto): Promise<any> {
+    const result = this.client.send('deleteWalker', { ...delWalkerDto });
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
   @Get('requester')
   @ApiOperation({ summary: 'Show list of all requesters' })
   @ApiResponse({ status: 200, description: 'Returns list of requesters.' })
@@ -45,8 +94,8 @@ export class AdminController {
   }
 
   @Get('walker')
-  @ApiOperation({ summary: 'Show list of walkers with status true' })
-  @ApiResponse({ status: 200, description: 'Returns list of verified walkers.' })
+  @ApiOperation({ summary: 'Show list of walkers with status Active' })
+  @ApiResponse({ status: 200, description: 'Returns list of Active walkers.' })
   async showWalker(): Promise<any> {
     const result = this.client.send('showWalker', {});
     return await lastValueFrom(result);

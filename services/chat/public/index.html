@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order-Based Chat</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Order-Based Chat</h1>
+    
+    <!-- User Info -->
+    <input id="userId" type="text" placeholder="Your ID">
+    <select id="role">
+        <option value="requester">Requester</option>
+        <option value="walker">Walker</option>
+        <option value="admin">Admin</option>
+    </select>
+    
+    <!-- Order ID for Chat -->
+    <input id="orderId" type="text" placeholder="Order ID">
+    
+    <!-- Select Target Role -->
+    <select id="targetRole">
+        <option value="walker">Walker</option>
+        <option value="admin">Admin</option>
+        <option value="requester">Requester</option>
+    </select>
+    
+    <button onclick="joinOrderChat()">Join Order Chat</button><br><br>
+    
+    <!-- Predefined Issue -->
+    <select id="issue">
+        <option value="This order is incomplete.">This order is incomplete.</option>
+        <option value="This order my bread was missing.">This order my bread was missing.</option>
+    </select>
+    <button onclick="reportIssue()">Report Issue</button><br><br>
+
+    <!-- Messaging -->
+    <input id="message" type="text" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+    <ul id="messages"></ul>
+    
+    <script>
+        const socket = io('https://ku-man-chat.vimforlanie.com/');
+
+        // Join the chat room and retrieve old messages
+        function joinOrderChat() {
+            const userId = document.getElementById('userId').value;
+            const role = document.getElementById('role').value;
+            const orderId = document.getElementById('orderId').value;
+            const targetRole = document.getElementById('targetRole').value;
+            
+            socket.emit('joinOrderChat', { userId, role, targetRole, orderId });
+        }
+
+        // Send a predefined issue as a message
+        function reportIssue() {
+            const issue = document.getElementById('issue').value;
+            const orderId = document.getElementById('orderId').value;
+            const userId = document.getElementById('userId').value;
+            const role = document.getElementById('role').value;
+            const targetRole = document.getElementById('targetRole').value;
+            
+            sendOrderMessage(issue, orderId, userId, role, targetRole);
+        }
+
+        // Send a new chat message
+        function sendMessage() {
+            const message = document.getElementById('message').value;
+            const orderId = document.getElementById('orderId').value;
+            const userId = document.getElementById('userId').value;
+            const role = document.getElementById('role').value;
+            const targetRole = document.getElementById('targetRole').value;
+            
+            sendOrderMessage(message, orderId, userId, role, targetRole);
+        }
+
+        // Send the chat message to the server
+        function sendOrderMessage(message, orderId, fromUser, role, targetRole) {
+            socket.emit('orderMessage', { orderId, message, fromUser, role, targetRole });
+        }
+
+        // Display real-time chat messages
+        socket.on('message', function(data) {
+            const { fromUser, role, message } = data;
+            const li = document.createElement('li');
+            li.textContent = `[${role}] ${fromUser}: ${message}`;
+            document.getElementById('messages').appendChild(li);
+        });
+
+        // Display system messages (e.g., user joined)
+        socket.on('systemMessage', function(msg) {
+            const li = document.createElement('li');
+            li.style.fontStyle = 'italic';
+            li.textContent = msg;
+            document.getElementById('messages').appendChild(li);
+        });
+
+        // Display old messages when joining the chat
+        socket.on('oldMessages', function(oldMessages) {
+            oldMessages.forEach(function(msg) {
+                const li = document.createElement('li');
+                li.textContent = `[${msg.senderRole}] ${msg.senderId}: ${msg.message}`;
+                document.getElementById('messages').appendChild(li);
+            });
+        });
+    </script>
+</body>
+</html>
