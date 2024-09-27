@@ -24,7 +24,7 @@ export class PaymentController {
       return {url:transactionSCB[0]['deeplinkUrl'], transactionId: transactionSCB[0]['transactionId']};
     }
     let deepLink_res = await this.paymentService.createDeeplink(transaction.amount);
-    await this.paymentService.createTransactionSCB(transaction.transactionId, deepLink_res['data']['transactionId']);
+    await this.paymentService.createTransactionSCB(transaction.transactionId, deepLink_res['data']['transactionId'], deepLink_res['data']['deeplinkUrl']);
     return {url:deepLink_res['data']['deeplinkUrl'], transactionId: deepLink_res['data']['transactionId']};
   }
 

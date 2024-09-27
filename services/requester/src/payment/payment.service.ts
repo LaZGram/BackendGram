@@ -121,12 +121,13 @@ export class PaymentService {
         }
     }
 
-    async createTransactionSCB(transactionId: number, transactionId_SCB: string) {
+    async createTransactionSCB(transactionId: number, transactionId_SCB: string, deepLinkUrl: string) {
         try{
             return await this.prismaService.transactionSCB.create({
                 data: {
                     transactionId: transactionId,
-                    transactionId_SCB: transactionId_SCB
+                    transactionId_SCB: transactionId_SCB,
+                    deeplinkUrl: deepLinkUrl
                 }
             })
         }
@@ -153,7 +154,7 @@ export class PaymentService {
         let status = 0;
         for (let i = 0; i < transactionIdSCB.length; i++) {
             const token = await this.getToken()
-            const response = await lastValueFrom(await this.httpService.get(`https://api-sandbox.partners.scb/partners/sandbox/v2/transactions/${transactionIdSCB}`,
+            const response: any = await lastValueFrom(await this.httpService.get(`https://api-sandbox.partners.scb/partners/sandbox/v2/transactions/${transactionIdSCB}`,
             {
                 headers: { 
                     'authorization': `Bearer ${token.accessToken}`, 
