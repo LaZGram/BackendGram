@@ -105,6 +105,7 @@ export class PaymentService {
                 }
             }
         ));
+        console.log(response);
         return response.data
     }
 
