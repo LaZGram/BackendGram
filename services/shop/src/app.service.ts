@@ -84,7 +84,6 @@ export class AppService {
         shopNumber: msg.shopNumber
       },
       select: {
-        authId: true,
         shopId: true,
         username: true,
         shopName: true,
@@ -137,6 +136,9 @@ export class AppService {
   }
 
   searchShop(msg: SearchShopDto): any{
+    if(!msg.shopname){
+      msg.shopname = '';
+    }
     return this.prisma.shop.findMany({
       where: {
         shopName: {

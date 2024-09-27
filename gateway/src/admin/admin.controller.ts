@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Inject, Request, SetMetadata, Query, Delete, BadRequestException  } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Inject, Request, SetMetadata, Query, Delete, BadRequestException, NotFoundException  } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { catchError, lastValueFrom } from 'rxjs';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
@@ -138,7 +138,16 @@ export class AdminController {
   @ApiQuery({ name: 'orderId', type: 'number' })
   @ApiResponse({ status: 200, description: 'Returns order info', type: GetOrderInfoResponse })
   async getOrderInfo(@Query() orderId: object): Promise<string> {
-    const result = await this.client.send('getOrderInfo', orderId);
+    const result = await this.client.send('getOrderInfo', orderId)
+    .pipe(
+      catchError(error => {
+        const { statusCode, message } = error;
+        if (statusCode === 404) {
+          throw new NotFoundException(message);
+        }
+        else throw new BadRequestException(error);
+      }),
+    );
     const value = await lastValueFrom(result);
     return value;
   } 

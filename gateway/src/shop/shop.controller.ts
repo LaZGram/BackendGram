@@ -171,6 +171,16 @@ export class ShopController {
     const value = await lastValueFrom(result);
     return value;
   }
+
+  @Get('shop-menu')
+  @ApiOperation({ summary: 'Get list of menu of shop from database' })
+  @ApiQuery({ name: 'shopId', type: 'number' })
+  @ApiResponse({ status: 200, description: 'Get shop menu successes', type: GetMenuResponseDto, isArray: true })
+  async getShopMenu(@Query() shopId: object): Promise<string> {
+    const result = await this.client.send('getShopMenu', JSON.stringify(shopId));
+    const value = await lastValueFrom(result);
+    return value;
+  }
   
   @Post('menu/create-option')
   @ApiOperation({ summary: 'Create new option to database' })

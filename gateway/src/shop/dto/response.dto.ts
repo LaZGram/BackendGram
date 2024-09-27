@@ -19,8 +19,6 @@ export class ShopLoginResponseDto extends CreateShopResponseDto {}
 
 export class UpdateShopInfoResponseDto {
   @ApiProperty()
-  authId: string
-  @ApiProperty()
   shopId: number
   @ApiProperty()
   username: string
@@ -169,10 +167,19 @@ export class GetSpecialOperatingHoursResponseDto extends CreateSpecialOperatingH
 
 export class OrderItemExtra {
   @ApiProperty()
+  orderItemExtraId: number
+  @ApiProperty()
   optionItem: OptionItem
 }
 
-export class GetOrderResponseDto {
+export class Menu {
+  @ApiProperty()
+  name: string
+  @ApiProperty()
+  price: number
+}
+
+export class OrderItem {
   @ApiProperty()
   orderItemId: number
   @ApiProperty()
@@ -181,20 +188,21 @@ export class GetOrderResponseDto {
   totalPrice: number
   @ApiProperty()
   specialInstructions: string
-  @ApiProperty()
-  shopId: number
-  @ApiProperty({description: '"lookingForWalker", "inProgress", "completed", "cancelled"'})
-  orderItemStatus: string
-  @ApiProperty()
-  orderItemDate: Date
-  @ApiProperty()
-  completedDate: Date
-  @ApiProperty()
-  menuId: number
-  @ApiProperty()
-  orderId: number
+  @ApiProperty({type: [Menu]})
+  menu: Menu[]
   @ApiProperty({type: [OrderItemExtra]})
   orderItemExtras: OrderItemExtra[]
+}
+
+export class GetOrderResponseDto {
+  @ApiProperty()
+  orderId: number
+  @ApiProperty()
+  orderDate: Date
+  @ApiProperty({description: '"lookingForWalker", "inProgress", "completed", "cancelled"'})
+  orderStatus: string
+  @ApiProperty({type: [OrderItem]})
+  orderItem: OrderItem[]
 }
 
 export class GetOrderHistoryResponseDto extends GetOrderResponseDto {}
