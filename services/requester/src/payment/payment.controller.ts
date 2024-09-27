@@ -21,11 +21,11 @@ export class PaymentController {
     const transactionSCB = await this.paymentService.getTransactionSCB(transaction.transactionId);
     if (transactionSCB.length > 0){
       console.log({url:transactionSCB[0]['deeplinkUrl'], transactionId: transactionSCB[0]['transactionId']});
-      return {url:transactionSCB[0]['deeplinkUrl'], transactionId: transactionSCB[0]['transactionId']};
+      return {url:transactionSCB[0]['deeplinkUrl'], transactionIdSCB: transactionSCB[0]['transactionId_SCB']};
     }
     let deepLink_res = await this.paymentService.createDeeplink(transaction.amount);
     await this.paymentService.createTransactionSCB(transaction.transactionId, deepLink_res['data']['transactionId'], deepLink_res['data']['deeplinkUrl']);
-    return {url:deepLink_res['data']['deeplinkUrl'], transactionId: deepLink_res['data']['transactionId']};
+    return {url:deepLink_res['data']['deeplinkUrl'], transactionIdSCB: deepLink_res['data']['transactionId']};
   }
 
   @MessagePattern('getPaymentStatus')
