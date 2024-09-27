@@ -146,15 +146,20 @@ export class OrderService {
       });
     }
     catch(e) {
-      throw  new RpcException({ statusCode: 404, message: "Order not found" });
+      throw  new RpcException({ statusCode: 404, message: "Order not found"+e });
     }
   }
 
-  async getOrder(authId: string) {
-    return this.prisma.order.findUnique({
-      where: {
-        orderId: await this.appService.getRequesterId(authId)
-      }
-    });
+  async getOrder(orderId: number) {
+    try {
+      return this.prisma.order.findUnique({
+        where: {
+          orderId: orderId
+        }
+      });
+    }
+    catch(e) {
+      throw  new RpcException({ statusCode: 404, message: "Order not found" });
+    }
   }
 }

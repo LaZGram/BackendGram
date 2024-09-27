@@ -16,10 +16,11 @@ export class PaymentController {
 
   @MessagePattern('getPaymentDeeplink')
   async getPaymentDeeplink(@Payload() msg: any) {
-    let order: Order = await this.orderService.getOrder(msg.authId);
+    let order: Order = await this.orderService.getOrder(parseInt(msg.orderId));
     let transaction: Transaction = await this.paymentService.getTransaction(order.transactionId);
     const transactionSCB = await this.paymentService.getTransactionSCB(transaction.transactionId);
-    if (transactionSCB){
+    if (transactionSCB.length > 0){
+      console.log({url:transactionSCB[0]['deeplinkUrl'], transactionId: transactionSCB[0]['transactionId']});
       return {url:transactionSCB[0]['deeplinkUrl'], transactionId: transactionSCB[0]['transactionId']};
     }
     let deepLink_res = await this.paymentService.createDeeplink(transaction.amount);
