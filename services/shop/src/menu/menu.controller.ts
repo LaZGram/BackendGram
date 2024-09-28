@@ -42,4 +42,10 @@ export class MenuController {
     const authId = msg["authId"].toString();
     return this.menuService.getMenu(authId);
   }
+
+  @MessagePattern('getShopMenu')
+  getShopMenu(msg: object){
+    const id = parseInt(msg["shopId"].toString());
+    return this.menuService.getShopMenu(id);
+  }
 }
