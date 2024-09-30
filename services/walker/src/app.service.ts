@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class AppService {
   constructor(private readonly prisma: PrismaService) {}
 
-  getWalkerId(authId: string){
+  async getWalkerId(authId: string){
     return this.prisma.walker.findUnique({
       where: {
         authId: authId
@@ -81,7 +82,7 @@ export class AppService {
     return updatedWalker;
   }
 
-  walkerGet(msg: any): Promise<any> {
+  async walkerGet(msg: any): Promise<any> {
     return this.prisma.walker.findMany({
       where: {
         authId: msg.authId,
@@ -99,7 +100,7 @@ export class AppService {
     });
   }
 
-  orderHistory(msg: any): Promise<any> {
+  async orderHistory(msg: any): Promise<any> {
     return this.prisma.walker.findMany({
       where: {
         authId: msg.authId
@@ -134,7 +135,7 @@ export class AppService {
   }
   
 
-  getOrderList(msg: any): Promise<any> {
+  async getOrderList(msg: any): Promise<any> {
     return this.prisma.order.findMany({
       where: {
         orderStatus: msg.orderStatus,
@@ -186,9 +187,14 @@ export class AppService {
             name: true,
             latitude: true,
             longitude: true,
+            shop: {
+              select: {
+                shopName: true,
+              },
+            },
           },
         },
-        walker: {
+        requester: {
           select: {
             username: true,
             phoneNumber: true,
@@ -209,6 +215,7 @@ export class AppService {
       },
     });
   }
+    
 
   async confirmOrder(msg: any): Promise<any> {
     const photo = await this.prisma.photo.create({
@@ -239,20 +246,68 @@ export class AppService {
   }
 
   async postReport(msg: any): Promise<any> {
-    const report = await this.prisma.report.create({
+    // Check if a report already exists for the given orderId and reportBy walker
+    const existingReport = await this.prisma.report.findMany({
+      where: {
+        orderId: msg.orderId,
+        reportBy: 'walker',
+      },
+    });
+  
+    if (existingReport.length > 0) {
+      throw new RpcException({ statusCode: 400, message: 'Report already exists' });
+    }
+  
+    // Find the order based on the provided orderId
+    const order = await this.prisma.order.findUnique({
+      where: {
+        orderId: Number(msg.orderId),
+      },
+    });
+  
+    if (!order) {
+      throw new RpcException({ statusCode: 404, message: 'Order not found' });
+    }
+  
+    // Ensure the order has been completed
+    if (order.orderStatus !== 'completed') {
+      throw new RpcException({ statusCode: 400, message: 'Order not completed yet' });
+    }
+  
+    // Validate report date range (within 3 days of order date)
+    const reportDate = new Date();
+    const orderDate = new Date(order.orderDate);
+    const validDate = new Date(order.orderDate);
+    validDate.setDate(validDate.getDate() + 3);
+  
+    console.log(reportDate, orderDate, validDate);
+  
+    const isInRange = reportDate >= orderDate && reportDate <= validDate;
+  
+    if (!isInRange) {
+      throw new RpcException({ statusCode: 400, message: 'Report date is not in range' });
+    }
+  
+    // Ensure the `requesterId` is provided in the message and use it in the create operation
+    if (!msg.requesterId) {
+      throw new RpcException({ statusCode: 400, message: 'Requester ID is required to create a report' });
+    }
+  
+    // Create the report with the required requester field
+    return this.prisma.report.create({
       data: {
-        reportDate: new Date(),
+        reportDate: reportDate,
         title: msg.title,
         description: msg.description,
-        status: msg.status,
-        requester: {
-          connect: {
-            requesterId: msg.requesterId,
-          },
-        },
+        status: 'pending',
         walker: {
           connect: {
             walkerId: msg.walkerId,
+          },
+        },
+        admin: {
+          connect: {
+            adminId: order.adminId,
           },
         },
         order: {
@@ -260,16 +315,14 @@ export class AppService {
             orderId: Number(msg.orderId),
           },
         },
-        admin: {
+        requester: {
           connect: {
-            adminId: msg.adminId,
+            requesterId: msg.requesterId,
           },
         },
         reportBy: 'walker',
       },
     });
-  
-    return report;
   }
 
   async getRequesterIdByOrder(msg: any): Promise<any> {
@@ -291,7 +344,7 @@ export class AppService {
         orderId: Number(msg.orderId),
       },
       data: {
-        orderStatus: msg.status,
+        orderStatus: msg.orderStatus,
       },
     });
 

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Inject, Request, SetMetadata, Query, Delete, BadRequestException  } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Inject, Request, SetMetadata, Query, Delete, BadRequestException, Put  } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { catchError, lastValueFrom } from 'rxjs';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
@@ -66,7 +66,7 @@ export class AdminController {
     return value;
   }
 
-  @Post('verify')
+  @Put('verify')
   @ApiOperation({ summary: 'Verify a walker by changing their status to true' })
   @ApiResponse({ status: 200, description: 'Walker status updated successfully.' })
   async verifyWalker(@Body() verifyWalkerDto: VerifyWalkerDto): Promise<string> {
@@ -109,7 +109,7 @@ export class AdminController {
     return await lastValueFrom(result);
   }
 
-  @Post('approval/:id')
+  @Put('approval/:id')
   @ApiOperation({ summary: 'Approve or disapprove an order' })
   @ApiResponse({ status: 200, description: 'Order status updated successfully.' })
   async postApproval(

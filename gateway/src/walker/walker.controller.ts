@@ -58,8 +58,8 @@ export class WalkerController {
   @Get('order-list')
   @ApiOperation({ summary: 'Get walker order list' })
   @ApiResponse({ status: 200, description: 'Order list retrieved successfully.'})
-  async getOrderList(@Param() params: GetOrderListDto): Promise<any> {
-    const result = await this.client.send('getOrderList', {...params});
+  async getOrderList(@Body() getorder: GetOrderListDto): Promise<any> {
+    const result = await this.client.send('getOrderList', {...getorder});
     return await lastValueFrom(result);
   }
 
@@ -119,7 +119,7 @@ export class WalkerController {
   ): Promise<any> {
     const result = this.client.send('updateOrderStatus', {
       orderId,
-      status: updateOrderStatusDto.status,
+      orderStatus: updateOrderStatusDto.orderStatus,
     });
     return await lastValueFrom(result);
   }

@@ -74,7 +74,7 @@ export class UpdateWalkerDto {
 export class UpdateOrderStatusDto {
   @ApiProperty({ description: 'The new status of the order', example: 'Confirmed' })
   @IsString()
-  status: string;
+  orderStatus: string;
 }
 
 export class ConfirmOrderDto {
@@ -173,7 +173,7 @@ class OrderItemDto {
 }
 
 export class GetOrderListDto {
-  @ApiProperty({ description: 'Order status', example: '"lookingForWalker", "inProgress", "completed", "cancelled","waitingAdmin"' })
+  @ApiProperty({ description: 'Order status', example: 'lookingForWalker, inProgress, completed, cancelled, waitingAdmin' })
   @IsString()
   orderStatus: string;
 }
