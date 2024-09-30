@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class AppService {
@@ -27,11 +28,12 @@ export class AppService {
   }
 
   async searchMenu(msg: any): Promise<any> {
+    if (!msg.name) {
+      throw new RpcException({ statusCode: 400, message: 'Menu name is required for search' });
+    }
     return this.prisma.menu.findMany({
       where: {
-        name: {
-          contains: msg.name,
-        },
+        name: msg.name,
         status: true,
       },
       select: {
