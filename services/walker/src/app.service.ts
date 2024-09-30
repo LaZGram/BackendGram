@@ -208,6 +208,11 @@ export class AppService {
               select: {
                 name: true,
                 price: true,
+                shop: {
+                  select: {
+                    shopName: true,
+                  },
+                },
               },
             },
           },

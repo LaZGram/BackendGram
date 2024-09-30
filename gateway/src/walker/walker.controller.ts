@@ -67,7 +67,7 @@ export class WalkerController {
   @ApiOperation({ summary: 'Get order detail by orderId' })
   @ApiResponse({ status: 200, description: 'Order detail retrieved successfully.', type: GetOrderDetailDto })
   @ApiResponse({ status: 404, description: 'Order not found.' })
-  async getOrderDetail(@Param('orderId') orderId: string): Promise<GetOrderDetailDto> {
+  async getOrderDetail(@Param('orderId') orderId: Number): Promise<GetOrderDetailDto> {
     const result = await this.client.send('getOrderDetail', { orderId });
     const orderDetail = await lastValueFrom(result);
     
