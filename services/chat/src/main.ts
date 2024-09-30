@@ -8,7 +8,7 @@ import * as express from 'express'; // Import express
 
 async function bootstrap() {
   // Create the HTTP server alongside the Kafka microservice
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
 
   // Serve index.html as a fallback route
   app.use(express.static(join(__dirname, '..', 'public'))); // Serve static files from the public directory

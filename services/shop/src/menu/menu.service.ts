@@ -151,6 +151,7 @@ export class MenuService {
             minChoose: true,
             optionItem: {
               select: {
+                optionItemId: true,
                 name: true,
                 price: true,
               },
@@ -163,5 +164,9 @@ export class MenuService {
 
   async getMenu(authId: string) {
     return (await this.prisma.menu.findMany({ where: { shopId: await this.appservice.getShopId(authId) } })).sort((a, b) => a.menuId - b.menuId);
+  }
+
+  async getShopMenu(shopId: number) {
+    return (await this.prisma.menu.findMany({ where: { shopId: shopId } })).sort((a, b) => a.menuId - b.menuId);
   }
 }

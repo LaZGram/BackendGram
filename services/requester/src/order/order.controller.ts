@@ -32,6 +32,6 @@ export class OrderController {
 
   @MessagePattern('reqGetOrder')
   getOrder(@Payload() msg: any) {
-    return this.orderService.getOrders(msg);
+    return this.orderService.getOrders(msg.authId);
   }
 }
