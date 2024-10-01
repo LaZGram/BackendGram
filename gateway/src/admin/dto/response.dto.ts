@@ -91,6 +91,56 @@ export class Photo{
   photoId: number;
   @ApiProperty()
   photoPath: string;
+  @ApiProperty()
+  uploadedAt: Date;
+}
+
+export class OptionItem {
+  @ApiProperty()
+  optionItemId: number
+  @ApiProperty()
+  name: string
+  @ApiProperty()
+  price: number
+}
+
+export class OrderItemExtra {
+  @ApiProperty()
+  orderItemExtraId: number
+  @ApiProperty()
+  optionItem: OptionItem
+}
+
+export class Menu {
+  @ApiProperty()
+  name: string
+  @ApiProperty()
+  price: number
+}
+
+export class OrderItem{
+  @ApiProperty()
+  orderItemId: number;
+  @ApiProperty()
+  quantity: number;
+  @ApiProperty()
+  totalPrice: number;
+  @ApiProperty()
+  specialInstructions: string;
+  @ApiProperty()
+  shopId: number;
+  @ApiProperty()
+  orderItemStatus: string;
+  @ApiProperty()
+  orderItemDate: Date;
+  @ApiProperty()
+  completedDate: Date;
+  @ApiProperty()
+  orderId: number;
+  @ApiProperty({type:[Menu]})
+  menu: Menu[];
+  @ApiProperty({type:[OrderItemExtra]})
+  orderItemExtra: OrderItemExtra[];
 }
 
 export class GetOrderInfoResponse {
@@ -110,6 +160,8 @@ export class GetOrderInfoResponse {
   canteen: CanteenResponse;
   @ApiProperty({type: Address})
   address: Address;
+  @ApiProperty({type: [OrderItem]})
+  orderItem: OrderItem[];
 }
 
 export class SearchOrderResponse extends GetToDayOrderResponse {}

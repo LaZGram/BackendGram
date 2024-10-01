@@ -30,6 +30,13 @@ jobs:
       run: |
         docker compose -f deploy/production/docker-compose.production.yml down
 
+    - name: Create .env file for requester service
+      run: |
+        echo "CLIENT_ID_GOOGLE=${{ secrets.CLIENT_ID_GOOGLE }}" >> services/requester/.env
+        echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> services/requester/.env
+        echo "PAYMENT_API=${{ secrets.PAYMENT_API }}" >> services/requester/.env
+        echo "PAYMENT_API_SECRET=${{ secrets.PAYMENT_API_SECRET }}" >> services/requester/.env
+
     - name: Build and start Docker containers
       run: |
         docker compose -f deploy/production/docker-compose.production.yml up --build -d

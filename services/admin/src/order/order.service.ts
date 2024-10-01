@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma.service';
 import { SearchOrderDto } from './dto/search-order.dto';
 import { FilterOrderDto } from './dto/filter-order.dto';
+import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class OrderService {
@@ -21,53 +22,92 @@ export class OrderService {
     })
   }
 
-  getOrderInfo(orderId: number) {
-    return this.prisma.order.findUnique({
-      where: {
-        orderId: orderId
-      },
-      select: {
-        orderId: true,
-        orderDate: true,
-        orderStatus: true,
-        requester: {
-          select: {
-            requesterId: true,
-            phoneNumber: true
-          }
+  async getOrderInfo(orderId: number) {
+    try {
+      const order = await this.prisma.order.findUnique({
+        where: {
+          orderId: orderId
         },
-        walker: {
-          select: {
-            walkerId: true,
-            phoneNumber: true
-          }
-        },
-        Photo: {
-          select: {
-            photoId: true,
-            photoPath: true
-          }
-        },
-        canteen: {
-          select: {
-            canteenId: true,
-            name: true,
-            latitude: true,
-            longitude: true
-          }
-        },
-        address: {
-          select: {
-            addressId: true,
-            name: true,
-            detail: true,
-            note: true,
-            latitude: true,
-            longitude: true
+        select: {
+          orderId: true,
+          orderDate: true,
+          orderStatus: true,
+          totalPrice: true,
+          shippingFee: true,
+          amount: true,
+          confirmedAt: true,
+          requester: {
+            select: {
+              requesterId: true,
+              phoneNumber: true
+            }
+          },
+          walker: {
+            select: {
+              walkerId: true,
+              phoneNumber: true
+            }
+          },
+          Photo: {
+            select: {
+              photoId: true,
+              photoPath: true
+            }
+          },
+          canteen: {},
+          address: {
+            select: {
+              addressId: true,
+              name: true,
+              detail: true,
+              note: true,
+              latitude: true,
+              longitude: true
+            }
+          },
+          orderItem:{
+            select: {
+              orderItemId: true,
+              quantity: true,
+              totalPrice: true,
+              specialInstructions: true,
+              orderItemStatus: true,
+              orderItemDate: true,
+              completedDate: true,
+              shopId: true,
+              menu:{
+                select: {
+                  menuId: true,
+                  name: true,
+                  price: true,
+                }
+              },
+              orderItemExtra: {
+                where: {
+                  selected: true
+                },
+                select: {
+                  OrderItemExtraId: true,
+                  optionItem: {
+                    select: {
+                      optionItemId: true,
+                      name: true,
+                      price: true
+                    }
+                  }
+                }
+              }
+            }
           }
         }
+      });
+      if(!order) {
+        throw new RpcException({ statusCode: 404, message: 'Order not found' });
       }
-    })
+      return order;
+    } catch (error) {
+      throw error;
+    }
   }
 
   searchOrder(msg: SearchOrderDto) {

@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -26,6 +25,7 @@ model Admin {
   report Report[]
   order Order[]
   chat  Chat[]
+
   authorization   Authorization @relation(fields: [authId], references: [authId])
   authId          String           @unique
 }
@@ -150,6 +150,7 @@ model Transaction{
 model TransactionSCB{
   transactionSCBId Int @id @default(autoincrement())
   transactionId_SCB String
+  deeplinkUrl String
 
   transaction Transaction @relation(fields: [transactionId], references: [transactionId])
   transactionId Int

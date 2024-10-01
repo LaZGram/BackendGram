@@ -20,7 +20,7 @@ export class ReportService {
         orderId: createReportDto.orderId
       }
     });
-    if (report) {
+    if (report.length > 0) {
       throw new RpcException({ statusCode: 400, message: 'Report already exists' });
     }
     else if (!order) {
