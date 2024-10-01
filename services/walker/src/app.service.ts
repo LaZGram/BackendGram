@@ -41,6 +41,7 @@ export class AppService {
         bankAccountName: msg.bankAccountName,
         bankAccountNo: msg.bankAccountNo,
         registerAt: new Date(),
+        verifyAt: null,
         status: 'waitingVerify',
       },
     });
@@ -83,7 +84,7 @@ export class AppService {
   }
 
   async walkerGet(msg: any): Promise<any> {
-    return this.prisma.walker.findMany({
+    return this.prisma.walker.findUnique({
       where: {
         authId: msg.authId,
       },
@@ -101,35 +102,50 @@ export class AppService {
   }
 
   async orderHistory(msg: any): Promise<any> {
-    return this.prisma.walker.findMany({
+    return this.prisma.order.findMany({
       where: {
-        authId: msg.authId
+        walker: {
+          authId: msg.authId
+        }
       },
       select: {
-        order: {
+        orderId: true,
+        orderDate: true,
+        orderStatus: true,
+        totalPrice: true,
+        shippingFee: true,
+        amount: true,
+        confirmedAt: true,
+        canteen: {
           select: {
-            orderId: true,
-            orderDate: true,
-            orderStatus: true,
-            totalPrice: true,
-            shippingFee: true,
-            amount: true,
-            confirmedAt: true,
-            canteen: {
+            name: true,
+            latitude: true,
+            longitude: true
+          }
+        },
+        requester: {
+          select: {
+            username: true,
+            phoneNumber: true
+          }
+        },
+        orderItem: {
+          select: {
+            quantity: true,
+            specialInstructions: true,
+            menu: {
               select: {
                 name: true,
-                latitude: true,
-                longitude: true
-              }
+                price: true,
+                shop: {
+                  select: {
+                    shopName: true,
+                  },
+                },
+              },
             },
-            requester: {
-              select: {
-                username: true,
-                phoneNumber: true
-              }
-            }
-          }
-        }
+          },
+        },
       }
     });
   }
@@ -293,11 +309,6 @@ export class AppService {
       throw new RpcException({ statusCode: 400, message: 'Report date is not in range' });
     }
   
-    // Ensure the `requesterId` is provided in the message and use it in the create operation
-    if (!msg.requesterId) {
-      throw new RpcException({ statusCode: 400, message: 'Requester ID is required to create a report' });
-    }
-  
     // Create the report with the required requester field
     return this.prisma.report.create({
       data: {
@@ -307,7 +318,7 @@ export class AppService {
         status: 'pending',
         walker: {
           connect: {
-            walkerId: msg.walkerId,
+            walkerId: order.walkerId,
           },
         },
         admin: {
@@ -322,7 +333,7 @@ export class AppService {
         },
         requester: {
           connect: {
-            requesterId: msg.requesterId,
+            requesterId: order.requesterId,
           },
         },
         reportBy: 'walker',

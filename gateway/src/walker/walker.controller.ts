@@ -2,7 +2,7 @@ import { Controller, Get, Inject, Post, Body, Param, Request, Query , NotFoundEx
 import { ClientKafka } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import { OrderIdDto, CreateWalkerDto, UpdateWalkerDto, WalkerGetDto, UpdateOrderStatusDto, GetOrderListDto, ConfirmOrderDto, PostReportDto, GetOrderDetailDto, GetRequesterIdByOrderDto } from './dto/walker.dto';
+import { RegisTWalkerDto, OrderListsDto, OrderHistoryDto, OrderIdDto, CreateWalkerDto, UpdateWalkerDto, WalkerGetDto, UpdateOrderStatusDto, GetOrderListDto, ConfirmOrderDto, PostReportDto, GetOrderDetailDto, GetRequesterIdByOrderDto } from './dto/walker.dto';
 import { AcceptOrderResponseDto } from './dto/response.dto';
 
 @ApiTags('Walker')
@@ -19,7 +19,7 @@ export class WalkerController {
 
   @Post('registration')
   @ApiOperation({ summary: 'Register a new walker' })
-  @ApiResponse({ status: 201, description: 'Walker registered successfully.', type: CreateWalkerDto })
+  @ApiResponse({ status: 201, description: 'Walker registered successfully.', type: RegisTWalkerDto })
   @ApiResponse({ status: 400, description: 'Invalid walker registration data.' })
   async walkerRegistration(@Body() walkerData: CreateWalkerDto, @Request() req): Promise<any> {
     const result = this.client.send('walkerRegistration', { ...walkerData, authId: req.jwt.authId });
@@ -38,7 +38,7 @@ export class WalkerController {
 
   @Get('history')
   @ApiOperation({ summary: 'Get walker order history' })
-  @ApiResponse({ status: 200, description: 'Order history retrieved successfully.' })
+  @ApiResponse({ status: 200, description: 'Order history retrieved successfully.' , type: OrderHistoryDto})
   @ApiResponse({ status: 404, description: 'Order history not found.' })
   async orderHistory(@Body() body: any, @Request() req): Promise<string> {
     const result = await this.client.send('orderHistory', { ...body, authId: req.jwt.authId });
@@ -57,8 +57,8 @@ export class WalkerController {
 
   @Get('order-list')
   @ApiOperation({ summary: 'Get walker order list' })
-  @ApiResponse({ status: 200, description: 'Order list retrieved successfully.'})
-  async getOrderList(@Body() getorder: GetOrderListDto): Promise<any> {
+  @ApiResponse({ status: 200, description: 'Order list retrieved successfully.', type: OrderListsDto})
+  async getOrderList(@Query() getorder: GetOrderListDto): Promise<any> {
     const result = await this.client.send('getOrderList', {...getorder});
     return await lastValueFrom(result);
   }
@@ -92,11 +92,11 @@ export class WalkerController {
     return await lastValueFrom(result);
   }
 
-  @Post('order-list/:orderId/report')
+  @Post('order-list/report')
   @ApiOperation({ summary: 'Post a report for an order' })
   @ApiResponse({ status: 201, description: 'Report posted successfully.' })
-  async postReport(@Param('orderId') orderId: Number, @Body() reportData: PostReportDto): Promise<any> {
-    const result = this.client.send('postReport', { orderId, ...reportData });
+  async postReport(@Body() reportData: PostReportDto): Promise<any> {
+    const result = this.client.send('postReport', { ...reportData });
     return await lastValueFrom(result);
   }
 
