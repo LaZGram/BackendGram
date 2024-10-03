@@ -228,8 +228,8 @@ export class AppService {
       },
     });
 
-    if (!order || order.orderStatus !== 'waitingAdmin') {
-      throw new Error('Order not found or status is not "waiting admin".');
+    if (!order ) {
+      throw new Error('Order not found.');
     }
 
     return this.prisma.order.update({
