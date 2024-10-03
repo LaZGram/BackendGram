@@ -268,4 +268,12 @@ export class AdminController {
     const value = await lastValueFrom(result);
     return value;
   }
+
+  @Get('chat')
+  @ApiOperation({ summary: 'Show list of Chats' })
+  @ApiResponse({ status: 200, description: 'Returns list of Chats.', type: CanteenResponse })
+  async getChat(): Promise<any> {
+    const result = this.client.send('getChat', {});
+    return await lastValueFrom(result);
+  }
 }

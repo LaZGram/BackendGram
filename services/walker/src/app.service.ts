@@ -99,7 +99,7 @@ export class AppService {
 
   async walkerGet(msg: any): Promise<any> {
     try {
-      
+
       const walker = await this.prisma.walker.findUnique({
         where: {
           authId: msg.authId,
@@ -236,11 +236,6 @@ export class AppService {
               name: true,
               latitude: true,
               longitude: true,
-              shop: {
-                select: {
-                  shopName: true,
-                },
-              },
             },
           },
           requester: {
@@ -260,6 +255,7 @@ export class AppService {
                   shop: {
                     select: {
                       shopName: true,
+                      shopId: true, // Include shopId to distinguish shops
                     },
                   },
                 },
@@ -268,12 +264,68 @@ export class AppService {
           },
         },
       });
-
-      return order;
+  
+      if (!order) {
+        throw new RpcException({ statusCode: 404, message: `Order not found for ID ${msg.orderId}` });
+      }
+  
+      // Group order items by shop and then by order ID within each shop
+      const groupedItemsByShop = order.orderItem.reduce((grouped, item) => {
+        const { shopName, shopId } = item.menu.shop;
+        if (!grouped[shopId]) {
+          grouped[shopId] = {
+            shopName,
+            orders: {},
+          };
+        }
+  
+        const orderId = order.orderId;
+        if (!grouped[shopId].orders[orderId]) {
+          grouped[shopId].orders[orderId] = {
+            orderId,
+            orderDate: order.orderDate,
+            orderStatus: order.orderStatus,
+            items: [],
+          };
+        }
+  
+        grouped[shopId].orders[orderId].items.push({
+          quantity: item.quantity,
+          specialInstructions: item.specialInstructions,
+          menuName: item.menu.name,
+          price: item.menu.price,
+        });
+  
+        return grouped;
+      }, {} as { [shopId: string]: { shopName: string; orders: { [orderId: number]: any } } });
+  
+      // Convert groupedItemsByShop to an array format if needed
+      const formattedGroupedItems = Object.values(groupedItemsByShop).map((shop) => ({
+        shopName: shop.shopName,
+        orders: Object.values(shop.orders),
+      }));
+  
+      // Format the result to include grouped items
+      const formattedOrder = {
+        orderId: order.orderId,
+        orderDate: order.orderDate,
+        orderStatus: order.orderStatus,
+        amount: order.amount,
+        totalPrice: order.totalPrice,
+        shippingFee: order.shippingFee,
+        address: order.address,
+        canteen: order.canteen,
+        requester: order.requester,
+        groupedOrderItemsByShop: formattedGroupedItems, // Add the grouped order items
+      };
+  
+      return formattedOrder;
     } catch (error) {
       throw new RpcException({ statusCode: 500, message: `Failed to get order detail: ${error.message}` });
     }
   }
+  
+
 
   async confirmOrder(msg: any): Promise<any> {
     try {

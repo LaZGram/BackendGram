@@ -196,6 +196,27 @@ export class AppService {
     });
   }
 
+  async getChat(msg: any): Promise<any> {
+    try {
+      // Retrieve all chats with only the orderId field
+      const chats = await this.prisma.chat.findMany({
+        select: {
+          orderId: true, // Include only orderId in the result set
+        },
+      });
+  
+      // Use a Set to filter out duplicate orderId values
+      const distinctOrderIds = Array.from(new Set(chats.map(chat => chat.orderId)));
+  
+      // Map the distinct orderIds back to an array of objects
+      const distinctChats = distinctOrderIds.map(orderId => ({ orderId }));
+  
+      return distinctChats;
+    } catch (error) {
+      throw new RpcException({ statusCode: 500, message: `Failed to retrieve distinct order IDs: ${error.message}` });
+    }
+  }
+
   async postApproval(msg: any): Promise<any> {
     const order = await this.prisma.order.findUnique({
       where: {
