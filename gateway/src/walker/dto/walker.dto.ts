@@ -25,7 +25,36 @@ export class CreateWalkerDto {
   @ApiProperty({ description: 'Bank account number', example: '12345678' })
   @IsString()
   bankAccountNo: string;
+}
 
+export class RegisTWalkerDto {
+
+  @ApiProperty({ example: 'john_doe' })
+  username: string;
+
+  @ApiProperty({ example: 'john.doe@example.com' })
+  email: string;
+
+  @ApiProperty({ example: '1234567890' })
+  phoneNumber: string;
+
+  @ApiProperty({ example: 'https://example.com/profile.jpg' })
+  profilePicture: string;
+
+  @ApiProperty({ example: 'John Doe' })
+  bankAccountName: string;
+
+  @ApiProperty({ example: '123-456-789' })
+  bankAccountNo: string;
+
+  @ApiProperty({ example: '2024-09-25T12:34:56.000Z' })
+  registerAt: Date;
+
+  @ApiProperty({ example: '2024-09-25T12:55:58.000Z' })
+  verifyAt: Date;
+
+  @ApiProperty({ example: 'waitingVerify' })
+  status: string;
 }
 
 export class OrderIdDto {
@@ -84,30 +113,15 @@ export class ConfirmOrderDto {
 }
 
 export class PostReportDto {
-
-  @ApiProperty({ description: 'Title of the report', example: 'Order issue' })
+  @ApiProperty()
   @IsString()
   title: string;
-
-  @ApiProperty({ description: 'Detailed description of the issue', example: 'The walker did not deliver on time' })
+  @ApiProperty()
   @IsString()
   description: string;
-
-  @ApiProperty({ description: 'Status of the report', example: 'Cancel' })
-  @IsString()
-  status: string;
-
-  @ApiProperty({ description: 'Requester ID associated with the report', example: '1' })
+  @ApiProperty()
   @IsNumber()
-  requesterId: number;
-
-  @ApiProperty({ description: 'Walker ID associated with the report', example: '1' })
-  @IsNumber()
-  walkerId: number;
-
-  @ApiProperty({ description: 'Admin ID associated with the report', example: '1' })
-  @IsNumber()
-  adminId: number;
+  orderId: number;
 }
 
 class AddressDto {
@@ -172,8 +186,130 @@ class OrderItemDto {
   menu: MenuDto;
 }
 
+export class Cto {
+  @ApiProperty({ example: 'Central Canteen' })
+  name: string;
+
+  @ApiProperty({ example: 13.7563 })
+  latitude: number;
+
+  @ApiProperty({ example: 100.5018 })
+  longitude: number;
+}
+
+// Requester DTO
+export class RequesterDto {
+  @ApiProperty({ example: 'john_doe' })
+  username: string;
+
+  @ApiProperty({ example: '123456789' })
+  phoneNumber: string;
+}
+
+// Shop DTO
+export class ShopDto {
+  @ApiProperty({ example: 'Pasta Paradise' })
+  shopName: string;
+}
+
+// Menu DTO
+export class MDto {
+  @ApiProperty({ example: 'Spaghetti Carbonara' })
+  name: string;
+
+  @ApiProperty({ example: 12.99 })
+  price: number;
+
+  @ApiProperty({ type: ShopDto })
+  shop: ShopDto;
+}
+
+// OrderItem DTO
+export class OItemDto {
+  @ApiProperty({ example: 3 })
+  quantity: number;
+
+  @ApiProperty({ example: 'Gluten-free pasta' })
+  specialInstructions: string;
+
+  @ApiProperty({ type: MDto })
+  menu: MDto;
+}
+
+// Canteen DTO
+export class CDto {
+  @ApiProperty({ example: 'Central Canteen' })
+  name: string;
+
+  @ApiProperty({ example: 13.7563 })
+  latitude: number;
+
+  @ApiProperty({ example: 100.5018 })
+  longitude: number;
+}
+
+// OrderLists DTO
+export class OrderListsDto {
+  @ApiProperty({ example: 8 })
+  orderId: number;
+
+  @ApiProperty({ example: 3 })
+  amount: number;
+
+  @ApiProperty({ example: 500 })
+  totalPrice: number;
+
+  @ApiProperty({ example: 50 })
+  shippingFee: number;
+
+  @ApiProperty({ example: '2024-09-25T12:34:56.000Z' })
+  orderDate: Date;
+
+  @ApiProperty({ example: 'inProgress' })
+  orderStatus: string;
+
+  @ApiProperty({ type: AddressDto })
+  address: AddressDto;
+
+  @ApiProperty({ type: CDto })
+  canteen: CDto;
+}
+
+// OrderHistory DTO
+export class OrderHistoryDto {
+  @ApiProperty({ example: 8 })
+  orderId: number;
+
+  @ApiProperty({ example: '2024-09-25T12:34:56.000Z' })
+  orderDate: Date;
+
+  @ApiProperty({ example: 'inProgress' })
+  orderStatus: string;
+
+  @ApiProperty({ example: 500 })
+  totalPrice: number;
+
+  @ApiProperty({ example: 50 })
+  shippingFee: number;
+
+  @ApiProperty({ example: 3 })
+  amount: number;
+
+  @ApiProperty({ example: '2024-09-25T13:00:00.000Z' })
+  confirmedAt: Date;
+
+  @ApiProperty({ type: Cto })
+  canteen: Cto;
+
+  @ApiProperty({ type: RequesterDto })
+  requester: RequesterDto;
+
+  @ApiProperty({ type: [OItemDto] })
+  orderItem: OItemDto[];
+}
+
 export class GetOrderListDto {
-  @ApiProperty({ description: 'Order status', example: 'lookingForWalker, inProgress, completed, cancelled, waitingAdmin' })
+  @ApiProperty({ description: 'Order status', example: 'inProgress' })
   @IsString()
   orderStatus: string;
 }
