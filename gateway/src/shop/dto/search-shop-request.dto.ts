@@ -1,8 +1,8 @@
-import { ApiProperty } from "@nestjs/swagger"
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger"
 import { IsNumber, IsString } from "class-validator"
 
 export class SearchShopRequestDto {
-  @ApiProperty()
+  @ApiPropertyOptional()
   @IsString()
   shopname: string
   @ApiProperty()

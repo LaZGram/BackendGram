@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, Delete, Inject, Param, Request, BadRequestException, NotFoundException} from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Delete, Inject, Param, Request, BadRequestException, NotFoundException, Put} from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { PostChangeProfilePictureDto, GetDebitCardDto, PostChangeDebitCardDto, SearchMenuDto, RequesterProfileDto, UpdateRequesterProfileDto, RequesterAddressDto, CreateDebitCardDto, RequesterCreateDto } from './dto/requester.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -34,7 +34,7 @@ export class RequesterController {
         return await lastValueFrom(result);
     }
 
-    @Post('personal-info')
+    @Put('personal-info')
     @ApiOperation({ summary: 'Update personal info of the requester' })
     @ApiResponse({ status: 200, description: 'Personal info updated successfully.' })
     async postPersonalInfo(@Body() usrchg: UpdateRequesterProfileDto, @Request() req): Promise<string> {
@@ -42,7 +42,7 @@ export class RequesterController {
         return await lastValueFrom(result);
     }
 
-    @Post('profile-picture')
+    @Put('profile-picture')
     @ApiOperation({ summary: 'Change profile picture of the requester' })
     @ApiResponse({ status: 200, description: 'Profile picture updated successfully.' })
     async postChangeProfilePicture(@Body() body: PostChangeProfilePictureDto, @Request() req): Promise<string> {
@@ -66,7 +66,7 @@ export class RequesterController {
         return await lastValueFrom(result);
     }
 
-    @Post('debit-card/edit-card')
+    @Put('debit-card/edit-card')
     @ApiOperation({ summary: 'Edit debit card information of the requester' })
     @ApiResponse({ status: 200, description: 'Debit card information updated successfully.' })
     async postChangeDebitCard(@Body() body: PostChangeDebitCardDto): Promise<string> {
@@ -150,9 +150,10 @@ export class RequesterController {
 
     @Get('search-menu')
     @ApiOperation({ summary: 'Search for menu items by name' })
+    @ApiQuery({ name: 'name', type: 'string' })
     @ApiResponse({ status: 200, description: 'Menu items retrieved successfully.' })
-    async searchMenu(@Body() body: SearchMenuDto): Promise<any> {
-        const result = this.client.send('searchMenu', body);
+    async searchMenu(@Query('name') name: string): Promise<any> {
+        const result = this.client.send('searchMenu', { name });
         return await lastValueFrom(result);
     }
 
@@ -166,7 +167,7 @@ export class RequesterController {
         return value;
     }
 
-    @Post('update-address')
+    @Put('update-address')
     @ApiOperation({ summary: 'Update address in database' })
     @ApiResponse({ status: 201, description: 'Update address successes', type: UpdateAddressResponseDto })
     async updateAddress(@Body() body: UpdateAddressRequestDto, @Request() req): Promise<string> {
