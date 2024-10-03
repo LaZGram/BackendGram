@@ -6,365 +6,412 @@ import { RpcException } from '@nestjs/microservices';
 export class AppService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getWalkerId(authId: string){
-    return this.prisma.walker.findUnique({
-      where: {
-        authId: authId
+  async getWalkerId(authId: string) {
+    try {
+      const walker = await this.prisma.walker.findUnique({
+        where: {
+          authId: authId,
+        },
+      });
+
+      if (!walker) {
+        throw new RpcException({ statusCode: 404, message: 'Walker not found' });
       }
-    }).then(walker => {
+
       return walker.walkerId;
-    });
+    } catch (error) {
+      throw new RpcException({ statusCode: 500, message: `Failed to get walker ID: ${error.message}` });
+    }
   }
 
   async walkerRegistration(msg: any): Promise<any> {
+    try {
+      const walker = await this.prisma.walker.findUnique({
+        where: {
+          authId: msg.authId,
+        },
+        select: {
+          walkerId: true,
+        },
+      });
 
-    let walker = await this.prisma.walker.findUnique({
-      where: {
-        authId: msg.authId,
-      },
-      select: {
-        walkerId: true,
-      },
-    });
+      if (walker) {
+        throw new RpcException({ statusCode: 400, message: 'Walker found' });
+      }
 
-    if (walker) {
-      throw new Error('Walker found');
+      const updatedWalker = await this.prisma.walker.create({
+        data: {
+          authId: msg.authId,
+          username: msg.username,
+          email: msg.email,
+          phoneNumber: msg.phoneNumber,
+          profilePicture: msg.profilePicture,
+          bankAccountName: msg.bankAccountName,
+          bankAccountNo: msg.bankAccountNo,
+          registerAt: new Date(),
+          verifyAt: null,
+          status: 'waitingVerify',
+        },
+      });
+
+      return updatedWalker;
+    } catch (error) {
+      throw new RpcException({ statusCode: 500, message: `Walker registration failed: ${error.message}` });
     }
-
-    const updatedWalker = await this.prisma.walker.create({
-      data: {
-        authId: msg.authId,
-        username: msg.username,
-        email: msg.email,
-        phoneNumber: msg.phoneNumber,
-        profilePicture: msg.profilePicture,
-        bankAccountName: msg.bankAccountName,
-        bankAccountNo: msg.bankAccountNo,
-        registerAt: new Date(),
-        verifyAt: null,
-        status: 'waitingVerify',
-      },
-    });
-  
-    return updatedWalker;
   }
 
   async updateWalkerProfile(msg: any): Promise<any> {
-    const walker = await this.prisma.walker.findUnique({
+    try {
+      const walker = await this.prisma.walker.findUnique({
         where: {
-            authId: msg.authId,
+          authId: msg.authId,
         },
         select: {
-            walkerId: true,
+          walkerId: true,
         },
-    });
+      });
 
-    if (!walker) {
-        throw new Error('Walker not found');
-    }
+      if (!walker) {
+        throw new RpcException({ statusCode: 404, message: 'Walker not found' });
+      }
 
-    const updateData: any = {};
-    
-    if (msg.username !== undefined) updateData.username = msg.username;
-    if (msg.email !== undefined) updateData.email = msg.email;
-    if (msg.phoneNumber !== undefined) updateData.phoneNumber = msg.phoneNumber;
-    if (msg.profilePicture !== undefined) updateData.profilePicture = msg.profilePicture;
-    if (msg.bankAccountName !== undefined) updateData.bankAccountName = msg.bankAccountName;
-    if (msg.bankAccountNo !== undefined) updateData.bankAccountNo = msg.bankAccountNo;
-    if (msg.status !== undefined) updateData.status = msg.status;
+      const updateData: any = {};
+      if (msg.username !== undefined) updateData.username = msg.username;
+      if (msg.email !== undefined) updateData.email = msg.email;
+      if (msg.phoneNumber !== undefined) updateData.phoneNumber = msg.phoneNumber;
+      if (msg.profilePicture !== undefined) updateData.profilePicture = msg.profilePicture;
+      if (msg.bankAccountName !== undefined) updateData.bankAccountName = msg.bankAccountName;
+      if (msg.bankAccountNo !== undefined) updateData.bankAccountNo = msg.bankAccountNo;
+      if (msg.status !== undefined) updateData.status = msg.status;
 
-    const updatedWalker = await this.prisma.walker.update({
+      const updatedWalker = await this.prisma.walker.update({
         where: {
-            authId: msg.authId,
+          authId: msg.authId,
         },
         data: updateData,
-    });
+      });
 
-    return updatedWalker;
+      return updatedWalker;
+    } catch (error) {
+      throw new RpcException({ statusCode: 500, message: `Failed to update walker profile: ${error.message}` });
+    }
   }
 
   async walkerGet(msg: any): Promise<any> {
-    return this.prisma.walker.findUnique({
-      where: {
-        authId: msg.authId,
-      },
-      select: {
-        username: true,
-        email: true,
-        phoneNumber: true,
-        profilePicture: true,
-        bankAccountName: true,
-        bankAccountNo: true,
-        status: true,
-        registerAt: true,
-      },
-    });
+    try {
+      
+      const walker = await this.prisma.walker.findUnique({
+        where: {
+          authId: msg.authId,
+        },
+        select: {
+          username: true,
+          email: true,
+          phoneNumber: true,
+          profilePicture: true,
+          bankAccountName: true,
+          bankAccountNo: true,
+          status: true,
+          registerAt: true,
+        },
+      });
+
+      return walker;
+    } catch (error) {
+      throw new RpcException({ statusCode: 500, message: `Failed to get walker: ${error.message}` });
+    }
   }
 
   async orderHistory(msg: any): Promise<any> {
-    return this.prisma.order.findMany({
-      where: {
-        walker: {
-          authId: msg.authId
-        }
-      },
-      select: {
-        orderId: true,
-        orderDate: true,
-        orderStatus: true,
-        totalPrice: true,
-        shippingFee: true,
-        amount: true,
-        confirmedAt: true,
-        canteen: {
-          select: {
-            name: true,
-            latitude: true,
-            longitude: true
-          }
+    try {
+      const orders = await this.prisma.order.findMany({
+        where: {
+          walker: {
+            authId: msg.authId,
+          },
         },
-        requester: {
-          select: {
-            username: true,
-            phoneNumber: true
-          }
-        },
-        orderItem: {
-          select: {
-            quantity: true,
-            specialInstructions: true,
-            menu: {
-              select: {
-                name: true,
-                price: true,
-                shop: {
-                  select: {
-                    shopName: true,
+        select: {
+          orderId: true,
+          orderDate: true,
+          orderStatus: true,
+          totalPrice: true,
+          shippingFee: true,
+          amount: true,
+          confirmedAt: true,
+          canteen: {
+            select: {
+              name: true,
+              latitude: true,
+              longitude: true,
+            },
+          },
+          requester: {
+            select: {
+              username: true,
+              phoneNumber: true,
+            },
+          },
+          orderItem: {
+            select: {
+              quantity: true,
+              specialInstructions: true,
+              menu: {
+                select: {
+                  name: true,
+                  price: true,
+                  shop: {
+                    select: {
+                      shopName: true,
+                    },
                   },
                 },
               },
             },
           },
         },
-      }
-    });
+      });
+
+      return orders;
+    } catch (error) {
+      throw new RpcException({ statusCode: 500, message: `Failed to get order history: ${error.message}` });
+    }
   }
-  
 
   async getOrderList(msg: any): Promise<any> {
-    return this.prisma.order.findMany({
-      where: {
-        orderStatus: msg.orderStatus,
-      },
-      select: {
-        orderId: true,
-        amount: true,
-        totalPrice: true,
-        shippingFee: true,
-        orderDate: true,
-        orderStatus: true,
-        address: {
-          select: {
-            latitude: true,
-            longitude: true,
+    try {
+      const orders = await this.prisma.order.findMany({
+        where: {
+          orderStatus: msg.orderStatus,
+        },
+        select: {
+          orderId: true,
+          amount: true,
+          totalPrice: true,
+          shippingFee: true,
+          orderDate: true,
+          orderStatus: true,
+          address: {
+            select: {
+              latitude: true,
+              longitude: true,
+            },
+          },
+          canteen: {
+            select: {
+              name: true,
+              latitude: true,
+              longitude: true,
+            },
           },
         },
-        canteen: {
-          select: {
-            name: true,
-            latitude: true,
-            longitude: true,
-          },
-        },
-      },
-    });
+      });
+
+      return orders;
+    } catch (error) {
+      throw new RpcException({ statusCode: 500, message: `Failed to get order list: ${error.message}` });
+    }
   }
 
   async getOrderDetail(msg: any): Promise<any> {
-    return this.prisma.order.findUnique({
-      where: {
-        orderId: Number(msg.orderId),
-      },
-      select: {
-        orderId: true,
-        orderDate: true,
-        orderStatus: true,
-        amount: true,
-        totalPrice: true,
-        shippingFee: true,
-        address: {
-          select: {
-            latitude: true,
-            longitude: true,
-          },
+    try {
+      const order = await this.prisma.order.findUnique({
+        where: {
+          orderId: Number(msg.orderId),
         },
-        canteen: {
-          select: {
-            name: true,
-            latitude: true,
-            longitude: true,
-            shop: {
-              select: {
-                shopName: true,
+        select: {
+          orderId: true,
+          orderDate: true,
+          orderStatus: true,
+          amount: true,
+          totalPrice: true,
+          shippingFee: true,
+          address: {
+            select: {
+              latitude: true,
+              longitude: true,
+            },
+          },
+          canteen: {
+            select: {
+              name: true,
+              latitude: true,
+              longitude: true,
+              shop: {
+                select: {
+                  shopName: true,
+                },
               },
             },
           },
-        },
-        requester: {
-          select: {
-            username: true,
-            phoneNumber: true,
+          requester: {
+            select: {
+              username: true,
+              phoneNumber: true,
+            },
           },
-        },
-        orderItem: {
-          select: {
-            quantity: true,
-            specialInstructions: true,
-            menu: {
-              select: {
-                name: true,
-                price: true,
-                shop: {
-                  select: {
-                    shopName: true,
+          orderItem: {
+            select: {
+              quantity: true,
+              specialInstructions: true,
+              menu: {
+                select: {
+                  name: true,
+                  price: true,
+                  shop: {
+                    select: {
+                      shopName: true,
+                    },
                   },
                 },
               },
             },
           },
         },
-      },
-    });
+      });
+
+      return order;
+    } catch (error) {
+      throw new RpcException({ statusCode: 500, message: `Failed to get order detail: ${error.message}` });
+    }
   }
-    
 
   async confirmOrder(msg: any): Promise<any> {
-    const photo = await this.prisma.photo.create({
-      data: {
-        photoPath: msg.photoPath,
-        order: {
-          connect: { orderId: Number(msg.orderId) },
+    try {
+      const photo = await this.prisma.photo.create({
+        data: {
+          photoPath: msg.photoPath,
+          order: {
+            connect: { orderId: Number(msg.orderId) },
+          },
         },
-      },
-    });
+      });
 
-    const order = await this.prisma.order.update({
-      where: {
-        orderId: Number(msg.orderId),
-      },
-      data: {
-        orderStatus: 'completed',
-        confirmedAt: new Date(),
-        photoId: photo.photoId,
-      },
-      select: {
-        orderId: true,
-        orderStatus: true
-      }
-    });
+      const order = await this.prisma.order.update({
+        where: {
+          orderId: Number(msg.orderId),
+        },
+        data: {
+          orderStatus: 'completed',
+          confirmedAt: new Date(),
+          photoId: photo.photoId,
+        },
+        select: {
+          orderId: true,
+          orderStatus: true,
+        },
+      });
 
-    return order;
+      return order;
+    } catch (error) {
+      throw new RpcException({ statusCode: 500, message: `Failed to confirm order: ${error.message}` });
+    }
   }
 
   async postReport(msg: any): Promise<any> {
-    // Check if a report already exists for the given orderId and reportBy walker
-    const existingReport = await this.prisma.report.findMany({
-      where: {
-        orderId: msg.orderId,
-        reportBy: 'walker',
-      },
-    });
-  
-    if (existingReport.length > 0) {
-      throw new RpcException({ statusCode: 400, message: 'Report already exists' });
-    }
-  
-    // Find the order based on the provided orderId
-    const order = await this.prisma.order.findUnique({
-      where: {
-        orderId: Number(msg.orderId),
-      },
-    });
-  
-    if (!order) {
-      throw new RpcException({ statusCode: 404, message: 'Order not found' });
-    }
-  
-    // Ensure the order has been completed
-    if (order.orderStatus !== 'completed') {
-      throw new RpcException({ statusCode: 400, message: 'Order not completed yet' });
-    }
-  
-    // Validate report date range (within 3 days of order date)
-    const reportDate = new Date();
-    const orderDate = new Date(order.orderDate);
-    const validDate = new Date(order.orderDate);
-    validDate.setDate(validDate.getDate() + 3);
-  
-    console.log(reportDate, orderDate, validDate);
-  
-    const isInRange = reportDate >= orderDate && reportDate <= validDate;
-  
-    if (!isInRange) {
-      throw new RpcException({ statusCode: 400, message: 'Report date is not in range' });
-    }
-  
-    // Create the report with the required requester field
-    return this.prisma.report.create({
-      data: {
-        reportDate: reportDate,
-        title: msg.title,
-        description: msg.description,
-        status: 'pending',
-        walker: {
-          connect: {
-            walkerId: order.walkerId,
-          },
+    try {
+      const existingReport = await this.prisma.report.findMany({
+        where: {
+          orderId: msg.orderId,
+          reportBy: 'walker',
         },
-        admin: {
-          connect: {
-            adminId: order.adminId,
-          },
+      });
+
+      if (existingReport.length > 0) {
+        throw new RpcException({ statusCode: 400, message: 'Report already exists' });
+      }
+
+      const order = await this.prisma.order.findUnique({
+        where: {
+          orderId: Number(msg.orderId),
         },
-        order: {
-          connect: {
-            orderId: Number(msg.orderId),
+      });
+
+      if (!order) {
+        throw new RpcException({ statusCode: 404, message: 'Order not found' });
+      }
+
+      if (order.orderStatus !== 'completed') {
+        throw new RpcException({ statusCode: 400, message: 'Order not completed yet' });
+      }
+
+      const reportDate = new Date();
+      const orderDate = new Date(order.orderDate);
+      const validDate = new Date(order.orderDate);
+      validDate.setDate(validDate.getDate() + 3);
+
+      const isInRange = reportDate >= orderDate && reportDate <= validDate;
+
+      if (!isInRange) {
+        throw new RpcException({ statusCode: 400, message: 'Report date is not in range' });
+      }
+
+      const newReport = await this.prisma.report.create({
+        data: {
+          reportDate: reportDate,
+          title: msg.title,
+          description: msg.description,
+          status: 'pending',
+          walker: {
+            connect: {
+              walkerId: order.walkerId,
+            },
           },
-        },
-        requester: {
-          connect: {
-            requesterId: order.requesterId,
+          admin: {
+            connect: {
+              adminId: order.adminId,
+            },
           },
+          order: {
+            connect: {
+              orderId: Number(msg.orderId),
+            },
+          },
+          requester: {
+            connect: {
+              requesterId: order.requesterId,
+            },
+          },
+          reportBy: 'walker',
         },
-        reportBy: 'walker',
-      },
-    });
+      });
+
+      return newReport;
+    } catch (error) {
+      throw new RpcException({ statusCode: 500, message: `Failed to post report: ${error.message}` });
+    }
   }
 
   async getRequesterIdByOrder(msg: any): Promise<any> {
-    const order = await this.prisma.order.findUnique({
-      where: { orderId: Number(msg.orderId) },
-      select: { requesterId: true },
-    });
+    try {
+      const order = await this.prisma.order.findUnique({
+        where: { orderId: Number(msg.orderId) },
+        select: { requesterId: true },
+      });
 
-    if (!order) {
-      throw new Error('Order not found');
+      if (!order) {
+        throw new RpcException({ statusCode: 404, message: 'Order not found' });
+      }
+
+      return { requesterId: order.requesterId };
+    } catch (error) {
+      throw new RpcException({ statusCode: 500, message: `Failed to get requester ID: ${error.message}` });
     }
-
-    return { requesterId: order.requesterId };
   }
 
   async updateOrderStatus(msg: any): Promise<any> {
-    const order = await this.prisma.order.update({
-      where: {
-        orderId: Number(msg.orderId),
-      },
-      data: {
-        orderStatus: msg.orderStatus,
-      },
-    });
+    try {
+      const order = await this.prisma.order.update({
+        where: {
+          orderId: Number(msg.orderId),
+        },
+        data: {
+          orderStatus: msg.orderStatus,
+        },
+      });
 
-    return order;
+      return order;
+    } catch (error) {
+      throw new RpcException({ statusCode: 404, message: `Failed to update order status: ${error.message}` });
+    }
   }
-  
 }
