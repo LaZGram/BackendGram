@@ -51,4 +51,9 @@ export class AppController {
   deleteWalker(msg: any): any {
     return this.appService.deleteWalker(msg);
   }
+
+  @MessagePattern('getChat')
+  getChat(msg: any): any {
+    return this.appService.getChat(msg);
+  }
 }
