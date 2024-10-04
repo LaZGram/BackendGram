@@ -200,14 +200,20 @@ export class AppService {
   try {
     // Retrieve all chats with orderId, senderRole, walkerId, requesterId, and adminId fields
     const chats = await this.prisma.chat.findMany({
-      select: {
-        orderId: true,
-        senderRole: true,
-        walkerId: true,
-        requesterId: true,
-        adminId: true,
-      },
-    });
+  where: {
+    OR: [
+      { adminId: 0 },
+      { adminId: { not: null } }
+    ]
+  },
+  select: {
+    orderId: true,
+    senderRole: true,
+    walkerId: true,
+    requesterId: true,
+    adminId: true,
+  },
+});
 
     // Group chats by roles and ensure unique orderIds
     const groupedChats = chats.reduce((acc, chat) => {
