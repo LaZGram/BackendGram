@@ -210,12 +210,12 @@ export class AppService {
       });
   
       // Use a Set to filter out duplicate orderId values
-      // const distinctOrderIds = Array.from(new Set(chats.map(chat => {chat.orderId, })));
+      const distinctOrderIds = Array.from(new Set(chats.map(chat => chat.orderId)));
   
       // Map the distinct orderIds back to an array of objects
-      // const distinctChats = distinctOrderIds.map(orderId => ({ orderId }));
+      const distinctChats = distinctOrderIds.map(orderId => ({ orderId }));
   
-      return chats;
+      return distinctChats;
     } catch (error) {
       throw new RpcException({ statusCode: 500, message: `Failed to retrieve distinct order IDs: ${error.message}` });
     }
