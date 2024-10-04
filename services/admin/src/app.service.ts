@@ -203,6 +203,9 @@ export class AppService {
         select: {
           orderId: true, // Include only orderId in the result set
           senderRole: true,
+          walkerId: true,
+          requesterId: true,
+          adminId: true,
         },
       });
   
