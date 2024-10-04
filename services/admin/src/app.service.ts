@@ -202,6 +202,7 @@ export class AppService {
       const chats = await this.prisma.chat.findMany({
         select: {
           orderId: true, // Include only orderId in the result set
+          senderRole: true,
         },
       });
   
