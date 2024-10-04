@@ -197,29 +197,55 @@ export class AppService {
   }
 
   async getChat(msg: any): Promise<any> {
-    try {
-      // Retrieve all chats with only the orderId field
-      const chats = await this.prisma.chat.findMany({
-        select: {
-          orderId: true, // Include only orderId in the result set
-          senderRole: true,
-          walkerId: true,
-          requesterId: true,
-          adminId: true,
-        },
-      });
-  
-      // Use a Set to filter out duplicate orderId values
-      const distinctOrderIds = Array.from(new Set(chats.map(chat => chat.orderId)));
-  
-      // Map the distinct orderIds back to an array of objects
-      const distinctChats = distinctOrderIds.map(orderId => ({ orderId }));
-  
-      return distinctChats;
-    } catch (error) {
-      throw new RpcException({ statusCode: 500, message: `Failed to retrieve distinct order IDs: ${error.message}` });
-    }
+  try {
+    // Retrieve all chats with orderId, senderRole, walkerId, requesterId, and adminId fields
+    const chats = await this.prisma.chat.findMany({
+      select: {
+        orderId: true,
+        senderRole: true,
+        walkerId: true,
+        requesterId: true,
+        adminId: true,
+      },
+    });
+
+    // Group chats by roles and ensure unique orderIds
+    const groupedChats = chats.reduce((acc, chat) => {
+      // Create a set to track unique orderIds for each role
+      if (!acc[chat.senderRole]) {
+        acc[chat.senderRole] = { chats: [], orderIds: new Set<number>() };
+      }
+
+      // Check if the orderId is already added for the current role
+      if (!acc[chat.senderRole].orderIds.has(chat.orderId)) {
+        // Add the unique chat object to the respective role's chat list
+        const uniqueChat = { orderId: chat.orderId };
+        if (chat.senderRole === 'requester') uniqueChat['requesterId'] = chat.requesterId;
+        if (chat.senderRole === 'admin') uniqueChat['adminId'] = chat.adminId;
+        if (chat.senderRole === 'walker') uniqueChat['walkerId'] = chat.walkerId;
+
+        acc[chat.senderRole].chats.push(uniqueChat);
+        acc[chat.senderRole].orderIds.add(chat.orderId); // Track the added orderId
+      }
+
+      return acc;
+    }, {} as Record<string, { chats: Array<{ orderId: number; requesterId?: number; adminId?: number; walkerId?: number }>, orderIds: Set<number> }>);
+
+    // Convert groupedChats into the desired format without orderId tracking sets
+    const formattedGroupedChats = Object.keys(groupedChats).reduce((formattedAcc, role) => {
+      formattedAcc[role] = groupedChats[role].chats;
+      return formattedAcc;
+    }, {} as Record<string, Array<{ orderId: number; requesterId?: number; adminId?: number; walkerId?: number }>>);
+
+    return formattedGroupedChats;
+  } catch (error) {
+    throw new RpcException({
+      statusCode: 500,
+      message: `Failed to retrieve distinct order IDs: ${error.message}`,
+    });
   }
+}
+
 
   async postApproval(msg: any): Promise<any> {
     const order = await this.prisma.order.findUnique({
