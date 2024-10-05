@@ -199,7 +199,7 @@ export class AppService {
 
   async selectChat(msg: any): Promise<any> {
     try {
-      // Find the admin based on the provided authId
+
       const admin = await this.prisma.admin.findUnique({
         where: {
           authId: msg.authId,
@@ -241,7 +241,7 @@ export class AppService {
   
   async getChat(msg: any): Promise<any> {
     try {
-      // Find the admin based on the provided authId
+
       const admin = await this.prisma.admin.findUnique({
         where: {
           authId: msg.authId,
@@ -258,7 +258,6 @@ export class AppService {
         });
       }
   
-      // Fetch chats based on the adminId or adminId = 0
       const chats = await this.prisma.chat.findMany({
         where: {
           OR: [
@@ -274,28 +273,25 @@ export class AppService {
         },
       });
   
-      // Group chats by roles and ensure unique orderIds
       const groupedChats = chats.reduce((acc, chat) => {
-        // Create a set to track unique orderIds for each role
+
         if (!acc[chat.senderRole]) {
           acc[chat.senderRole] = { chats: [], orderIds: new Set<number>() };
         }
-  
-        // Check if the orderId is already added for the current role
+
         if (!acc[chat.senderRole].orderIds.has(chat.orderId)) {
-          // Add the unique chat object to the respective role's chat list
+
           const uniqueChat = { orderId: chat.orderId };
           if (chat.senderRole === 'requester') uniqueChat['requesterId'] = chat.requesterId;
           if (chat.senderRole === 'walker') uniqueChat['walkerId'] = chat.walkerId;
   
           acc[chat.senderRole].chats.push(uniqueChat);
-          acc[chat.senderRole].orderIds.add(chat.orderId); // Track the added orderId
+          acc[chat.senderRole].orderIds.add(chat.orderId);
         }
   
         return acc;
       }, {} as Record<string, { chats: Array<{ orderId: number; requesterId?: number; walkerId?: number }>, orderIds: Set<number> }>);
   
-      // Convert groupedChats into the desired format without orderId tracking sets
       const formattedGroupedChats = Object.keys(groupedChats).reduce((formattedAcc, role) => {
         formattedAcc[role] = groupedChats[role].chats;
         return formattedAcc;
@@ -309,8 +305,6 @@ export class AppService {
       });
     }
   }
-  
-  
 
   async postApproval(msg: any): Promise<any> {
     const order = await this.prisma.order.findUnique({
