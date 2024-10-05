@@ -12,3 +12,12 @@ export class VerifyWalkerDto {
   @IsNumber()
   walkerId: Number;
 }
+
+export class getChatDto {
+
+}
+
+export class selectChatDto {
+  @ApiProperty()
+  orderId: number;
+}
