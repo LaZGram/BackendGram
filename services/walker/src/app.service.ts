@@ -269,27 +269,17 @@ export class AppService {
         throw new RpcException({ statusCode: 404, message: `Order not found for ID ${msg.orderId}` });
       }
   
-      // Group order items by shop and then by order ID within each shop
+      // Group order items by shop only
       const groupedItemsByShop = order.orderItem.reduce((grouped, item) => {
         const { shopName, shopId } = item.menu.shop;
         if (!grouped[shopId]) {
           grouped[shopId] = {
             shopName,
-            orders: {},
-          };
-        }
-  
-        const orderId = order.orderId;
-        if (!grouped[shopId].orders[orderId]) {
-          grouped[shopId].orders[orderId] = {
-            orderId,
-            orderDate: order.orderDate,
-            orderStatus: order.orderStatus,
             items: [],
           };
         }
   
-        grouped[shopId].orders[orderId].items.push({
+        grouped[shopId].items.push({
           quantity: item.quantity,
           specialInstructions: item.specialInstructions,
           menuName: item.menu.name,
@@ -297,12 +287,12 @@ export class AppService {
         });
   
         return grouped;
-      }, {} as { [shopId: string]: { shopName: string; orders: { [orderId: number]: any } } });
+      }, {} as { [shopId: string]: { shopName: string; items: any[] } });
   
       // Convert groupedItemsByShop to an array format if needed
       const formattedGroupedItems = Object.values(groupedItemsByShop).map((shop) => ({
         shopName: shop.shopName,
-        orders: Object.values(shop.orders),
+        items: shop.items,
       }));
   
       // Format the result to include grouped items
@@ -316,7 +306,7 @@ export class AppService {
         address: order.address,
         canteen: order.canteen,
         requester: order.requester,
-        groupedOrderItemsByShop: formattedGroupedItems, // Add the grouped order items
+        groupedOrderItemsByShop: formattedGroupedItems, // Add the grouped order items in the desired format
       };
   
       return formattedOrder;
@@ -324,8 +314,6 @@ export class AppService {
       throw new RpcException({ statusCode: 500, message: `Failed to get order detail: ${error.message}` });
     }
   }
-  
-
 
   async confirmOrder(msg: any): Promise<any> {
     try {
