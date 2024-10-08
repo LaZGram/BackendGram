@@ -199,56 +199,62 @@ export class AppService {
 
   async selectChat(msg: any): Promise<any> {
     try {
-
+      // Retrieve admin information
       const admin = await this.prisma.admin.findUnique({
-        where: {
-          authId: msg.authId,
-        },
-        select: {
-          adminId: true,
-        },
+        where: { authId: msg.authId },
+        select: { adminId: true },
       });
   
       if (!admin) {
         throw new RpcException({
           statusCode: 404,
-          message: `Admin with authId: ${msg.authId} not found`,
+          message: `Admin with authId: ${msg.authId} not found.`,
         });
       }
-
-      const updatedChats = await this.prisma.chat.updateMany({
-        where: {
-          orderId: Number(msg.orderId),
-          adminId: 0,
-        },
-        data: {
-          adminId: admin.adminId,
-        },
-      });
   
+      // Perform updates in a transaction to ensure consistency
+      const [updatedChats, updatedOrder] = await this.prisma.$transaction([
+        // Update adminId in the Chat table for the specified orderId and existing adminId = 0
+        this.prisma.chat.updateMany({
+          where: {
+            orderId: Number(msg.orderId),
+            adminId: 0, // Update only chats with adminId = 0 (unassigned)
+          },
+          data: { adminId: admin.adminId },
+        }),
+        
+        // Update adminId in the Order table for the specified orderId
+        this.prisma.order.update({
+          where: {
+            orderId: Number(msg.orderId),
+          },
+          data: { adminId: admin.adminId },
+          select: { orderId: true, adminId: true, orderStatus: true },
+        }),
+      ]);
+  
+      // Return a success response with details of the updates
       return {
         statusCode: 200,
-        message: `Updated ${updatedChats.count} chats with new adminId: ${admin.adminId} for orderId: ${msg.orderId}`,
+        message: `Updated ${updatedChats.count} chats and updated orderId: ${updatedOrder.orderId} with new adminId: ${admin.adminId}.`,
+        updatedChats: updatedChats.count,
+        updatedOrder,
       };
     } catch (error) {
+      // Handle any errors during the update process
       throw new RpcException({
         statusCode: 500,
-        message: `Failed to update adminId for chats with orderId: ${msg.orderId}. Error: ${error.message}`,
+        message: `Failed to update adminId for chats and order with orderId: ${msg.orderId}. Error: ${error.message}`,
       });
     }
   }
   
-  
   async getChat(msg: any): Promise<any> {
     try {
-
+      // Retrieve admin information using the provided authId
       const admin = await this.prisma.admin.findUnique({
-        where: {
-          authId: msg.authId,
-        },
-        select: {
-          adminId: true,
-        },
+        where: { authId: msg.authId },
+        select: { adminId: true },
       });
   
       if (!admin) {
@@ -258,6 +264,7 @@ export class AppService {
         });
       }
   
+      // Retrieve all relevant chats, either unassigned (adminId = 0) or assigned to the current admin
       const chats = await this.prisma.chat.findMany({
         where: {
           OR: [
@@ -273,15 +280,17 @@ export class AppService {
         },
       });
   
-      const groupedChats = chats.reduce((acc, chat) => {
-
+      // Filter out any chats where the senderRole is 'admin'
+      const filteredChats = chats.filter(chat => chat.senderRole !== 'admin');
+  
+      // Group the filtered chats based on sender role (excluding 'admin')
+      const groupedChats = filteredChats.reduce((acc, chat) => {
         if (!acc[chat.senderRole]) {
           acc[chat.senderRole] = { chats: [], orderIds: new Set<number>() };
         }
-
+  
         if (!acc[chat.senderRole].orderIds.has(chat.orderId)) {
-
-          const uniqueChat = { orderId: chat.orderId };
+          const uniqueChat: any = { orderId: chat.orderId };
           if (chat.senderRole === 'requester') uniqueChat['requesterId'] = chat.requesterId;
           if (chat.senderRole === 'walker') uniqueChat['walkerId'] = chat.walkerId;
   
@@ -292,6 +301,7 @@ export class AppService {
         return acc;
       }, {} as Record<string, { chats: Array<{ orderId: number; requesterId?: number; walkerId?: number }>, orderIds: Set<number> }>);
   
+      // Format the grouped chats to return only necessary fields
       const formattedGroupedChats = Object.keys(groupedChats).reduce((formattedAcc, role) => {
         formattedAcc[role] = groupedChats[role].chats;
         return formattedAcc;
@@ -305,6 +315,7 @@ export class AppService {
       });
     }
   }
+  
 
   async postApproval(msg: any): Promise<any> {
     const order = await this.prisma.order.findUnique({
