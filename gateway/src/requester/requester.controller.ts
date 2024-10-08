@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Query, Delete, Inject, Param, Request, BadRequestException, NotFoundException, Put} from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
-import { PostChangeProfilePictureDto, GetDebitCardDto, PostChangeDebitCardDto, SearchMenuDto, RequesterProfileDto, UpdateRequesterProfileDto, RequesterAddressDto, CreateDebitCardDto, RequesterCreateDto } from './dto/requester.dto';
+import { buildReviewDto , PostChangeProfilePictureDto, GetDebitCardDto, PostChangeDebitCardDto, SearchMenuDto, RequesterProfileDto, UpdateRequesterProfileDto, RequesterAddressDto, CreateDebitCardDto, RequesterCreateDto , createReviewDto , ResultgetReview , ResultcreateReview , ResultgetShop } from './dto/requester.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { catchError, lastValueFrom, Observable } from 'rxjs';
 import { CreateAddressRequestDto, CreateOrderRequestDto, CreateReportRequestDto, UpdateAddressRequestDto } from 'src/dtos/';
@@ -241,4 +241,30 @@ export class RequesterController {
         const result = this.client.send('getPaymentStatus', transactionIdSCB);
         return await lastValueFrom(result);
     }
+
+    @Get('review')
+    @ApiOperation({ summary: 'Retrieve all reviews' })
+    @ApiResponse({ status: 200, description: 'Reviews retrieved successfully.', type: ResultgetReview })
+    async getReview(@Query() createReviewDto: createReviewDto): Promise<any> {
+        const result = this.client.send('getReview', {...createReviewDto});
+        return await lastValueFrom(result);
+    }
+
+    @Post('review')
+    @ApiOperation({ summary: 'Create a new review' })
+    @ApiResponse({ status: 201, description: 'Review created successfully.', type: ResultcreateReview})
+    @ApiResponse({ status: 400, description: 'Invalid input data for creating review.' })
+    async createReview(@Body() buildReviewDto: buildReviewDto , @Request() req): Promise<string> {
+        const result = this.client.send('createReview', {...buildReviewDto, authId: req.jwt.authId});
+        return await lastValueFrom(result);
+    }
+    
+    @Get('shop')
+    @ApiOperation({ summary: 'Retrieve review by shopId' })
+    @ApiResponse({ status: 200, description: 'Shops retrieved successfully.', type: ResultgetShop})
+    async getShop(): Promise<any> {
+        const result = this.client.send('getShop', {});
+        return await lastValueFrom(result);
+    }
+    
 }

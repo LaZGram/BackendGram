@@ -41,8 +41,8 @@
     <ul id="messages"></ul>
     
     <script>
-        const socket = io('https://ku-man-chat.vimforlanie.com/');
-
+        // const socket = io('https://ku-man-chat.vimforlanie.com/');
+        const socket = io('http://localhost:3001/');
         // Join the chat room and retrieve old messages
         function joinOrderChat() {
             const userId = document.getElementById('userId').value;

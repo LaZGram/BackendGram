@@ -64,7 +64,7 @@ import {
         }
     
         // Call the service to save the message
-        await this.chatService.saveMessage(chatId, orderId, message, role, walkerId, adminId, requesterId);
+        await this.chatService.saveMessage(chatId, orderId, message, role);
     
         // Broadcast the message to the chat room
         this.server.to(chatId).emit('message', { fromUser, role, message });

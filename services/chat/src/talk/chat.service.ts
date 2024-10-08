@@ -12,26 +12,37 @@ export class ChatService {
     orderId: any,
     message: string,
     senderRole: string,
-    walkerId?: number,
-    adminId?: number,
-    requesterId?: number
   ): Promise<Chat> {
-    let orderIdReal = parseInt(orderId);
+
+    const orderIdReal = parseInt(orderId);
+  
+    const order = await this.prisma.order.findUnique({
+      where: { orderId: orderIdReal },
+      select: {
+        walkerId: true,
+        adminId: true,
+        requesterId: true,
+      },
+    });
+  
+    if (!order) {
+      throw new Error(`Order with ID ${orderIdReal} not found`);
+    }
+    console.log(order.requesterId)
     return this.prisma.chat.create({
       data: {
         chatId,
         orderId: orderIdReal,
         message,
         senderRole,
-        walkerId: walkerId || null,         // Optional walkerId (set to null if not provided)
-        adminId: adminId || null,           // Optional adminId (set to null if not provided)
-        requesterId: requesterId || null,   // Optional requesterId (set to null if not provided)
+        walkerId: order.walkerId ?? null,
+        adminId: order.adminId ?? 0,
+        requesterId: order.requesterId ?? null,
         timestamp: new Date(),
       },
     });
   }
 
-  // Retrieve old messages from the database by chatId
   async getMessages(chatId: string): Promise<Chat[]> {
     console.log(await this.prisma.chat.findMany({
         where: { chatId },

@@ -50,5 +50,20 @@ export class AppController {
   createDebitcard(msg: any): any {
     return this.appService.createDebitcard(msg);
   }
+  
+  @MessagePattern('getReview')
+  getReview(msg: any): any {
+    return this.appService.getReview(msg);
+  }
+
+  @MessagePattern('createReview')
+  createReview(msg: any): any {
+    return this.appService.createReview(msg);
+  }
+  
+  @MessagePattern('getShop')
+  getShop(): any {
+    return this.appService.getShop();
+  }
 
 }
