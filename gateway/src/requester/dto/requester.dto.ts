@@ -191,6 +191,15 @@ export class ResultgetReview {
 
   @ApiProperty({ description: 'ID of the requester who wrote the review', example: 1 })
   requesterId: number;
+
+  @ApiProperty({ description: 'Username of the requester who wrote the review', example: 'john_doe' })
+  username: string;
+
+  @ApiProperty({ description: 'Last name of the requester who wrote the review', example: 'Doe' })
+  lastName: string;
+
+  @ApiProperty({ description: 'Profile picture URL of the requester who wrote the review', example: 'https://example.com/profile-pic.jpg' })
+  profilePicture: string;
 }
 
 // Response structure for creating a review

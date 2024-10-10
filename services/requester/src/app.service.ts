@@ -201,8 +201,8 @@ export class AppService {
     });
   }
 
-  async getReview(msg:any): Promise<any> {
-    return this.prisma.review.findMany({
+  async getReview(msg: any): Promise<any> {
+    const reviews = await this.prisma.review.findMany({
       where: {
         shopId: Number(msg.shopId)
       },
@@ -211,8 +211,25 @@ export class AppService {
         comment: true,
         shopId: true,
         requesterId: true,
+        requester: {
+          select: {
+            username: true,
+            lastName: true,
+            profilePicture: true,
+          }
+        }
       }
-    })
+    });
+  
+    return reviews.map(review => ({
+      rating: review.rating,
+      comment: review.comment,
+      shopId: review.shopId,
+      requesterId: review.requesterId,
+      username: review.requester.username,
+      lastName: review.requester.lastName,
+      profilePicture: review.requester.profilePicture,
+    }));
   }
 
   async createReview(msg: any): Promise<any> {
