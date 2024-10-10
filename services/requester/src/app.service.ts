@@ -207,6 +207,7 @@ export class AppService {
         shopId: Number(msg.shopId)
       },
       select: {
+        reviewId: true,
         rating: true,
         comment: true,
         shopId: true,
