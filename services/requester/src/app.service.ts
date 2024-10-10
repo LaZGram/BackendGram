@@ -215,6 +215,7 @@ export class AppService {
         requester: {
           select: {
             username: true,
+            firstName: true,
             lastName: true,
             profilePicture: true,
           }
