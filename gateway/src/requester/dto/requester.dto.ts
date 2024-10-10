@@ -180,6 +180,9 @@ export class buildReviewDto {
 }
 
 export class ResultgetReview {
+  @ApiProperty({ description: 'ReviewId', example: 1 })
+  reviewId: number;
+
   @ApiProperty({ description: 'Rating given in the review', example: 3 })
   rating: number;
 
@@ -194,6 +197,9 @@ export class ResultgetReview {
 
   @ApiProperty({ description: 'Username of the requester who wrote the review', example: 'john_doe' })
   username: string;
+
+  @ApiProperty({ description: 'First name of the requester who wrote the review', example: 'john' })
+  firstName: string;
 
   @ApiProperty({ description: 'Last name of the requester who wrote the review', example: 'Doe' })
   lastName: string;
