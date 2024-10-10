@@ -224,11 +224,13 @@ export class AppService {
     });
   
     return reviews.map(review => ({
+      reviewId: review.reviewId,
       rating: review.rating,
       comment: review.comment,
       shopId: review.shopId,
       requesterId: review.requesterId,
       username: review.requester.username,
+      firstName: review.requester.firstName,
       lastName: review.requester.lastName,
       profilePicture: review.requester.profilePicture,
     }));
