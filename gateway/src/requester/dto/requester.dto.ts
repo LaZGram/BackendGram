@@ -162,6 +162,64 @@ export class SearchMenuDto {
   name: string;
 }
 
+export class createReviewDto {
+  @ApiProperty()
+  shopId: number;
+}
+
+export class buildReviewDto {
+  @ApiProperty({ description: 'ShopId', example: 5 })
+  @IsNumber()
+  shopId: number
+  @ApiProperty({ description: 'Rating', example: 3 })
+  @IsNumber()
+  rating: number;
+  @ApiProperty({ description: 'Comment', example: 'CleanAndGood' })
+  @IsString()
+  comment: string;
+}
+
+export class ResultgetReview {
+  @ApiProperty({ description: 'Rating given in the review', example: 3 })
+  rating: number;
+
+  @ApiProperty({ description: 'Comment left in the review', example: 'CleanAndGood' })
+  comment: string;
+
+  @ApiProperty({ description: 'ID of the shop being reviewed', example: 5 })
+  shopId: number;
+
+  @ApiProperty({ description: 'ID of the requester who wrote the review', example: 1 })
+  requesterId: number;
+}
+
+// Response structure for creating a review
+export class ResultcreateReview {
+  @ApiProperty({ description: 'ID of the created review', example: 2 })
+  reviewId: number;
+
+  @ApiProperty({ description: 'Rating given in the review', example: 1 })
+  rating: number;
+
+  @ApiProperty({ description: 'Comment left in the review', example: 'Bad' })
+  comment: string;
+
+  @ApiProperty({ description: 'ID of the shop being reviewed', example: 6 })
+  shopId: number;
+
+  @ApiProperty({ description: 'ID of the requester who wrote the review', example: 1 })
+  requesterId: number;
+}
+
+// Response structure for getting multiple shops
+export class ResultgetShop {
+  @ApiProperty({ description: 'ID of the shop', example: 5 })
+  shopId: number;
+
+  @ApiProperty({ description: 'Name of the shop', example: 'Burger House' })
+  shopName: string;
+}
+
 // 9. RequesterCreateDto
 export class RequesterCreateDto {
   @IsString()

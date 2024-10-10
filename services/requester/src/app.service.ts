@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
 import { RpcException } from '@nestjs/microservices';
+import { mergeScan } from 'rxjs';
 
 @Injectable()
 export class AppService {
@@ -189,6 +190,53 @@ export class AppService {
         cvv: msg.cvv,
       },
     });
+  }
+
+  async getShop(): Promise<any> {
+    return this.prisma.shop.findMany({
+      select: {
+        shopId: true,
+        shopName: true,
+      },
+    });
+  }
+
+  async getReview(msg:any): Promise<any> {
+    return this.prisma.review.findMany({
+      where: {
+        shopId: Number(msg.shopId)
+      },
+      select: {
+        rating: true,
+        comment: true,
+        shopId: true,
+        requesterId: true,
+      }
+    })
+  }
+
+  async createReview(msg: any): Promise<any> {
+    const { rating, comment, shopId, authId } = msg;
+
+    const existingRequester = await this.prisma.requester.findUnique({
+      where: { authId },
+      select: { requesterId: true },
+    });
+
+    if (!existingRequester) {
+      throw new RpcException({ statusCode: 404, message: 'Requester not found' });
+    }
+
+    const newReview = await this.prisma.review.create({
+      data: {
+        rating,
+        comment,
+        shop: { connect: { shopId } },
+        requester: { connect: { requesterId: existingRequester.requesterId } },
+      },
+    });
+
+    return newReview;
   }
 
 }

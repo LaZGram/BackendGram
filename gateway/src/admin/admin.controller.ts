@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Inject, Request, SetMetadata, Query
 import { ClientKafka } from '@nestjs/microservices';
 import { catchError, lastValueFrom } from 'rxjs';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import { VerifyWalkerDto , PostApprovalDto} from './dto/admin.dto';
+import { VerifyWalkerDto , PostApprovalDto , selectChatDto , getChatDto , ResultselectChatDTO} from './dto/admin.dto';
 import { AdminLoginResponseDto, CanteenResponse, CreateAdminResponseDto, FilterOrderResponse, FilterReportResponse, GetOrderInfoResponse, GetReportInfoResponse, GetReportResponse, GetShopInCanteenResponse, GetShopInfoResponse, GetShopMenuResponse, GetShopOrderResponse, GetToDayOrderResponse, SearchOrderResponse, SearchReportResponse } from './dto/response.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
@@ -10,7 +10,6 @@ import { AdminLoginRequestDto, CreateAdminRequestDto } from './dto/request.dto';
 
 @ApiTags('admin')
 @Controller('admin')
-@SetMetadata('isPublic', true)
 export class AdminController {
   constructor(@Inject('KAFKA') private client: ClientKafka, private JwtService: JwtService) {}
 
@@ -271,9 +270,17 @@ export class AdminController {
 
   @Get('chat')
   @ApiOperation({ summary: 'Show list of Chats' })
-  @ApiResponse({ status: 200, description: 'Returns list of Chats.', type: CanteenResponse })
-  async getChat(): Promise<any> {
-    const result = this.client.send('getChat', {});
+  @ApiResponse({ status: 200, description: 'Returns list of Chats.', type: getChatDto })
+  async getChat(@Request() req): Promise<any> {
+    const result = this.client.send('getChat', {authId: req.jwt.authId});
+    return await lastValueFrom(result);
+  }
+
+  @Put('chat')
+  @ApiOperation({ summary: 'Update Chat come in your responsibility.' })
+  @ApiResponse({ status: 200, description: 'Returns list of Chats in your responsibility.', type: ResultselectChatDTO })
+  async selectChat(@Query() selectChatDto: selectChatDto , @Request() req): Promise<any> {
+    const result = this.client.send('selectChat', { ...selectChatDto , authId: req.jwt.authId});
     return await lastValueFrom(result);
   }
 }

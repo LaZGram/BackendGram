@@ -3,6 +3,7 @@ import { PrismaService } from './prisma.service';
 import { AdminLoginDto, CreateAdminDto } from './dto/admin.dto';
 import { RpcException } from '@nestjs/microservices';
 import * as bcrypt from 'bcrypt';
+import { maxHeaderSize } from 'http';
 
 @Injectable()
 export class AppService {
@@ -196,26 +197,125 @@ export class AppService {
     });
   }
 
+  async selectChat(msg: any): Promise<any> {
+    try {
+      // Retrieve admin information
+      const admin = await this.prisma.admin.findUnique({
+        where: { authId: msg.authId },
+        select: { adminId: true },
+      });
+  
+      if (!admin) {
+        throw new RpcException({
+          statusCode: 404,
+          message: `Admin with authId: ${msg.authId} not found.`,
+        });
+      }
+  
+      // Perform updates in a transaction to ensure consistency
+      const [updatedChats, updatedOrder] = await this.prisma.$transaction([
+        // Update adminId in the Chat table for the specified orderId and existing adminId = 0
+        this.prisma.chat.updateMany({
+          where: {
+            orderId: Number(msg.orderId),
+            adminId: 0, // Update only chats with adminId = 0 (unassigned)
+          },
+          data: { adminId: admin.adminId },
+        }),
+        
+        // Update adminId in the Order table for the specified orderId
+        this.prisma.order.update({
+          where: {
+            orderId: Number(msg.orderId),
+          },
+          data: { adminId: admin.adminId },
+          select: { orderId: true, adminId: true, orderStatus: true },
+        }),
+      ]);
+  
+      // Return a success response with details of the updates
+      return {
+        statusCode: 200,
+        message: `Updated ${updatedChats.count} chats and updated orderId: ${updatedOrder.orderId} with new adminId: ${admin.adminId}.`,
+        updatedChats: updatedChats.count,
+        updatedOrder,
+      };
+    } catch (error) {
+      // Handle any errors during the update process
+      throw new RpcException({
+        statusCode: 500,
+        message: `Failed to update adminId for chats and order with orderId: ${msg.orderId}. Error: ${error.message}`,
+      });
+    }
+  }
+  
   async getChat(msg: any): Promise<any> {
     try {
-      // Retrieve all chats with only the orderId field
+      // Retrieve admin information using the provided authId
+      const admin = await this.prisma.admin.findUnique({
+        where: { authId: msg.authId },
+        select: { adminId: true },
+      });
+  
+      if (!admin) {
+        throw new RpcException({
+          statusCode: 404,
+          message: `Admin with authId: ${msg.authId} not found`,
+        });
+      }
+  
+      // Retrieve all relevant chats, either unassigned (adminId = 0) or assigned to the current admin
       const chats = await this.prisma.chat.findMany({
+        where: {
+          OR: [
+            { adminId: 0 },
+            { adminId: admin.adminId },
+          ],
+        },
         select: {
-          orderId: true, // Include only orderId in the result set
+          orderId: true,
+          senderRole: true,
+          walkerId: true,
+          requesterId: true,
         },
       });
   
-      // Use a Set to filter out duplicate orderId values
-      const distinctOrderIds = Array.from(new Set(chats.map(chat => chat.orderId)));
+      // Filter out any chats where the senderRole is 'admin'
+      const filteredChats = chats.filter(chat => chat.senderRole !== 'admin');
   
-      // Map the distinct orderIds back to an array of objects
-      const distinctChats = distinctOrderIds.map(orderId => ({ orderId }));
+      // Group the filtered chats based on sender role (excluding 'admin')
+      const groupedChats = filteredChats.reduce((acc, chat) => {
+        if (!acc[chat.senderRole]) {
+          acc[chat.senderRole] = { chats: [], orderIds: new Set<number>() };
+        }
   
-      return distinctChats;
+        if (!acc[chat.senderRole].orderIds.has(chat.orderId)) {
+          const uniqueChat: any = { orderId: chat.orderId };
+          if (chat.senderRole === 'requester') uniqueChat['requesterId'] = chat.requesterId;
+          if (chat.senderRole === 'walker') uniqueChat['walkerId'] = chat.walkerId;
+  
+          acc[chat.senderRole].chats.push(uniqueChat);
+          acc[chat.senderRole].orderIds.add(chat.orderId);
+        }
+  
+        return acc;
+      }, {} as Record<string, { chats: Array<{ orderId: number; requesterId?: number; walkerId?: number }>, orderIds: Set<number> }>);
+  
+      // Format the grouped chats to return only necessary fields
+      const formattedGroupedChats = Object.keys(groupedChats).reduce((formattedAcc, role) => {
+        formattedAcc[role] = groupedChats[role].chats;
+        return formattedAcc;
+      }, {} as Record<string, Array<{ orderId: number; requesterId?: number; walkerId?: number }>>);
+  
+      return formattedGroupedChats;
     } catch (error) {
-      throw new RpcException({ statusCode: 500, message: `Failed to retrieve distinct order IDs: ${error.message}` });
+      throw new RpcException({
+        statusCode: 500,
+        message: `Failed to retrieve distinct order IDs: ${error.message}`,
+      });
     }
   }
+  
 
   async postApproval(msg: any): Promise<any> {
     const order = await this.prisma.order.findUnique({

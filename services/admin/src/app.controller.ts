@@ -56,4 +56,9 @@ export class AppController {
   getChat(msg: any): any {
     return this.appService.getChat(msg);
   }
+  
+  @MessagePattern('selectChat')
+  selectChat(msg: any): any {
+    return this.appService.selectChat(msg);
+  }
 }
