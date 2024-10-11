@@ -34,4 +34,10 @@ export class OrderController {
   getOrder(@Payload() msg: any) {
     return this.orderService.getOrders(msg.authId);
   }
+
+  @MessagePattern('reqGetOrderInfo')
+  getOrderInfo(@Payload() msg: object) {
+    const orderId = parseInt(msg["orderId"].toString());
+    return this.orderService.getOrderInfo(orderId);
+  }
 }
