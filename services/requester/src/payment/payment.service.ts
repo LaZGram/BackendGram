@@ -150,8 +150,7 @@ export class PaymentService {
         }
     }
 
-    async getPaymentStatus(transactionId: number) : Promise<boolean> {
-        const transactionIdSCB = await this.getTransactionSCB(transactionId);
+    async getPaymentStatus(transactionIdSCB: string) : Promise<boolean> {
         let status = 0;
         for (let i = 0; i < transactionIdSCB.length; i++) {
             const token = await this.getToken()
