@@ -14,8 +14,17 @@ export class VerifyWalkerDto {
 }
 
 class RequesterChatDto {
-  @ApiProperty({ description: 'ID of the order', example: 1 })
+  @ApiProperty({ description: 'ID of the order', example: 8 })
   orderId: number;
+
+  @ApiProperty({ description: 'Status of the order', example: 'inProgress' })
+  orderStatus: string;
+
+  @ApiProperty({ description: 'ID of the shop', example: 5 })
+  shopId: number;
+
+  @ApiProperty({ description: 'ID of the admin', example: 1 })
+  adminId: number;
 
   @ApiProperty({ description: 'ID of the requester', example: 1 })
   requesterId: number;
@@ -24,6 +33,15 @@ class RequesterChatDto {
 class WalkerChatDto {
   @ApiProperty({ description: 'ID of the order', example: 3 })
   orderId: number;
+
+  @ApiProperty({ description: 'Status of the order', example: 'completed' })
+  orderStatus: string;
+
+  @ApiProperty({ description: 'ID of the shop', example: 5 })
+  shopId: number;
+
+  @ApiProperty({ description: 'ID of the admin', example: 1 })
+  adminId: number;
 
   @ApiProperty({ description: 'ID of the walker', example: 3 })
   walkerId: number;

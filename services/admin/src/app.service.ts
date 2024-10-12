@@ -277,6 +277,19 @@ export class AppService {
           senderRole: true,
           walkerId: true,
           requesterId: true,
+          adminId: true,
+          order: {
+            select: {
+              orderStatus: true,  // Fetch the order status
+              canteen: {
+                select: {
+                  shop: {
+                    select: { shopId: true },  // Fetch the shop ID through Canteen
+                  },
+                },
+              },
+            },
+          },
         },
       });
   
@@ -290,7 +303,13 @@ export class AppService {
         }
   
         if (!acc[chat.senderRole].orderIds.has(chat.orderId)) {
-          const uniqueChat: any = { orderId: chat.orderId };
+          const uniqueChat: any = {
+            orderId: chat.orderId,
+            orderStatus: chat.order.orderStatus,
+            shopId: chat.order.canteen?.shop?.[0]?.shopId,
+            adminId: chat.adminId,
+          };
+  
           if (chat.senderRole === 'requester') uniqueChat['requesterId'] = chat.requesterId;
           if (chat.senderRole === 'walker') uniqueChat['walkerId'] = chat.walkerId;
   
@@ -299,13 +318,13 @@ export class AppService {
         }
   
         return acc;
-      }, {} as Record<string, { chats: Array<{ orderId: number; requesterId?: number; walkerId?: number }>, orderIds: Set<number> }>);
+      }, {} as Record<string, { chats: Array<{ orderId: number; requesterId?: number; walkerId?: number; shopId?: number; orderStatus: string }>, orderIds: Set<number> }>);
   
       // Format the grouped chats to return only necessary fields
       const formattedGroupedChats = Object.keys(groupedChats).reduce((formattedAcc, role) => {
         formattedAcc[role] = groupedChats[role].chats;
         return formattedAcc;
-      }, {} as Record<string, Array<{ orderId: number; requesterId?: number; walkerId?: number }>>);
+      }, {} as Record<string, Array<{ orderId: number; requesterId?: number; walkerId?: number; shopId?: number; orderStatus: string }>>);
   
       return formattedGroupedChats;
     } catch (error) {
@@ -315,6 +334,8 @@ export class AppService {
       });
     }
   }
+
+
   
 
   async postApproval(msg: any): Promise<any> {
