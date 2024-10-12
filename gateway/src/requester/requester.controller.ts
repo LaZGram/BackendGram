@@ -236,6 +236,7 @@ export class RequesterController {
     @Get('payment/status')
     @ApiOperation({ summary: 'Get payment status from database' })
     @ApiQuery({ name: 'transactionIdSCB', type: 'string' })
+    @ApiQuery({ name: 'orderId', type: 'string' })
     @ApiResponse({ status: 200, description: 'Get payment status successes', type: String })
     async getPaymentStatus(@Query('transactionIdSCB') transactionIdSCB: string, @Query('orderId') orderId: string): Promise<string> {
         const result = this.client.send('getPaymentStatus', { transactionIdSCB, orderId });
