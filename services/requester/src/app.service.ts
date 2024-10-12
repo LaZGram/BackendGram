@@ -201,18 +201,39 @@ export class AppService {
     });
   }
 
-  async getReview(msg:any): Promise<any> {
-    return this.prisma.review.findMany({
+  async getReview(msg: any): Promise<any> {
+    const reviews = await this.prisma.review.findMany({
       where: {
         shopId: Number(msg.shopId)
       },
       select: {
+        reviewId: true,
         rating: true,
         comment: true,
         shopId: true,
         requesterId: true,
+        requester: {
+          select: {
+            username: true,
+            firstName: true,
+            lastName: true,
+            profilePicture: true,
+          }
+        }
       }
-    })
+    });
+  
+    return reviews.map(review => ({
+      reviewId: review.reviewId,
+      rating: review.rating,
+      comment: review.comment,
+      shopId: review.shopId,
+      requesterId: review.requesterId,
+      username: review.requester.username,
+      firstName: review.requester.firstName,
+      lastName: review.requester.lastName,
+      profilePicture: review.requester.profilePicture,
+    }));
   }
 
   async createReview(msg: any): Promise<any> {
