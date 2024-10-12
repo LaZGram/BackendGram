@@ -6,7 +6,7 @@ import { RpcException } from '@nestjs/microservices';
 
 @Injectable()
 export class OrderService {
-  constructor(private prisma: PrismaService, private appService: AppService) {}
+  constructor(private prisma: PrismaService, private appService: AppService) { }
 
   async create(createOrderDto: CreateOrderDto) {
     const date = new Date();
@@ -53,7 +53,7 @@ export class OrderService {
         walker: {
           connect: {
             walkerId: 0 // default walker, will be updated when walker is assigned
-        }
+          }
         }
       }
     });
@@ -77,7 +77,7 @@ export class OrderService {
         orderId: order.orderId
       }
     });
-    for(let i = 0; i < orderItems.length; i++) {
+    for (let i = 0; i < orderItems.length; i++) {
       await this.prisma.orderItemExtra.createMany({
         data: createOrderDto.orderItems[i].orderItemExtras.map(extra => {
           return {
@@ -118,7 +118,8 @@ export class OrderService {
         },
         data: {
           orderItemStatus: "canceled"
-      }});
+        }
+      });
       return `Update a #${orderId} order status to canceled`;
     }
     else if (status === "canceled") return "Order is already canceled";
@@ -145,8 +146,8 @@ export class OrderService {
         }
       });
     }
-    catch(e) {
-      throw  new RpcException({ statusCode: 404, message: "Order not found"+e });
+    catch (e) {
+      throw new RpcException({ statusCode: 404, message: "Order not found" + e });
     }
   }
 
@@ -158,8 +159,78 @@ export class OrderService {
         }
       });
     }
-    catch(e) {
-      throw  new RpcException({ statusCode: 404, message: "Order not found" });
+    catch (e) {
+      throw new RpcException({ statusCode: 404, message: "Order not found" });
+    }
+  }
+
+  async getOrderInfo(orderId: number) {
+    try {
+      const order = await this.prisma.order.findUnique({
+        where: {
+          orderId: orderId
+        },
+        include: {
+          canteen: {
+            select: {
+              canteenId: true,
+              name: true,
+            }
+          },
+          address: {
+            select: {
+              addressId: true,
+              name: true,
+              detail: true,
+              note: true,
+            }
+          },
+          orderItem: {
+            select: {
+              orderItemId: true,
+              quantity: true,
+              totalPrice: true,
+              specialInstructions: true,
+              shop: {
+                select: {
+                  shopId: true,
+                  shopName: true,
+                  profilePicture: true
+                }
+              },
+              menu: {
+                select: {
+                  menuId: true,
+                  name: true,
+                  price: true,
+                }
+              },
+              orderItemExtra: {
+                where: {
+                  selected: true
+                },
+                select: {
+                  OrderItemExtraId: true,
+                  optionItem: {
+                    select: {
+                      optionItemId: true,
+                      name: true,
+                      price: true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+      if(!order) {
+        throw new RpcException({ statusCode: 404, message: 'Order not found' });
+      }
+      return order;
+    }
+    catch (e) {
+      throw e;
     }
   }
 }

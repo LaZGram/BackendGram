@@ -4,7 +4,7 @@ import { buildReviewDto , PostChangeProfilePictureDto, GetDebitCardDto, PostChan
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { catchError, lastValueFrom, Observable } from 'rxjs';
 import { CreateAddressRequestDto, CreateOrderRequestDto, CreateReportRequestDto, UpdateAddressRequestDto } from 'src/dtos/';
-import { CancelOrderResponseDto, CreateAddressResponseDto, CreateOrderResponseDto, CreateReportResponseDto, DeleteAddressResponseDto, GetAddressInfoResponseDto, GetAddressResponseDto, UpdateAddressResponseDto } from './dto/response.dto';
+import { CancelOrderResponseDto, CreateAddressResponseDto, CreateOrderResponseDto, CreateReportResponseDto, DeleteAddressResponseDto, GetAddressInfoResponseDto, GetAddressResponseDto, GetReviewInfoResponse, ReqGetOrderInfoResponseDto, UpdateAddressResponseDto } from './dto/response.dto';
 
 @ApiTags('REQUESTER')
 @Controller('requester')
@@ -225,6 +225,24 @@ export class RequesterController {
         return await lastValueFrom(result);
     }
 
+    @Get('order/info')
+    @ApiOperation({ summary: 'Get order information from database' })
+    @ApiQuery({ name: 'orderId', type: 'number' })
+    @ApiResponse({ status: 200, description: 'Get order information successes', type: ReqGetOrderInfoResponseDto })
+    async reqGetOrderInfo(@Query() orderId: object): Promise<ReqGetOrderInfoResponseDto> {
+        const result = this.client.send('reqGetOrderInfo', orderId)
+        .pipe(
+            catchError(error => {
+                const { statusCode, message } = error;
+                if (statusCode === 404) {
+                  throw new NotFoundException(message);
+                } else {
+                  throw new BadRequestException('Unexpected error occurred');
+                }
+        }));
+        return await lastValueFrom(result);
+    }
+
     @Get('payment/deeplink/:orderId')
     @ApiOperation({ summary: 'Get payment deeplink for an order' })
     @ApiResponse({ status: 200, description: 'Payment deeplink retrieved successfully.' })
@@ -257,6 +275,43 @@ export class RequesterController {
     @ApiResponse({ status: 400, description: 'Invalid input data for creating review.' })
     async createReview(@Body() buildReviewDto: buildReviewDto , @Request() req): Promise<string> {
         const result = this.client.send('createReview', {...buildReviewDto, authId: req.jwt.authId});
+        return await lastValueFrom(result);
+    }
+
+    @Get('order/review/info')
+    @ApiOperation({ summary: 'Get review infomation by orderId and shopId' })
+    @ApiQuery({ name: 'orderId', type: 'number' })
+    @ApiQuery({ name: 'shopId', type: 'number' })
+    @ApiResponse({ status: 200, description: 'Review retrieved successfully.', type: GetReviewInfoResponse })
+    async getReviewInfo(@Query() msg: object): Promise<any> {
+        const result = this.client.send('getReviewInfo', msg)
+        .pipe(
+            catchError(error => {
+                const { statusCode, message } = error;
+                if (statusCode === 404) {
+                  throw new NotFoundException(message);
+                } else {
+                  throw new BadRequestException('Unexpected error occurred');
+                }
+        }));
+        return await lastValueFrom(result);
+    }
+
+    @Get('order/review')
+    @ApiOperation({ summary: 'Get list of review by orderId' })
+    @ApiQuery({ name: 'orderId', type: 'number' })
+    @ApiResponse({ status: 200, description: 'Review retrieved successfully.', type: ResultgetReview, isArray: true })
+    async getReviewByOrder(@Query() orderId: object): Promise<any> {
+        const result = this.client.send('getReviewByOrder', orderId)
+        .pipe(
+            catchError(error => {
+                const { statusCode, message } = error;
+                if (statusCode === 404) {
+                  throw new NotFoundException(message);
+                } else {
+                  throw new BadRequestException('Unexpected error occurred');
+                }
+        }));
         return await lastValueFrom(result);
     }
     
