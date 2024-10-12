@@ -238,7 +238,7 @@ export class RequesterController {
     @ApiQuery({ name: 'transactionIdSCB', type: 'string' })
     @ApiQuery({ name: 'orderId', type: 'string' })
     @ApiResponse({ status: 200, description: 'Get payment status successes', type: String })
-    async getPaymentStatus(@Query('transactionIdSCB') transactionIdSCB: string, @Query('orderId') orderId: string): Promise<string> {
+    async getPaymentStatus(@Query('transactionIdSCB') transactionIdSCB: string, @Query('orderId') orderId: number): Promise<string> {
         const result = this.client.send('getPaymentStatus', { transactionIdSCB, orderId });
         return await lastValueFrom(result);
     }
