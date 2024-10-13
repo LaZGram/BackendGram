@@ -237,7 +237,7 @@ export class AppService {
   }
 
   async createReview(msg: any): Promise<any> {
-    const { rating, comment, shopId, authId } = msg;
+    const { rating, comment, shopId, authId, orderId } = msg;
 
     const existingRequester = await this.prisma.requester.findUnique({
       where: { authId },
@@ -253,7 +253,7 @@ export class AppService {
         rating,
         comment,
         shop: { connect: { shopId } },
-        order: { connect: { orderId: 1 } },
+        order: { connect: { orderId } },
         requester: { connect: { requesterId: existingRequester.requesterId } },
       },
     });
