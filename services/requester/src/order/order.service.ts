@@ -191,6 +191,7 @@ export class OrderService {
               quantity: true,
               totalPrice: true,
               specialInstructions: true,
+              orderItemStatus: true,
               shop: {
                 select: {
                   shopId: true,
