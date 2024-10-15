@@ -30,8 +30,8 @@ export class PaymentController {
 
   @MessagePattern('getPaymentStatus')
   async getPaymentStatus(@Payload() msg: any) {
-    let order: Order = await this.orderService.getOrder(msg.authId);
-    let paymentStatus = await this.paymentService.getPaymentStatus(order.transactionId);
+    let order: Order = await this.orderService.getOrder(parseInt(msg.orderId));
+    let paymentStatus = await this.paymentService.getPaymentStatus(msg.transactionIdSCB);
     if (paymentStatus != true){
       throw new Error('Payment not completed');
     }

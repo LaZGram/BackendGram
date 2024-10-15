@@ -66,4 +66,16 @@ export class AppController {
     return this.appService.getShop();
   }
 
+  @MessagePattern('getReviewInfo')
+  getReviewInfo(msg: object): any {
+    const orderId = parseInt(msg["orderId"].toString());
+    const shopId = parseInt(msg["shopId"].toString());
+    return this.appService.getReviewInfo(orderId, shopId);
+  }
+
+  @MessagePattern('getReviewByOrder')
+  getReviewByOrder(msg: object): any {
+    const orderId = parseInt(msg["orderId"].toString());
+    return this.appService.getReviewByOrder(orderId);
+  }
 }
