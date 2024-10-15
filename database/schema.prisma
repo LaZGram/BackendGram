@@ -105,7 +105,11 @@ model Photo {
   photoId     Int      @id @default(autoincrement())
   photoPath   String
   uploadedAt  DateTime @default(now())
-  order       Order? 
+  order       Order?
+  orderId Int?
+  orderItem   OrderItem?
+  orderItemId Int?
+  photoType   String
 }
 
 model Order {
@@ -263,7 +267,8 @@ model OrderItem {
   orderItemStatus     String
   orderItemDate       DateTime
   completedDate       DateTime?
-
+  Photo        Photo?   @relation(fields: [photoId], references: [photoId])
+  photoId      Int? @unique
   order Order @relation(fields: [orderId], references: [orderId])
   orderId             Int
   orderItemExtra  OrderItemExtra[]

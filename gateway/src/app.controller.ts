@@ -32,7 +32,7 @@ export class AppController {
     const admin_order_list = ['getToDayOrder', 'getOrderInfo', 'searchOrder', 'filterOrder'];
     const admin_topic_list = ['selectChat', 'getChat', 'createAdmin', 'adminLogin', 'walkerQueue' , 'verifyWalker' , 'showRequester' , 'showWalker' , 'showOrder' , 'postApproval', ...admin_order_list, ...admin_report_list, ...admin_canteen_list];
     const address_topic_list = ['createAddress', 'updateAddress', 'deleteAddress', 'getAddress', 'getAddressInfo'];
-    const order_topic_list = ['createOrder', 'getOrderStatus', 'cancelOrder', 'getOrderWalker', 'createOrderReport'];
+    const order_topic_list = ['confirmOrderItem' , 'createOrder', 'getOrderStatus', 'cancelOrder', 'getOrderWalker', 'createOrderReport'];
     const requester_topic_list = ['getShop' , 'createReview' , 'getReview' , ...order_topic_list, ...address_topic_list, 'createDebitcard', 'searchMenu', 'postPersonalInfo', 'authIdCreate'];
     const schedule_topic_list = ['createWeeklySchedule', 'createSpecialOperatingHours', 'getWeeklySchedule', 'getSpecialOperatingHours'];
     const menu_topic_list = ['createMenu', 'editMenu', 'updateMenuStatus', 'deleteMenu', 'getMenu', 'getMenuInfo', 'getShopMenu'];

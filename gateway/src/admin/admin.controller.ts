@@ -7,6 +7,7 @@ import { AdminLoginResponseDto, CanteenResponse, CreateAdminResponseDto, FilterO
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
 import { AdminLoginRequestDto, CreateAdminRequestDto } from './dto/request.dto';
+import {GetOrderInfoDTO123} from './dto/orderinfo.dto'
 
 @ApiTags('admin')
 @Controller('admin')
@@ -135,7 +136,7 @@ export class AdminController {
   @Get('order/info')
   @ApiOperation({ summary: 'Get order information' })
   @ApiQuery({ name: 'orderId', type: 'number' })
-  @ApiResponse({ status: 200, description: 'Returns order info', type: GetOrderInfoResponse })
+  @ApiResponse({ status: 200, description: 'Returns order info', type: GetOrderInfoDTO123 })
   async getOrderInfo(@Query() orderId: object): Promise<string> {
     const result = await this.client.send('getOrderInfo', orderId)
     .pipe(

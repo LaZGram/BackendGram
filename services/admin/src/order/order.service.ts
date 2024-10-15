@@ -51,10 +51,16 @@ export class OrderService {
           Photo: {
             select: {
               photoId: true,
-              photoPath: true
+              photoPath: true,
+              photoType: true,
             }
           },
-          canteen: {},
+          canteen: {
+            select: {
+              canteenId: true,
+              name: true,
+            }
+          },
           address: {
             select: {
               addressId: true,
@@ -74,6 +80,13 @@ export class OrderService {
               orderItemStatus: true,
               orderItemDate: true,
               completedDate: true,
+              Photo: {
+                select: {
+                  photoId: true,
+                  photoPath: true,
+                  photoType: true,
+                }
+              },
               shopId: true,
               menu:{
                 select: {

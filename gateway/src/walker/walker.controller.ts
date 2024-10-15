@@ -2,7 +2,7 @@ import { Controller, Get, Inject, Post, Body, Param, Request, Query , NotFoundEx
 import { ClientKafka } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import { RegisTWalkerDto, OrderListsDto, OrderHistoryDto, OrderIdDto, CreateWalkerDto, UpdateWalkerDto, WalkerGetDto, UpdateOrderStatusDto, GetOrderListDto, ConfirmOrderDto, PostReportDto, GetOrderDetailDto, GetRequesterIdByOrderDto } from './dto/walker.dto';
+import { ConfirmOrderAllDto , ConfirmOrderItemDto , RegisTWalkerDto, OrderListsDto, OrderHistoryDto, OrderIdDto, CreateWalkerDto, UpdateWalkerDto, WalkerGetDto, UpdateOrderStatusDto, GetOrderListDto, ConfirmOrderDto, PostReportDto, GetOrderDetailDto, GetRequesterIdByOrderDto } from './dto/walker.dto';
 import { AcceptOrderResponseDto } from './dto/response.dto';
 
 @ApiTags('Walker')
@@ -79,7 +79,7 @@ export class WalkerController {
 
   @Put('order-list/:orderId/confirm-order')
   @ApiOperation({ summary: 'Confirm an order by orderId' })
-  @ApiResponse({ status: 200, description: 'Order confirmed successfully.' })
+  @ApiResponse({ status: 200, description: 'Order confirmed successfully.' , type : ConfirmOrderAllDto })
   @ApiResponse({ status: 400, description: 'Invalid order confirmation data.' })
   async confirmOrder(
     @Param('orderId') orderId: Number,
@@ -87,6 +87,21 @@ export class WalkerController {
   ): Promise<any> {
     const result = this.client.send('confirmOrder', {
       orderId,
+      ...confirmData,
+    });
+    return await lastValueFrom(result);
+  }
+
+  @Put('order-list/:orderItemId/confirm-orderItem')
+  @ApiOperation({ summary: 'Confirm an orderItem by orderItemId' })
+  @ApiResponse({ status: 200, description: 'OrderItem confirmed successfully.' , type : ConfirmOrderItemDto })
+  @ApiResponse({ status: 400, description: 'Invalid orderItem confirmation data.' })
+  async confirmOrderItem(
+    @Param('orderItemId') orderItemId: Number,
+    @Body() confirmData: ConfirmOrderDto
+  ): Promise<any> {
+    const result = this.client.send('confirmOrderItem', {
+      orderItemId,
       ...confirmData,
     });
     return await lastValueFrom(result);
