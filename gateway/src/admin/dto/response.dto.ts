@@ -10,6 +10,46 @@ export class AdminLoginResponseDto {
   token: string;
 }
 
+export class UpdateShopInfoResponseDto {
+  @ApiProperty()
+  shopId: number
+  @ApiProperty()
+  username: string
+  @ApiProperty()
+  shopName: string
+  @ApiProperty()
+  profilePicture: string
+  @ApiProperty()
+  tel: string
+  @ApiProperty()
+  shopNumber: string
+  @ApiProperty({description: 'status default is "false", mean shop is close'})
+  status: boolean
+  @ApiProperty()
+  canteenId: number
+}
+
+export class CreateMenuResponseDto {
+  @ApiProperty()
+  menuId: number
+  @ApiProperty()
+  name: string
+  @ApiProperty()
+  picture: string
+  @ApiProperty()
+  price: number
+  @ApiProperty()
+  description: string
+  @ApiProperty({description: 'status default is "false", mean menu is not available'})
+  status: boolean
+  @ApiProperty()
+  shopId: number
+}
+
+export class UpdateShopStatusResponseDto extends UpdateShopInfoResponseDto {}
+
+export class UpdateMenuStatusResponseDto extends CreateMenuResponseDto {}
+
 export class Order{
   @ApiProperty()
   orderId: number;
