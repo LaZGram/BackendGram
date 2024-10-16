@@ -143,10 +143,10 @@ export class OrderService {
           requester: {
             requesterId: await this.appService.getRequesterId(authId)
           },
-          include:{
+        },
+        include:{
             canteen: {}
           },
-        }
       });
     }
     catch (e) {
