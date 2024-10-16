@@ -142,7 +142,10 @@ export class OrderService {
         where: {
           requester: {
             requesterId: await this.appService.getRequesterId(authId)
-          }
+          },
+          include:{
+            canteen: {}
+          },
         }
       });
     }
