@@ -29,13 +29,13 @@ export class OrderController {
     return this.orderService.filterOrder(msg);
   }
 
-  @MessagePattern('updateShopStatus')
-  updateShopStatus(msg: any): any {
-    return this.orderService.updateShopStatus(msg);
+  @MessagePattern('updateShopStatusByAdmin')
+  updateShopStatusByAdmin(msg: any): any {
+    return this.orderService.updateShopStatusByAdmin(msg);
   }
 
-  @MessagePattern('updateMenuStatus')
-  updateMenuStatus(msg: any): any {
-    return this.orderService.updateMenuStatus(msg);
+  @MessagePattern('updateMenuStatusByAdmin')
+  updateMenuStatusByAdmin(msg: any): any {
+    return this.orderService.updateMenuStatusByAdmin(msg);
   }
 }

@@ -290,8 +290,8 @@ export class AdminController {
   @Patch('menu/update-status')
   @ApiOperation({ summary: 'Update menu status to open or close'})
   @ApiResponse({ status: 201, description: 'Update status successes', type: UpdateMenuStatusResponseDto })
-  async updateMenuStatus(@Body() updateMenuStatusRequest: UpdateMenuStatusRequestDto , @Request() req): Promise<string> {
-    const result = await this.client.send('updateMenuStatus', { ...updateMenuStatusRequest , authId: req.jwt.authId})
+  async updateMenuStatusByAdmin(@Body() updateMenuStatusRequest: UpdateMenuStatusRequestDto , @Request() req): Promise<string> {
+    const result = await this.client.send('updateMenuStatusByAdmin', { ...updateMenuStatusRequest , authId: req.jwt.authId})
     .pipe(
       catchError(error => {
         const { statusCode, message } = error;
@@ -307,8 +307,8 @@ export class AdminController {
   @Patch('update-status')
   @ApiOperation({ summary: 'Update shop status to open or close'})
   @ApiResponse({ status: 201, description: 'Update status successes', type: UpdateShopStatusResponseDto })
-  async updateShopStatus(@Body() updateShopStatusRequest: UpdateShopStatusRequestDto, @Request() req): Promise<string> {
-    const result = await this.client.send('updateShopStatus', {...updateShopStatusRequest , authId: req.jwt.authId});
+  async updateShopStatusByAdmin(@Body() updateShopStatusRequest: UpdateShopStatusRequestDto, @Request() req): Promise<string> {
+    const result = await this.client.send('updateShopStatusByAdmin', {...updateShopStatusRequest , authId: req.jwt.authId});
     const value = await lastValueFrom(result);
     return value;
   }
