@@ -162,14 +162,108 @@ export class OrderService {
 
   async getOrder(orderId: number) {
     try {
-      return this.prisma.order.findUnique({
+      const order = await this.prisma.order.findUnique({
         where: {
-          orderId: orderId
-        }
+          orderId: Number(orderId),
+        },
+        select: {
+          orderId: true,
+          orderDate: true,
+          orderStatus: true,
+          amount: true,
+          totalPrice: true,
+          shippingFee: true,
+          address: {
+            select: {
+              latitude: true,
+              longitude: true,
+            },
+          },
+          canteen: {
+            select: {
+              name: true,
+              latitude: true,
+              longitude: true,
+            },
+          },
+          requester: {
+            select: {
+              username: true,
+              phoneNumber: true,
+            },
+          },
+          orderItem: {
+            select: {
+              orderItemId: true,
+              quantity: true,
+              specialInstructions: true,
+              orderItemStatus: true, // Include orderItemStatus here
+              menu: {
+                select: {
+                  name: true,
+                  price: true,
+                  shop: {
+                    select: {
+                      shopName: true,
+                      shopId: true, // Include shopId to distinguish shops
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       });
-    }
-    catch (e) {
-      throw new RpcException({ statusCode: 404, message: "Order not found" });
+  
+      if (!order) {
+        throw new RpcException({ statusCode: 404, message: `Order not found for ID ${orderId}` });
+      }
+  
+      // Group order items by shop only
+      const groupedItemsByShop = order.orderItem.reduce((grouped, item) => {
+        const { shopName, shopId } = item.menu.shop;
+        if (!grouped[shopId]) {
+          grouped[shopId] = {
+            shopName,
+            items: [],
+          };
+        }
+  
+        grouped[shopId].items.push({
+          orderItemId: item.orderItemId,
+          quantity: item.quantity,
+          specialInstructions: item.specialInstructions,
+          menuName: item.menu.name,
+          price: item.menu.price,
+          orderItemStatus: item.orderItemStatus, // Add orderItemStatus to the result
+        });
+  
+        return grouped;
+      }, {} as { [shopId: string]: { shopName: string; items: any[] } });
+  
+      // Convert groupedItemsByShop to an array format if needed
+      const formattedGroupedItems = Object.values(groupedItemsByShop).map((shop) => ({
+        shopName: shop.shopName,
+        items: shop.items,
+      }));
+  
+      // Format the result to include grouped items
+      const formattedOrder = {
+        orderId: order.orderId,
+        orderDate: order.orderDate,
+        orderStatus: order.orderStatus,
+        amount: order.amount,
+        totalPrice: order.totalPrice,
+        shippingFee: order.shippingFee,
+        address: order.address,
+        canteen: order.canteen,
+        requester: order.requester,
+        groupedOrderItemsByShop: formattedGroupedItems, // Add the grouped order items in the desired format
+      };
+  
+      return formattedOrder;
+    } catch (error) {
+      throw new RpcException({ statusCode: 500, message: `Failed to get order detail: ${error.message}` });
     }
   }
 
