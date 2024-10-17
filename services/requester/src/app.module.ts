@@ -15,7 +15,7 @@ import { DevtoolsModule } from '@nestjs/devtools-integration';
 @Module({
   imports: [CanteenModule, CanteenModule, ProfileModule, AuthModule, PrismaModule, OrderModule, ReportModule, AddressModule, PaymentModule,
     ConfigModule.forRoot({
-    envFilePath: `.env${process.env.NODE_ENV ? '.' + process.env.NODE_ENV : ''}`,
+    envFilePath: `.env`,
     isGlobal: true,
   })
   ],

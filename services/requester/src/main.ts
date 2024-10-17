@@ -23,6 +23,6 @@ async function bootstrap() {
     },
   );
   await app.listen();
-
 }
 bootstrap();
+console.log(process.env);
