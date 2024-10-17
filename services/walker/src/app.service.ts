@@ -246,6 +246,7 @@ export class AppService {
           },
           orderItem: {
             select: {
+              orderItemId: true,
               quantity: true,
               specialInstructions: true,
               orderItemStatus: true, // Include orderItemStatus here

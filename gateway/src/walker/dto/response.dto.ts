@@ -9,6 +9,8 @@ export class OrderItemExtra {
 
 export class OrderItem {
   @ApiProperty()
+  orderItemId: number;
+  @ApiProperty()
   shopId: number;
   @ApiProperty()
   quantity: number;
