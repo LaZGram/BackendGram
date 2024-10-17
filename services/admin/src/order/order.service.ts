@@ -138,7 +138,7 @@ export class OrderService {
     });
   }
 
-  async updateMenuStatus(menuId: number) {
+  async updateMenuStatusByAdmin(menuId: number) {
     const menuExists = await this.prisma.menu.findUnique({
       where: { menuId: menuId },
     });
@@ -154,7 +154,7 @@ export class OrderService {
     });
   }
 
-  async updateShopStatus(msg: any){
+  async updateShopStatusByAdmin(msg: any){
     return this.prisma.shop.update({
       where: {
         shopId: msg.shopId
