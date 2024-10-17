@@ -132,7 +132,13 @@ export class OrderService {
         orderId: orderId
       }
     }).then(order => {
-      return order.walkerId;
+      return this.prisma.walker.findUnique({
+        where: {
+          walkerId: order.walkerId
+        }
+      }).then(walker => {
+        return walker;
+      });
     });
   }
 
