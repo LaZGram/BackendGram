@@ -454,4 +454,5 @@ export class AppService {
       throw new RpcException({ statusCode: 404, message: `Failed to update order status: ${error.message}` });
     }
   }
+
 }

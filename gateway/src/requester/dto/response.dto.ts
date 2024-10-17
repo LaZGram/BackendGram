@@ -234,3 +234,10 @@ export class GetReviewByOrderResponse {
   @ApiProperty()
   comment: string;
 }
+
+export class WalkerAddressResponseDto {
+  @ApiProperty()
+  latitude: number;
+  @ApiProperty()
+  longitude: number;
+}
