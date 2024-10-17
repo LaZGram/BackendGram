@@ -6,7 +6,7 @@ import { PrismaService } from 'src/prisma.service';
 @Injectable()
 export class AuthService {
     private client: OAuth2Client;
-    private GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+    private GOOGLE_CLIENT_ID = process.env.CLIENT_ID_GOOGLE;
     constructor(private readonly jwtService: JwtService, private prisma: PrismaService) {
         this.client = new OAuth2Client(this.GOOGLE_CLIENT_ID);
     }
