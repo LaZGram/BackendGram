@@ -248,6 +248,7 @@ export class AppService {
             select: {
               quantity: true,
               specialInstructions: true,
+              orderItemStatus: true, // Include orderItemStatus here
               menu: {
                 select: {
                   name: true,
@@ -284,6 +285,7 @@ export class AppService {
           specialInstructions: item.specialInstructions,
           menuName: item.menu.name,
           price: item.menu.price,
+          orderItemStatus: item.orderItemStatus, // Add orderItemStatus to the result
         });
   
         return grouped;
@@ -314,18 +316,57 @@ export class AppService {
       throw new RpcException({ statusCode: 500, message: `Failed to get order detail: ${error.message}` });
     }
   }
+  
+
+  async confirmOrderItem(msg: any): Promise<any> {
+    try {
+      // Create the photo entry, specifying that it is for an order
+      const photo = await this.prisma.photo.create({
+        data: {
+          photoPath: msg.photoPath,
+          orderItem: {
+            connect: { orderItemId: Number(msg.orderItemId) },
+          },
+          photoType: 'orderItem',
+        },
+      });
+  
+      // Update the order status to 'completed' and link the photo
+      const orderItem = await this.prisma.orderItem.update({
+        where: {
+          orderItemId: Number(msg.orderItemId),
+        },
+        data: {
+          orderItemStatus: 'completed',
+          completedDate: new Date(),
+          photoId: photo.photoId,
+        },
+        select: {
+          orderItemId: true,
+          orderItemStatus: true,
+        },
+      });
+  
+      return orderItem;
+    } catch (error) {
+      throw new RpcException({ statusCode: 500, message: `Failed to confirm order: ${error.message}` });
+    }
+  }
 
   async confirmOrder(msg: any): Promise<any> {
     try {
+      // Create the photo entry, specifying that it is for an order
       const photo = await this.prisma.photo.create({
         data: {
           photoPath: msg.photoPath,
           order: {
             connect: { orderId: Number(msg.orderId) },
           },
+          photoType: 'order',
         },
       });
-
+  
+      // Update the order status to 'completed' and link the photo
       const order = await this.prisma.order.update({
         where: {
           orderId: Number(msg.orderId),
@@ -340,7 +381,7 @@ export class AppService {
           orderStatus: true,
         },
       });
-
+  
       return order;
     } catch (error) {
       throw new RpcException({ statusCode: 500, message: `Failed to confirm order: ${error.message}` });

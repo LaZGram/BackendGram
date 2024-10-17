@@ -112,6 +112,38 @@ export class ConfirmOrderDto {
   photoPath: string;
 }
 
+export class ConfirmOrderItemDto {
+  @ApiProperty({
+    description: 'ID of the order item to confirm',
+    example: 3,
+  })
+  @IsNumber()
+  orderItemId: number;
+
+  @ApiProperty({
+    description: 'Status of the order item (e.g., completed)',
+    example: 'completed',
+  })
+  @IsString()
+  orderItemStatus: string;
+}
+
+export class ConfirmOrderAllDto {
+  @ApiProperty({
+    description: 'ID of the order to confirm',
+    example: 3,
+  })
+  @IsNumber()
+  orderId: number;
+
+  @ApiProperty({
+    description: 'Status of the order (e.g., completed)',
+    example: 'completed',
+  })
+  @IsString()
+  orderStatus: string;
+}
+
 export class PostReportDto {
   @ApiProperty()
   @IsString()

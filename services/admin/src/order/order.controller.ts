@@ -28,4 +28,14 @@ export class OrderController {
   filterOrder(msg: FilterOrderDto) {
     return this.orderService.filterOrder(msg);
   }
+
+  @MessagePattern('updateShopStatus')
+  updateShopStatus(msg: any): any {
+    return this.orderService.updateShopStatus(msg);
+  }
+
+  @MessagePattern('updateMenuStatus')
+  updateMenuStatus(msg: any): any {
+    return this.orderService.updateMenuStatus(msg);
+  }
 }

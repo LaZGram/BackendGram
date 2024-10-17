@@ -142,8 +142,11 @@ export class OrderService {
         where: {
           requester: {
             requesterId: await this.appService.getRequesterId(authId)
-          }
-        }
+          },
+        },
+        include:{
+            canteen: {}
+          },
       });
     }
     catch (e) {
@@ -191,6 +194,7 @@ export class OrderService {
               quantity: true,
               totalPrice: true,
               specialInstructions: true,
+              orderItemStatus: true,
               shop: {
                 select: {
                   shopId: true,

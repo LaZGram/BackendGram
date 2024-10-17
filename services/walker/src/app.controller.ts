@@ -55,4 +55,9 @@ export class AppController {
   orderHistory(msg: any): any {
     return this.appService.orderHistory(msg);
   }
+  
+  @MessagePattern('confirmOrderItem')
+  confirmOrderItem(msg: any): any {
+    return this.appService.confirmOrderItem(msg);
+  }
 }

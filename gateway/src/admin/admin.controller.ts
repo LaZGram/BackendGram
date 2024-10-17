@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Inject, Request, SetMetadata, Query, Delete, BadRequestException, Put, NotFoundException  } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, Inject, Request, SetMetadata, Query, Delete, BadRequestException, Put, NotFoundException  } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { catchError, lastValueFrom } from 'rxjs';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
@@ -6,7 +6,10 @@ import { VerifyWalkerDto , PostApprovalDto , selectChatDto , getChatDto , Result
 import { AdminLoginResponseDto, CanteenResponse, CreateAdminResponseDto, FilterOrderResponse, FilterReportResponse, GetOrderInfoResponse, GetReportInfoResponse, GetReportResponse, GetShopInCanteenResponse, GetShopInfoResponse, GetShopMenuResponse, GetShopOrderResponse, GetToDayOrderResponse, SearchOrderResponse, SearchReportResponse } from './dto/response.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { JwtService } from '@nestjs/jwt';
-import { AdminLoginRequestDto, CreateAdminRequestDto } from './dto/request.dto';
+import { AdminLoginRequestDto, CreateAdminRequestDto , UpdateMenuStatusRequestDto } from './dto/request.dto';
+import {GetOrderInfoDTO123} from './dto/orderinfo.dto'
+import { UpdateShopStatusRequestDto } from './dto/update-shop-status-request.dto';
+import { UpdateShopStatusResponseDto , UpdateMenuStatusResponseDto } from './dto/response.dto';
 
 @ApiTags('admin')
 @Controller('admin')
@@ -135,7 +138,7 @@ export class AdminController {
   @Get('order/info')
   @ApiOperation({ summary: 'Get order information' })
   @ApiQuery({ name: 'orderId', type: 'number' })
-  @ApiResponse({ status: 200, description: 'Returns order info', type: GetOrderInfoResponse })
+  @ApiResponse({ status: 200, description: 'Returns order info', type: GetOrderInfoDTO123 })
   async getOrderInfo(@Query() orderId: object): Promise<string> {
     const result = await this.client.send('getOrderInfo', orderId)
     .pipe(
@@ -282,5 +285,31 @@ export class AdminController {
   async selectChat(@Query() selectChatDto: selectChatDto , @Request() req): Promise<any> {
     const result = this.client.send('selectChat', { ...selectChatDto , authId: req.jwt.authId});
     return await lastValueFrom(result);
+  }
+
+  @Patch('menu/update-status')
+  @ApiOperation({ summary: 'Update menu status to open or close'})
+  @ApiResponse({ status: 201, description: 'Update status successes', type: UpdateMenuStatusResponseDto })
+  async updateMenuStatus(@Body() updateMenuStatusRequest: UpdateMenuStatusRequestDto , @Request() req): Promise<string> {
+    const result = await this.client.send('updateMenuStatus', { ...updateMenuStatusRequest , authId: req.jwt.authId})
+    .pipe(
+      catchError(error => {
+        const { statusCode, message } = error;
+        if(statusCode === 401)
+          throw new BadRequestException(message);
+        else throw new BadRequestException(error);
+      }),
+    );
+    const value = await lastValueFrom(result);
+    return value;
+  }
+
+  @Patch('update-status')
+  @ApiOperation({ summary: 'Update shop status to open or close'})
+  @ApiResponse({ status: 201, description: 'Update status successes', type: UpdateShopStatusResponseDto })
+  async updateShopStatus(@Body() updateShopStatusRequest: UpdateShopStatusRequestDto, @Request() req): Promise<string> {
+    const result = await this.client.send('updateShopStatus', {...updateShopStatusRequest , authId: req.jwt.authId});
+    const value = await lastValueFrom(result);
+    return value;
   }
 }
