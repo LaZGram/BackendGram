@@ -282,6 +282,7 @@ export class AppService {
         }
   
         grouped[shopId].items.push({
+          orderItemId: item.orderItemId,
           quantity: item.quantity,
           specialInstructions: item.specialInstructions,
           menuName: item.menu.name,
