@@ -237,7 +237,7 @@ export class AppService {
   }
 
   async createReview(msg: any): Promise<any> {
-    const { rating, comment, shopId, authId } = msg;
+    const { rating, comment, shopId, authId, orderId } = msg;
 
     const existingRequester = await this.prisma.requester.findUnique({
       where: { authId },
@@ -253,6 +253,7 @@ export class AppService {
         rating,
         comment,
         shop: { connect: { shopId } },
+        order: { connect: { orderId } },
         requester: { connect: { requesterId: existingRequester.requesterId } },
       },
     });
@@ -260,4 +261,59 @@ export class AppService {
     return newReview;
   }
 
+  async getReviewInfo(orderId: number, shopId: number){
+    try {
+      const review = await this.prisma.review.findMany({
+        where: {
+          orderId: orderId,
+          shopId: shopId
+        },
+        select: {
+          shop: {
+            select: {
+              shopId: true,
+              shopName: true,
+              profilePicture: true
+            }
+          },
+          requester: {
+            select: {
+              requesterId: true,
+              username: true,
+              profilePicture: true,
+            }
+          },
+          rating: true,
+          comment: true,
+        }
+      });
+      if(!review) {
+        throw new RpcException({ statusCode: 404, message: 'Review not found' });
+      }
+      return review;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getReviewByOrder(orderId: number){
+    try {
+      const review = await this.prisma.review.findMany({
+        where: {
+          orderId: orderId
+        },
+        select: {
+          shopId: true,
+          rating: true,
+          comment: true,
+        }
+      });
+      if(!review) {
+        throw new RpcException({ statusCode: 404, message: 'Review not found' });
+      }
+      return review;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

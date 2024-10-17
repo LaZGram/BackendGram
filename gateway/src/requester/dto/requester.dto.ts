@@ -168,6 +168,9 @@ export class createReviewDto {
 }
 
 export class buildReviewDto {
+  @ApiProperty({ description: 'OrderId', example: 1 })
+  @IsNumber()
+  orderId: number;
   @ApiProperty({ description: 'ShopId', example: 5 })
   @IsNumber()
   shopId: number

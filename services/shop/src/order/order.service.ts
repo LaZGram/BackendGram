@@ -53,7 +53,8 @@ export class OrderService {
         }
       },
     });
-    return order;
+    const filteredOrders = order.filter(o => o.orderItem.length > 0);
+    return filteredOrders;
   }
 
   async getOrderHistory(authId: string, date: string) {
