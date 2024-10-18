@@ -63,6 +63,7 @@ export class AppService {
   }
 
   async deleteWalker(msg: any): Promise<any> {
+    // Find the walker by walkerId
     const walker = await this.prisma.walker.findUnique({
       where: {
         walkerId: msg.walkerId,
@@ -73,11 +74,22 @@ export class AppService {
         email: true,
       },
     });
-
+  
+    // If walker not found, throw an error
     if (!walker) {
-      throw new Error('Walker not found');
+      throw new RpcException('Walker not found');
     }
-
+  
+    // Update all orders related to this walker by setting walkerId to null
+    await this.prisma.order.updateMany({
+      where: {
+        walkerId: msg.walkerId,
+      },
+      data: {
+        walkerId: null,
+      },
+    });
+  
     return this.prisma.walker.delete({
       where: {
         walkerId: msg.walkerId,
@@ -89,6 +101,7 @@ export class AppService {
       },
     });
   }
+  
 
   async verifyWalker(msg: any): Promise<any> {
     return this.prisma.walker.update({
@@ -121,6 +134,7 @@ export class AppService {
         phoneNumber: true,
         firstName: true,
         lastName: true,
+        createAt: true,
         profilePicture: true,
         address: {
           select: {
