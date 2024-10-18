@@ -527,6 +527,12 @@ export class GetRequesterIdByOrderDto {
   orderId: number;
 }
 
+export class GetWalkerIdByOrderDto {
+  @ApiProperty({ description: 'OrderId', example: '1' })
+  @IsNumber()
+  orderId: number;
+}
+
 export class WalkerGetDto {
 
   @ApiProperty({ description: 'Id of the walker', example: 1 })
