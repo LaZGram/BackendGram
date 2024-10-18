@@ -528,6 +528,11 @@ export class GetRequesterIdByOrderDto {
 }
 
 export class WalkerGetDto {
+
+  @ApiProperty({ description: 'Id of the walker', example: 1 })
+  @IsNumber()
+  walkerId: number;
+
   @ApiProperty({ description: 'Username of the walker', example: 'walker123' })
   @IsString()
   username: string;

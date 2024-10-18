@@ -105,6 +105,7 @@ export class AppService {
           authId: msg.authId,
         },
         select: {
+          walkerId: true,
           username: true,
           email: true,
           phoneNumber: true,

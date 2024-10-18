@@ -77,12 +77,12 @@ export class AdminController {
     return value;
   }
 
-  @Delete('verify')
-  @ApiOperation({ summary: 'Delete a walker by ID' })
-  @ApiResponse({ status: 200, description: 'Walker deleted successfully.' })
+  @Patch('verify')
+  @ApiOperation({ summary: 'Deny a walker by ID' })
+  @ApiResponse({ status: 200, description: 'Walker deny successfully.' })
   @ApiResponse({ status: 404, description: 'Walker not found.' })
-  async deleteWalker(@Body() delWalkerDto: VerifyWalkerDto): Promise<any> {
-    const result = this.client.send('deleteWalker', { ...delWalkerDto });
+  async denyWalker(@Body() delWalkerDto: VerifyWalkerDto): Promise<any> {
+    const result = this.client.send('denyWalker', { ...delWalkerDto });
     const value = await lastValueFrom(result);
     return value;
   }
@@ -291,7 +291,7 @@ export class AdminController {
   @ApiOperation({ summary: 'Update menu status to open or close'})
   @ApiResponse({ status: 201, description: 'Update status successes', type: UpdateMenuStatusResponseDto })
   async updateMenuStatusByAdmin(@Body() updateMenuStatusRequest: UpdateMenuStatusRequestDto , @Request() req): Promise<string> {
-    const result = await this.client.send('updateMenuStatusByAdmin', { ...updateMenuStatusRequest , authId: req.jwt.authId})
+    const result = await this.client.send('updateMenuStatusByAdmin', { ...updateMenuStatusRequest})
     .pipe(
       catchError(error => {
         const { statusCode, message } = error;
@@ -308,7 +308,7 @@ export class AdminController {
   @ApiOperation({ summary: 'Update shop status to open or close'})
   @ApiResponse({ status: 201, description: 'Update status successes', type: UpdateShopStatusResponseDto })
   async updateShopStatusByAdmin(@Body() updateShopStatusRequest: UpdateShopStatusRequestDto, @Request() req): Promise<string> {
-    const result = await this.client.send('updateShopStatusByAdmin', {...updateShopStatusRequest , authId: req.jwt.authId});
+    const result = await this.client.send('updateShopStatusByAdmin', {...updateShopStatusRequest});
     const value = await lastValueFrom(result);
     return value;
   }

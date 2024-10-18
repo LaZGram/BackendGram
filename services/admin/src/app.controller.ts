@@ -47,9 +47,9 @@ export class AppController {
     return this.appService.verifyWalker(msg);
   }
 
-  @MessagePattern('deleteWalker')
-  deleteWalker(msg: any): any {
-    return this.appService.deleteWalker(msg);
+  @MessagePattern('denyWalker')
+  denyWalker(msg: any): any {
+    return this.appService.denyWalker(msg);
   }
 
   @MessagePattern('getChat')

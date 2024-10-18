@@ -62,33 +62,27 @@ export class AppService {
     });
   }
 
-  async deleteWalker(msg: any): Promise<any> {
-    const walker = await this.prisma.walker.findUnique({
+  async denyWalker(msg: any): Promise<any> {
+    return this.prisma.walker.update({
       where: {
         walkerId: msg.walkerId,
+      },
+      data: {
+        status: 'inActive',
       },
       select: {
         walkerId: true,
         username: true,
         email: true,
-      },
-    });
-
-    if (!walker) {
-      throw new Error('Walker not found');
-    }
-
-    return this.prisma.walker.delete({
-      where: {
-        walkerId: msg.walkerId,
-      },
-      select: {
-        walkerId: true,
-        username: true,
-        email: true,
+        phoneNumber: true,
+        profilePicture: true,
+        registerAt: true,
+        verifyAt: true,
+        status: true,
       },
     });
   }
+  
 
   async verifyWalker(msg: any): Promise<any> {
     return this.prisma.walker.update({
@@ -121,6 +115,7 @@ export class AppService {
         phoneNumber: true,
         firstName: true,
         lastName: true,
+        createAt: true,
         profilePicture: true,
         address: {
           select: {

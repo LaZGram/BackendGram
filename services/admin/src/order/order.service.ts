@@ -138,18 +138,18 @@ export class OrderService {
     });
   }
 
-  async updateMenuStatusByAdmin(menuId: number) {
+  async updateMenuStatusByAdmin(msg : any) {
     const menuExists = await this.prisma.menu.findUnique({
-      where: { menuId: menuId },
+      where: { menuId: Number(msg.menuId) },
     });
     if (!menuExists) {
-      throw new RpcException({statusCode: 404, message: `Menu with id ${menuId} does not exist.`});
+      throw new RpcException({statusCode: 404, message: `Menu with id ${Number(msg.menuId)} does not exist.`});
     }
     const status = await this.prisma.menu.findUnique({
-      where: { menuId: menuId },
+      where: { menuId: Number(msg.menuId) },
     }).then((menu) => { return !menu.status; });
     return this.prisma.menu.update({
-      where: { menuId: menuId },
+      where: { menuId: Number(msg.menuId) },
       data: { status: status },
     });
   }
