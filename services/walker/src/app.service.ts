@@ -465,6 +465,23 @@ export class AppService {
     }
   }
 
+  async getWalkerIdByOrder(msg: any): Promise<any> {
+    try {
+      const order = await this.prisma.order.findUnique({
+        where: { orderId: Number(msg.orderId) },
+        select: { walkerId: true },
+      });
+
+      if (!order) {
+        throw new RpcException({ statusCode: 404, message: 'Order not found' });
+      }
+
+      return { walkerId: order.walkerId };
+    } catch (error) {
+      throw new RpcException({ statusCode: 500, message: `Failed to get requester ID: ${error.message}` });
+    }
+  }
+
   async getRequesterIdByOrder(msg: any): Promise<any> {
     try {
       const order = await this.prisma.order.findUnique({

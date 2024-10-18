@@ -60,4 +60,9 @@ export class AppController {
   confirmOrderItem(msg: any): any {
     return this.appService.confirmOrderItem(msg);
   }
+
+  @MessagePattern('getWalkerIdByOrder')
+  getWalkerIdByOrder(msg: any): any {
+    return this.appService.getWalkerIdByOrder(msg);
+  }
 }

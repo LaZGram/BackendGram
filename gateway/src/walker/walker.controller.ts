@@ -2,7 +2,7 @@ import { Controller, Get, Inject, Post, Body, Param, Request, Query , NotFoundEx
 import { ClientKafka } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import { AddressData,ConfirmOrderAllDto , ConfirmOrderItemDto ,RegisTWalkerDto, OrderListsDto, OrderHistoryDto, OrderIdDto, CreateWalkerDto, UpdateWalkerDto, WalkerGetDto, UpdateOrderStatusDto, GetOrderListDto, ConfirmOrderDto, PostReportDto, GetOrderDetailDto, GetRequesterIdByOrderDto } from './dto/walker.dto';
+import { AddressData,ConfirmOrderAllDto , ConfirmOrderItemDto ,RegisTWalkerDto, OrderListsDto, OrderHistoryDto, OrderIdDto, CreateWalkerDto, UpdateWalkerDto, WalkerGetDto, UpdateOrderStatusDto, GetOrderListDto, ConfirmOrderDto, PostReportDto, GetOrderDetailDto, GetRequesterIdByOrderDto , GetWalkerIdByOrderDto} from './dto/walker.dto';
 import { AcceptOrderResponseDto } from './dto/response.dto';
 
 @ApiTags('Walker')
@@ -121,6 +121,15 @@ export class WalkerController {
   @ApiResponse({ status: 404, description: 'Requester not found.' })
   async getRequesterIdByOrder(@Param() params: GetRequesterIdByOrderDto): Promise<any> {
     const result = this.client.send('getRequesterIdByOrder', {...params});
+    return (await lastValueFrom(result));
+  }
+  
+  @Get('order-list/:orderId/walker-id')
+  @ApiOperation({ summary: 'Get walker ID by orderId' })
+  @ApiResponse({ status: 200, description: 'Walker ID retrieved successfully.' })
+  @ApiResponse({ status: 404, description: 'Walker not found.' })
+  async getWalkerIdByOrder(@Param() params: GetWalkerIdByOrderDto): Promise<any> {
+    const result = this.client.send('getWalkerIdByOrder', {...params});
     return (await lastValueFrom(result));
   }
 
