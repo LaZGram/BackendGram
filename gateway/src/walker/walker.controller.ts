@@ -2,7 +2,7 @@ import { Controller, Get, Inject, Post, Body, Param, Request, Query , NotFoundEx
 import { ClientKafka } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import { ConfirmOrderAllDto , ConfirmOrderItemDto , RegisTWalkerDto, OrderListsDto, OrderHistoryDto, OrderIdDto, CreateWalkerDto, UpdateWalkerDto, WalkerGetDto, UpdateOrderStatusDto, GetOrderListDto, ConfirmOrderDto, PostReportDto, GetOrderDetailDto, GetRequesterIdByOrderDto } from './dto/walker.dto';
+import { AddressData,ConfirmOrderAllDto , ConfirmOrderItemDto ,RegisTWalkerDto, OrderListsDto, OrderHistoryDto, OrderIdDto, CreateWalkerDto, UpdateWalkerDto, WalkerGetDto, UpdateOrderStatusDto, GetOrderListDto, ConfirmOrderDto, PostReportDto, GetOrderDetailDto, GetRequesterIdByOrderDto } from './dto/walker.dto';
 import { AcceptOrderResponseDto } from './dto/response.dto';
 
 @ApiTags('Walker')
@@ -146,6 +146,15 @@ export class WalkerController {
   async acceptOrder(@Query() msg: object, @Request() req): Promise<any> {
     msg['authId'] = req.jwt.authId;
     const result = this.client.send('acceptOrder', msg);
+    return await lastValueFrom(result);
+  }
+
+  @Put('address')
+  @ApiOperation({ summary: 'Update walker address' })
+  @ApiResponse({ status: 200, description: 'Walker address updated successfully.' })
+  @ApiResponse({ status: 400, description: 'Invalid address data.' })
+  async updateWalkerAddress(@Body() addressData: AddressData, @Request() req): Promise<any> {
+    const result = this.client.send('updateWalkerAddress', { ...addressData, authId: req.jwt.authId });
     return await lastValueFrom(result);
   }
 }

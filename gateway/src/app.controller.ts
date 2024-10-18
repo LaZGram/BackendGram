@@ -32,8 +32,8 @@ export class AppController {
     const admin_order_list = ['getToDayOrder', 'getOrderInfo', 'searchOrder', 'filterOrder'];
     const admin_topic_list = ['updateMenuStatusByAdmin' , 'updateShopStatusByAdmin' , 'selectChat', 'getChat', 'createAdmin', 'adminLogin', 'walkerQueue' , 'verifyWalker' , 'showRequester' , 'showWalker' , 'showOrder' , 'postApproval', ...admin_order_list, ...admin_report_list, ...admin_canteen_list];
     const address_topic_list = ['createAddress', 'updateAddress', 'deleteAddress', 'getAddress', 'getAddressInfo'];
-    const order_topic_list = ['confirmOrderItem' , 'createOrder', 'getOrderStatus', 'cancelOrder', 'getOrderWalker', 'createOrderReport', 'reqGetOrderInfo'];
-    const requester_topic_list = ['getShop' , 'createReview' , 'getReview', 'getReviewInfo', 'getReviewByOrder' , ...order_topic_list, ...address_topic_list, 'createDebitcard', 'searchMenu', 'postPersonalInfo', 'authIdCreate'];
+    const order_topic_list = ['confirmOrderItem' ,'createOrder', 'getOrderStatus', 'cancelOrder', 'getOrderWalker', 'createOrderReport', 'reqGetOrderInfo'];
+    const requester_topic_list = ['getShop' , 'createReview' , 'getReview', 'getReviewInfo', 'getReviewByOrder' , ...order_topic_list, ...address_topic_list, 'createDebitcard', 'searchMenu', 'postPersonalInfo', 'authIdCreate', 'getWalkerAddress'];
     const schedule_topic_list = ['createWeeklySchedule', 'createSpecialOperatingHours', 'getWeeklySchedule', 'getSpecialOperatingHours'];
     const menu_topic_list = ['createMenu', 'editMenu', 'updateMenuStatus', 'deleteMenu', 'getMenu', 'getMenuInfo', 'getShopMenu'];
     const option_topic_list = ['createOption', 'editOption', 'deleteOption', 'getOption', 'getOptionInfo'];
@@ -42,7 +42,7 @@ export class AppController {
     const walker_order_topic_list = ['acceptOrder'];
     const walker_topic_list = ['orderHistory','createWalker', 'getWalker', 'updateWalker', 'deleteWalker', 'getWalkerInfo','postChangeProfilePicture', 'getDebitcard', 
       'postChangeDebitCard', 'walkerRegistration', 'walkerGet', 'getOrderList', 'getOrderDetail', 'confirmOrder', 'postReport'
-      , 'getRequesterIdByOrder', 'updateWalkerProfile', 'updateOrderStatus', ...walker_order_topic_list, 'deleteWalker'];
+      , 'getRequesterIdByOrder', 'updateWalkerProfile', 'updateOrderStatus', ...walker_order_topic_list, 'deleteWalker', 'updateWalkerAddress'];
     const requester_payment_topic_list = ['getPaymentToken', 'reqGetOrder', 'getPaymentDeeplink', 'getPaymentStatus'];
     let topic_list = ['hello', 'requesterRegistration', 'getCanteens', 'getProfile', 'googleAuth', ...shop_topic_list, ...requester_topic_list, ...walker_topic_list, ...admin_topic_list, ...requester_payment_topic_list];
     // unique topic

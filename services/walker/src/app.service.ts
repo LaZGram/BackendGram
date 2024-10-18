@@ -247,6 +247,7 @@ export class AppService {
           },
           orderItem: {
             select: {
+              orderItemId: true,
               quantity: true,
               specialInstructions: true,
               orderItemStatus: true, // Include orderItemStatus here
@@ -496,4 +497,5 @@ export class AppService {
       throw new RpcException({ statusCode: 404, message: `Failed to update order status: ${error.message}` });
     }
   }
+
 }

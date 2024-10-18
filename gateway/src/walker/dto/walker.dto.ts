@@ -569,3 +569,13 @@ export class WalkerGetDto {
   @IsDateString()
   verifyAt: string;
 }
+
+export class AddressData{
+  @ApiProperty({ description: 'Latitude of the address', example: 13.7563 })
+  @IsNumber()
+  latitude: number;
+
+  @ApiProperty({ description: 'Longitude of the address', example: 100.5018 })
+  @IsNumber()
+  longitude: number;
+}

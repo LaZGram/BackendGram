@@ -4,7 +4,7 @@ import { buildReviewDto , PostChangeProfilePictureDto, GetDebitCardDto, PostChan
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { catchError, lastValueFrom, Observable } from 'rxjs';
 import { CreateAddressRequestDto, CreateOrderRequestDto, CreateReportRequestDto, UpdateAddressRequestDto } from 'src/dtos/';
-import { CancelOrderResponseDto, CreateAddressResponseDto, CreateOrderResponseDto, CreateReportResponseDto, DeleteAddressResponseDto, GetAddressInfoResponseDto, GetAddressResponseDto, GetReviewInfoResponse, ReqGetOrderInfoResponseDto, UpdateAddressResponseDto } from './dto/response.dto';
+import { CancelOrderResponseDto, CreateAddressResponseDto, CreateOrderResponseDto, CreateReportResponseDto, DeleteAddressResponseDto, GetAddressInfoResponseDto, GetAddressResponseDto, GetReviewInfoResponse, ReqGetOrderInfoResponseDto, UpdateAddressResponseDto, WalkerAddressResponseDto } from './dto/response.dto';
 
 @ApiTags('REQUESTER')
 @Controller('requester')
@@ -322,5 +322,12 @@ export class RequesterController {
         const result = this.client.send('getShop', {});
         return await lastValueFrom(result);
     }
-    
+    @Get('walker/address')
+    @ApiOperation({ summary: 'Get walker address' })
+    @ApiQuery({ name: 'orderId', type: 'number' })
+    @ApiResponse({ status: 200, description: 'Walker address retrieved successfully.', type: WalkerAddressResponseDto })
+    async getWalkerAddress(@Request() req, @Query() orderId): Promise<string> {
+        const result = this.client.send('getWalkerAddress', { orderId });
+        return await lastValueFrom(result);
+    }    
 }
