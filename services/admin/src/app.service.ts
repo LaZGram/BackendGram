@@ -62,6 +62,22 @@ export class AppService {
     });
   }
 
+  async walkerAll(msg:any): Promise<any> {
+    return this.prisma.walker.findMany({
+      select: {
+        walkerId: true,
+        username: true,
+        email: true,
+        phoneNumber: true,
+        profilePicture: true,
+        bankAccountName: true,
+        bankAccountNo: true,
+        registerAt: true,
+        status: true,
+      },
+    });
+  }
+
   async denyWalker(msg: any): Promise<any> {
     return this.prisma.walker.update({
       where: {

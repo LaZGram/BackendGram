@@ -57,6 +57,11 @@ export class AppController {
     return this.appService.getChat(msg);
   }
   
+  @MessagePattern('walkerAll')
+  walkerAll(msg: any): any {
+    return this.appService.walkerAll(msg);
+  }
+  
   @MessagePattern('selectChat')
   selectChat(msg: any): any {
     return this.appService.selectChat(msg);

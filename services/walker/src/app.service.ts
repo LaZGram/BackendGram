@@ -249,16 +249,37 @@ export class AppService {
             select: {
               orderItemId: true,
               quantity: true,
+              totalPrice: true,
               specialInstructions: true,
-              orderItemStatus: true, // Include orderItemStatus here
+              orderItemStatus: true,
+              orderItemDate: true,
+              completedDate: true,
+              Photo: {
+                select: {
+                  photoId: true,
+                  photoPath: true,
+                  photoType: true,
+                },
+              },
+              shopId: true,
               menu: {
                 select: {
+                  menuId: true,
                   name: true,
                   price: true,
-                  shop: {
+                },
+              },
+              orderItemExtra: {
+                where: {
+                  selected: true,
+                },
+                select: {
+                  OrderItemExtraId: true,
+                  optionItem: {
                     select: {
-                      shopName: true,
-                      shopId: true, // Include shopId to distinguish shops
+                      optionItemId: true,
+                      name: true,
+                      price: true,
                     },
                   },
                 },
@@ -272,31 +293,79 @@ export class AppService {
         throw new RpcException({ statusCode: 404, message: `Order not found for ID ${msg.orderId}` });
       }
   
-      // Group order items by shop only
+      // Define the type for grouped items, including OrderItemExtra details
+      type GroupedItem = {
+        shopId: number;
+        items: {
+          quantity: number;
+          totalPrice: number;
+          specialInstructions: string | null;
+          orderItemStatus: string;
+          orderItemDate: Date;
+          completedDate: Date | null;
+          photo: {
+            photoId: number;
+            photoPath: string;
+            photoType: string | null;
+          } | null;
+          menu: {
+            menuId: number;
+            name: string;
+            price: number;
+          };
+          extras: {
+            OrderItemExtraId: number;
+            optionItemId: number;
+            optionItemName: string;
+            optionItemPrice: number;
+          }[];
+        }[];
+      };
+  
+      // Group order items by shop, including OrderItemExtra details
       const groupedItemsByShop = order.orderItem.reduce((grouped, item) => {
-        const { shopName, shopId } = item.menu.shop;
-        if (!grouped[shopId]) {
-          grouped[shopId] = {
-            shopName,
+        if (!grouped[item.shopId]) {
+          grouped[item.shopId] = {
+            shopId: item.shopId,
             items: [],
           };
         }
   
-        grouped[shopId].items.push({
-          orderItemId: item.orderItemId,
+
+        // Map OrderItemExtras to the format you want
+        const extras = item.orderItemExtra.map(extra => ({
+          OrderItemExtraId: extra.OrderItemExtraId,
+          optionItemId: extra.optionItem.optionItemId,
+          optionItemName: extra.optionItem.name,
+          optionItemPrice: extra.optionItem.price,
+        }));
+  
+        grouped[item.shopId].items.push({
           quantity: item.quantity,
+          totalPrice: item.totalPrice,
           specialInstructions: item.specialInstructions,
-          menuName: item.menu.name,
-          price: item.menu.price,
-          orderItemStatus: item.orderItemStatus, // Add orderItemStatus to the result
+          orderItemStatus: item.orderItemStatus,
+          orderItemDate: item.orderItemDate,
+          completedDate: item.completedDate,
+          photo: item.Photo ? {
+            photoId: item.Photo.photoId,
+            photoPath: item.Photo.photoPath,
+            photoType: item.Photo.photoType,
+          } : null,
+          menu: {
+            menuId: item.menu.menuId,
+            name: item.menu.name,
+            price: item.menu.price,
+          },
+          extras, // Add OrderItemExtra details here
         });
   
         return grouped;
-      }, {} as { [shopId: string]: { shopName: string; items: any[] } });
+      }, {} as { [shopId: number]: GroupedItem });
   
       // Convert groupedItemsByShop to an array format if needed
       const formattedGroupedItems = Object.values(groupedItemsByShop).map((shop) => ({
-        shopName: shop.shopName,
+        shopId: shop.shopId,
         items: shop.items,
       }));
   
@@ -311,7 +380,7 @@ export class AppService {
         address: order.address,
         canteen: order.canteen,
         requester: order.requester,
-        groupedOrderItemsByShop: formattedGroupedItems, // Add the grouped order items in the desired format
+        groupedOrderItemsByShop: formattedGroupedItems,
       };
   
       return formattedOrder;
@@ -319,7 +388,6 @@ export class AppService {
       throw new RpcException({ statusCode: 500, message: `Failed to get order detail: ${error.message}` });
     }
   }
-  
 
   async confirmOrderItem(msg: any): Promise<any> {
     try {

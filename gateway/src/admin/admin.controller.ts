@@ -348,4 +348,12 @@ export class AdminController {
     const value = await lastValueFrom(result);
     return value;
   }
+
+  @Get('walkerAll')
+  @ApiOperation({ summary: 'Show list of all walkers' })
+  @ApiResponse({ status: 200, description: 'Returns list of walkers.' })
+  async walkerAll(): Promise<any> {
+    const result = this.client.send('walkerAll', {});
+    return await lastValueFrom(result);
+  }
 }

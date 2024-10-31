@@ -80,7 +80,7 @@ export class OrderService {
               specialInstructions: true,
               orderItemStatus: true,
               orderItemDate: true,
-              completedDate: true,
+              completedDate: true,  
               Photo: {
                 select: {
                   photoId: true,
