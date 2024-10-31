@@ -326,9 +326,7 @@ export class AppService {
       const photo = await this.prisma.photo.create({
         data: {
           photoPath: msg.photoPath,
-          orderItem: {
-            connect: { orderItemId: Number(msg.orderItemId) },
-          },
+          orderItemId: Number(msg.orderItemId),
           photoType: 'orderItem',
         },
       });
@@ -358,14 +356,13 @@ export class AppService {
   async confirmOrder(msg: any): Promise<any> {
     try {
       // Create the photo entry, specifying that it is for an order
+      // console.log(Number(msg.orderId))
       const photo = await this.prisma.photo.create({
         data: {
           photoPath: msg.photoPath,
-          order: {
-            connect: { orderId: Number(msg.orderId) },
-          },
+          orderId: Number(msg.orderId),
           photoType: 'order',
-        },
+        }
       });
   
       // Update the order status to 'completed' and link the photo
