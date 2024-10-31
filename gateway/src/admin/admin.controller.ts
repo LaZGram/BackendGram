@@ -236,7 +236,16 @@ export class AdminController {
   @ApiQuery({ name: 'canteenId', type: 'number' })
   @ApiResponse({ status: 200, description: 'Returns list of shops in a canteen.', type: GetShopInCanteenResponse })
   async getShopInCanteen(@Query() canteenId: object): Promise<string> {
-    const result = await this.client.send('getShopInCanteen', canteenId);
+    const result = await this.client.send('getShopInCanteen', canteenId)
+    .pipe(
+      catchError(error => {
+        const { statusCode, message } = error;
+        if (statusCode === 404) {
+          throw new NotFoundException(message);
+        }
+        else throw new BadRequestException(error);
+      }),
+    );
     const value = await lastValueFrom(result);
     return value;
   }
@@ -246,7 +255,16 @@ export class AdminController {
   @ApiQuery({ name: 'shopId', type: 'number' })
   @ApiResponse({ status: 200, description: 'Returns menu of a shop.', type: GetShopMenuResponse })
   async getShopMenu(@Query() shopId: object): Promise<string> {
-    const result = await this.client.send('getShopMenu', shopId);
+    const result = await this.client.send('getShopMenu', shopId)
+    .pipe(
+      catchError(error => {
+        const { statusCode, message } = error;
+        if (statusCode === 404) {
+          throw new NotFoundException(message);
+        }
+        else throw new BadRequestException(error);
+      }),
+    );
     const value = await lastValueFrom(result);
     return value;
   }
@@ -256,7 +274,16 @@ export class AdminController {
   @ApiQuery({ name: 'shopId', type: 'number' })
   @ApiResponse({ status: 200, description: 'Returns order history of a shop.', type: GetShopOrderResponse })
   async adminGetShopOrderHistory(@Query() shopId: object): Promise<string> {
-    const result = await this.client.send('adminGetShopOrderHistory', shopId);
+    const result = await this.client.send('adminGetShopOrderHistory', shopId)
+    .pipe(
+      catchError(error => {
+        const { statusCode, message } = error;
+        if (statusCode === 404) {
+          throw new NotFoundException(message);
+        }
+        else throw new BadRequestException(error);
+      }),
+    );
     const value = await lastValueFrom(result);
     return value;
   }
@@ -266,7 +293,16 @@ export class AdminController {
   @ApiQuery({ name: 'shopId', type: 'number' })
   @ApiResponse({ status: 200, description: 'Returns information of a shop.', type: GetShopInfoResponse })
   async adminGetShopInfo(@Query() shopId: object): Promise<string> {
-    const result = await this.client.send('adminGetShopInfo', shopId);
+    const result = await this.client.send('adminGetShopInfo', shopId)
+    .pipe(
+      catchError(error => {
+        const { statusCode, message } = error;
+        if (statusCode === 404) {
+          throw new NotFoundException(message);
+        }
+        else throw new BadRequestException(error);
+      }),
+    );
     const value = await lastValueFrom(result);
     return value;
   }
