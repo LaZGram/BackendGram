@@ -65,12 +65,18 @@ export class AppController {
         topicList.push({
           topic,
           numPartitions: 1,
+          config: {
+            'max.message.bytes': '10485760', // Set max message size to 10 MB
+          },
         });
       }
       if (!topics.includes(`${topic}.reply`)) {
         topicList.push({
           topic: `${topic}.reply`,
           numPartitions: 1,
+          config: {
+            'max.message.bytes': '10485760', // Set max message size to 10 MB
+          },
         });
       }
     });
