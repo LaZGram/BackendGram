@@ -66,7 +66,8 @@ export class AppController {
           topic,
           numPartitions: 1,
           config: {
-            'max.message.bytes': '10485760', // Set max message size to 10 MB
+            'max.message.bytes': '104857600', // Set max message size to 10 MB
+            'max.request.size': '104857600', // Set max request size to 10 MB
           },
         });
       }
@@ -75,7 +76,8 @@ export class AppController {
           topic: `${topic}.reply`,
           numPartitions: 1,
           config: {
-            'max.message.bytes': '10485760', // Set max message size to 10 MB
+            'max.message.bytes': '104857600', // Set max message size to 10 MB
+            'max.request.size': '104857600', // Set max request size to 10 MB
           },
         });
       }
