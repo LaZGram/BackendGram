@@ -68,6 +68,11 @@ export class CanteenService {
         where: {
           canteenId: canteenId,
           orderStatus: "completed",
+          orderItem : {
+            some: {
+              shopId: shopId
+            }
+          }
         },
         select: {
           orderId: true,
@@ -120,7 +125,6 @@ export class CanteenService {
       if (!shop) throw new RpcException({ statusCode: 404, message: 'Shop not found' });
       const result = await this.client.send('getShopInfo', {authId: shop.authId});
       const value = await lastValueFrom(result);
-      console.log(value);
       return value;
     } catch (error) {
       throw error;
