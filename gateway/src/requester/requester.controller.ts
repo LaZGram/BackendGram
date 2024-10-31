@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, Delete, Inject, Param, Request, BadRequestException, NotFoundException, Put} from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Delete, Inject, Param, Request, BadRequestException, NotFoundException, Put, SetMetadata} from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { buildReviewDto , PostChangeProfilePictureDto, GetDebitCardDto, PostChangeDebitCardDto, SearchMenuDto, RequesterProfileDto, UpdateRequesterProfileDto, RequesterAddressDto, CreateDebitCardDto, RequesterCreateDto , createReviewDto , ResultgetReview , ResultcreateReview , ResultgetShop } from './dto/requester.dto';
 import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -74,6 +74,7 @@ export class RequesterController {
         return await lastValueFrom(result);
     }
 
+    @SetMetadata('isPublic', true)
     @Post('auth/google')
     @ApiOperation({ summary: 'Google authentication for requester' })
     @ApiResponse({ status: 200, description: 'Google authentication successful.' })

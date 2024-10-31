@@ -65,12 +65,22 @@ export class AppController {
         topicList.push({
           topic,
           numPartitions: 1,
+          config: {
+            'max.message.bytes': '104857600', // Set max message size to 10 MB
+            'max.request.size': '104857600', // Set max request size to 10 MB
+            'max.partition.fetch.bytes': '104857600', // Set max partition fetch size to 10 MB
+          },
         });
       }
       if (!topics.includes(`${topic}.reply`)) {
         topicList.push({
           topic: `${topic}.reply`,
           numPartitions: 1,
+          config: {
+            'max.message.bytes': '104857600', // Set max message size to 10 MB
+            'max.request.size': '104857600', // Set max request size to 10 MB
+            'max.partition.fetch.bytes': '104857600', // Set max partition fetch size to 10 MB
+          },
         });
       }
     });

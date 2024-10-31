@@ -13,6 +13,7 @@ export class AuthController {
       console.log('user:', JSON.stringify(user));
       await this.authService.sessionTokenSave(user.authId, sessionToken, msg.token);
       const requester = await this.authService.existsRequester(user.authId);
+      console.log(JSON.stringify({ sessionToken, "alradyRegistered": (requester != null) }));
       return JSON.stringify({ sessionToken, "alradyRegistered": (requester != null) });
     } catch (error) {
       console.error('Error verifying Google idToken:', error);

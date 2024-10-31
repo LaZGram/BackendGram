@@ -331,6 +331,7 @@ export class AppService {
           };
         }
   
+
         // Map OrderItemExtras to the format you want
         const extras = item.orderItemExtra.map(extra => ({
           OrderItemExtraId: extra.OrderItemExtraId,

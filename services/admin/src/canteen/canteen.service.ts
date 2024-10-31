@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ClientKafka } from '@nestjs/microservices';
+import { ClientKafka, RpcException } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { PrismaService } from 'src/prisma.service';
 
@@ -12,59 +12,122 @@ export class CanteenService {
   }
 
   getShopInCanteen(canteenId: number) {
-    return this.prisma.shop.findMany({
-      where: {
-        canteenId: canteenId
-      },
-      select: {
-        shopId: true,
-        username: true,
-        shopName: true,
-        profilePicture: true,
-        tel: true,
-        shopNumber: true,
-        status: true,
-        canteenId: true
-      }
-    });
+    try {
+      const canteen = this.prisma.canteen.findUnique({
+        where: {
+          canteenId: canteenId
+        }
+      });
+      if (!canteen) throw new RpcException({ statusCode: 404, message: 'Canteen not found' });
+      return this.prisma.shop.findMany({
+        where: {
+          canteenId: canteenId
+        },
+        select: {
+          shopId: true,
+          username: true,
+          shopName: true,
+          profilePicture: true,
+          tel: true,
+          shopNumber: true,
+          status: true,
+          canteenId: true
+        }
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 
   async getShopMenu(shopId: number) {
-    const shop = await this.prisma.shop.findUnique({
-      where: {
-        shopId: shopId
-      }
-    }).then(shop => {
-      return shop.authId;
-    });
-    const result = this.client.send('getMenu', {authId: shop});
-    const value = await lastValueFrom(result);
-    return value;
+    try {
+      const shop = await this.prisma.shop.findUnique({
+        where: {
+          shopId: shopId
+        }
+      });
+      if (!shop) throw new RpcException({ statusCode: 404, message: 'Shop not found' });
+      const result = this.client.send('getMenu', {authId: shop});
+      const value = await lastValueFrom(result);
+      return value;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async getShopOrderHistory(shopId: number) {
-    const shop = await this.prisma.shop.findUnique({
-      where: {
-        shopId: shopId
-      }
-    }).then(shop => {
-      return shop.authId;
-    });
-    const result = this.client.send('getShopOrderHistory', {authId: shop});
-    const value = await lastValueFrom(result);
-    return value;
+    try {
+      const shop = await this.prisma.shop.findUnique({
+        where: {
+          shopId: shopId
+        }
+      });
+      if (!shop) throw new RpcException({ statusCode: 404, message: 'Shop not found' });
+      const canteenId = (await this.prisma.shop.findUnique({ where: { shopId: shopId } })).canteenId;
+      return this.prisma.order.findMany({
+        where: {
+          canteenId: canteenId,
+          orderStatus: "completed",
+          orderItem : {
+            some: {
+              shopId: shopId
+            }
+          }
+        },
+        select: {
+          orderId: true,
+          orderDate: true,
+          orderStatus: true,
+          orderItem: {
+            where: {
+              shopId: shopId
+            },
+            select: {
+              orderItemId: true,
+              quantity: true,
+              totalPrice: true,
+              specialInstructions: true,
+              menu: {
+                select: {
+                  name: true,
+                  price: true,
+                }
+              },
+              orderItemExtra: {
+                where: {
+                  selected: true
+                },
+                select: {
+                  optionItem: {
+                    select: {
+                      name: true,
+                      price: true
+                    }
+                  }
+                }
+              }
+            },
+          }
+        },
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 
   async getShopInfo(shopId: number) {
-    const shop = await this.prisma.shop.findUnique({
-      where: {
-        shopId: shopId
-      }
-    }).then(shop => {
-      return shop.authId;
-    });
-    const result = this.client.send('getShopInfo', {authId: shop});
-    const value = await lastValueFrom(result);
-    return value;
+    try {
+      const shop = await this.prisma.shop.findUnique({
+        where: {
+          shopId: shopId
+        }
+      });
+      if (!shop) throw new RpcException({ statusCode: 404, message: 'Shop not found' });
+      const result = await this.client.send('getShopInfo', {authId: shop.authId});
+      const value = await lastValueFrom(result);
+      return value;
+    } catch (error) {
+      throw error;
+    }
   }
 }
