@@ -267,6 +267,11 @@ export class AppService {
                   menuId: true,
                   name: true,
                   price: true,
+                  shop: {
+                    select: {
+                      shopName: true, // Include shopName here
+                    },
+                  },
                 },
               },
               orderItemExtra: {
@@ -296,7 +301,9 @@ export class AppService {
       // Define the type for grouped items, including OrderItemExtra details
       type GroupedItem = {
         shopId: number;
+        shopName: string;
         items: {
+          orderItemId: number;
           quantity: number;
           totalPrice: number;
           specialInstructions: string | null;
@@ -324,14 +331,17 @@ export class AppService {
   
       // Group order items by shop, including OrderItemExtra details
       const groupedItemsByShop = order.orderItem.reduce((grouped, item) => {
-        if (!grouped[item.shopId]) {
-          grouped[item.shopId] = {
-            shopId: item.shopId,
+        const { shopId } = item;
+        const shopName = item.menu.shop.shopName;
+  
+        if (!grouped[shopId]) {
+          grouped[shopId] = {
+            shopId,
+            shopName,
             items: [],
           };
         }
   
-
         // Map OrderItemExtras to the format you want
         const extras = item.orderItemExtra.map(extra => ({
           OrderItemExtraId: extra.OrderItemExtraId,
@@ -340,7 +350,8 @@ export class AppService {
           optionItemPrice: extra.optionItem.price,
         }));
   
-        grouped[item.shopId].items.push({
+        grouped[shopId].items.push({
+          orderItemId: item.orderItemId, // Include orderItemId here
           quantity: item.quantity,
           totalPrice: item.totalPrice,
           specialInstructions: item.specialInstructions,
@@ -366,6 +377,7 @@ export class AppService {
       // Convert groupedItemsByShop to an array format if needed
       const formattedGroupedItems = Object.values(groupedItemsByShop).map((shop) => ({
         shopId: shop.shopId,
+        shopName: shop.shopName,
         items: shop.items,
       }));
   
@@ -388,6 +400,7 @@ export class AppService {
       throw new RpcException({ statusCode: 500, message: `Failed to get order detail: ${error.message}` });
     }
   }
+  
 
   async confirmOrderItem(msg: any): Promise<any> {
     try {
