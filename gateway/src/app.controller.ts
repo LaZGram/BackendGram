@@ -27,7 +27,7 @@ export class AppController {
   }
 
   async onModuleInit() {
-    const admin_canteen_list = ['getCanteen', 'getShopInCanteen', 'getShopMenu', 'adminGetShopOrderHistory', 'adminGetShopInfo'];
+    const admin_canteen_list = ['getCanteen', 'getShopInCanteen', 'adminGetShopMenu', 'adminGetShopOrderHistory', 'adminGetShopInfo'];
     const admin_report_list = ['getReport', 'getReportInfo', 'searchReport', 'filterReport'];
     const admin_order_list = ['getToDayOrder', 'getOrderInfo', 'searchOrder', 'filterOrder'];
     const admin_topic_list = [ 'walkerAll' , 'updateMenuStatusByAdmin' , 'updateShopStatusByAdmin' , 'selectChat', 'getChat', 'createAdmin', 'adminLogin', 'walkerQueue' , 'verifyWalker' , 'showRequester' , 'showWalker' , 'showOrder' , 'postApproval', ...admin_order_list, ...admin_report_list, ...admin_canteen_list];
