@@ -280,13 +280,8 @@ export class AppService {
                 },
                 select: {
                   OrderItemExtraId: true,
-                  optionItem: {
-                    select: {
-                      optionItemId: true,
-                      name: true,
-                      price: true,
-                    },
-                  },
+                  name: true,
+                  price: true,
                 },
               },
             },
@@ -322,7 +317,6 @@ export class AppService {
           };
           extras: {
             OrderItemExtraId: number;
-            optionItemId: number;
             optionItemName: string;
             optionItemPrice: number;
           }[];
@@ -345,9 +339,8 @@ export class AppService {
         // Map OrderItemExtras to the format you want
         const extras = item.orderItemExtra.map(extra => ({
           OrderItemExtraId: extra.OrderItemExtraId,
-          optionItemId: extra.optionItem.optionItemId,
-          optionItemName: extra.optionItem.name,
-          optionItemPrice: extra.optionItem.price,
+          optionItemName: extra.name,
+          optionItemPrice: extra.price,
         }));
   
         grouped[shopId].items.push({

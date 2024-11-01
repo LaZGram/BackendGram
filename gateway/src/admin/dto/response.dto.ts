@@ -135,20 +135,13 @@ export class Photo{
   uploadedAt: Date;
 }
 
-export class OptionItem {
-  @ApiProperty()
-  optionItemId: number
-  @ApiProperty()
-  name: string
-  @ApiProperty()
-  price: number
-}
-
 export class OrderItemExtra {
   @ApiProperty()
   orderItemExtraId: number
   @ApiProperty()
-  optionItem: OptionItem
+  name: string
+  @ApiProperty()
+  price: number
 }
 
 export class Menu {

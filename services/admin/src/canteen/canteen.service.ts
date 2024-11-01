@@ -47,7 +47,7 @@ export class CanteenService {
         }
       });
       if (!shop) throw new RpcException({ statusCode: 404, message: 'Shop not found' });
-      const result = this.client.send('getMenu', {authId: shop});
+      const result = this.client.send('getShopMenu', {shopId: shopId});
       const value = await lastValueFrom(result);
       return value;
     } catch (error) {
@@ -98,12 +98,8 @@ export class CanteenService {
                   selected: true
                 },
                 select: {
-                  optionItem: {
-                    select: {
-                      name: true,
-                      price: true
-                    }
-                  }
+                  name: true,
+                  price: true,
                 }
               }
             },
