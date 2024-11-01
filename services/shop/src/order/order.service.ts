@@ -26,6 +26,9 @@ export class OrderService {
         orderDate: true,
         orderStatus: true,
         orderItem: {
+          where: {
+            shopId: shopId
+          }
           select: {
             orderItemId: true,
             orderItemStatus: true,
