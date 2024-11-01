@@ -28,6 +28,7 @@ export class OrderService {
         orderItem: {
           select: {
             orderItemId: true,
+            orderItemStatus: true,
             quantity: true,
             totalPrice: true,
             specialInstructions: true,
