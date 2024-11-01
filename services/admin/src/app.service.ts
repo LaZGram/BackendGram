@@ -173,13 +173,14 @@ export class AppService {
   }
 
   async showOrder(): Promise<any> {
-    return this.prisma.order.findMany({
+    const orders = await this.prisma.order.findMany({
       select: {
         orderId: true,
         amount: true,
         totalPrice: true,
         shippingFee: true,
         orderStatus: true,
+        
         address: {
           select: {
             name: true,
@@ -187,6 +188,7 @@ export class AppService {
             longitude: true,
           },
         },
+        
         canteen: {
           select: {
             name: true,
@@ -194,11 +196,23 @@ export class AppService {
             longitude: true,
           },
         },
+        
+        orderItem: {
+          select: {
+            shop: {
+              select: {
+                shopName: true,
+              },
+            },
+          },
+        },
+        
         requester: {
           select: {
             username: true,
           },
         },
+        
         walker: {
           select: {
             username: true,
@@ -206,7 +220,17 @@ export class AppService {
         },
       },
     });
+  
+    // Transform the output to remove the array structure in `orderItem`
+    return orders.map(order => {
+      return {
+        ...order,
+        shop: order.orderItem[0]?.shop || null, // Get the first shop object or null if it doesn't exist
+      };
+    }).map(({ orderItem, ...rest }) => rest); // Remove the original `orderItem` field
   }
+  
+  
 
   async selectChat(msg: any): Promise<any> {
     try {
