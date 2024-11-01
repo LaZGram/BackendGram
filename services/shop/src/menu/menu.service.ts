@@ -46,7 +46,7 @@ export class MenuService {
     const menuExists = await this.prisma.menu.findUnique({
       where: { menuId: msg.menuId },
     });
-    if (!menuExists) {
+    if (!menuExists || menuExists.delete) {
       throw new RpcException({statusCode: 404, message: `Menu with id ${msg.menuId} does not exist.`});
     }
     await this.prisma.option.findMany({ where: { menuId: msg.menuId } }).then(async (option) => {
@@ -92,81 +92,100 @@ export class MenuService {
   }
 
   async updateMenuStatus(menuId: number) {
-    const menuExists = await this.prisma.menu.findUnique({
-      where: { menuId: menuId },
-    });
-    if (!menuExists) {
-      throw new RpcException({statusCode: 404, message: `Menu with id ${menuId} does not exist.`});
+    try {
+      const menuExists = await this.prisma.menu.findUnique({
+        where: { menuId: menuId },
+      });
+      if (!menuExists || menuExists.delete) {
+        throw new RpcException({statusCode: 404, message: `Menu with id ${menuId} does not exist.`});
+      }
+      const status = await this.prisma.menu.findUnique({
+        where: { menuId: menuId },
+      }).then((menu) => { return !menu.status; });
+      return this.prisma.menu.update({
+        where: { menuId: menuId },
+        data: { status: status },
+      });
+    } catch (error) {
+      throw new RpcException(error);
     }
-    const status = await this.prisma.menu.findUnique({
-      where: { menuId: menuId },
-    }).then((menu) => { return !menu.status; });
-    return this.prisma.menu.update({
-      where: { menuId: menuId },
-      data: { status: status },
-    });
   }
 
   async deleteMenu(id: number) {
-    const menuExists = await this.prisma.menu.findUnique({
-      where: { menuId: id },
-    });
-    if (!menuExists) {
-      throw new RpcException({statusCode: 404, message: `Menu with id ${id} does not exist.`});
-    }
-    const option = await this.prisma.option.findMany({ where: { menuId: id } });
-    for (const op of option) {
-      await this.prisma.optionItem.deleteMany({
-        where: { optionId: op.optionId }
+    try {
+      const menuExists = await this.prisma.menu.findUnique({
+        where: { menuId: id },
       });
+      if (!menuExists || menuExists.delete) {
+        throw new RpcException({statusCode: 404, message: `Menu with id ${id} does not exist.`});
+      }
+      return this.prisma.menu.update({
+        where: { menuId: id},
+        data: { 
+          status: false,
+          delete: true,
+       },
+      });
+    } catch (error) {
+      throw new RpcException(error);
     }
-    await this.prisma.option.deleteMany({
-      where: { optionId: { in: option.map(op => op.optionId) } }
-    });
-    return this.prisma.menu.delete({ where: { menuId: id } });
   }
 
   async getMenuInfo(id: number) {
-    const menuExists = await this.prisma.menu.findUnique({
-      where: { menuId: id },
-    });
-    if (!menuExists) {
-      throw new RpcException({statusCode: 404, message: `Menu with id ${id} does not exist.`});
-    }
-    return this.prisma.menu.findUnique({
-      where: { menuId: id },
-      select: {
-        menuId: true,
-        name: true,
-        price: true,
-        picture: true,
-        description: true,
-        status: true,
-        option: {
-          select: {
-            optionId: true,
-            name: true,
-            mustChoose: true,
-            maxChoose: true,
-            minChoose: true,
-            optionItem: {
-              select: {
-                optionItemId: true,
-                name: true,
-                price: true,
+    try {
+      const menuExists = await this.prisma.menu.findUnique({
+        where: { menuId: id },
+      });
+      if (!menuExists || menuExists.delete) {
+        throw new RpcException({statusCode: 404, message: `Menu with id ${id} does not exist.`});
+      }
+      return this.prisma.menu.findUnique({
+        where: { menuId: id },
+        select: {
+          menuId: true,
+          name: true,
+          price: true,
+          picture: true,
+          description: true,
+          status: true,
+          option: {
+            select: {
+              optionId: true,
+              name: true,
+              mustChoose: true,
+              maxChoose: true,
+              minChoose: true,
+              optionItem: {
+                select: {
+                  optionItemId: true,
+                  name: true,
+                  price: true,
+                },
               },
             },
           },
-        },
-      }
-    });
+        }
+      });
+    }catch (error) {
+      throw new RpcException(error);
+    }
   }
 
   async getMenu(authId: string) {
-    return (await this.prisma.menu.findMany({ where: { shopId: await this.appservice.getShopId(authId) } })).sort((a, b) => a.menuId - b.menuId);
+    const menu = await this.prisma.menu.findMany({ 
+      where: { 
+        shopId: await this.appservice.getShopId(authId),
+        delete: false || null,
+    }});
+    return menu.sort((a, b) => a.menuId - b.menuId);
   }
 
   async getShopMenu(shopId: number) {
-    return (await this.prisma.menu.findMany({ where: { shopId: shopId } })).sort((a, b) => a.menuId - b.menuId);
+    const menu = await this.prisma.menu.findMany({ 
+      where: { 
+        shopId: shopId,
+        delete: false,
+    }});
+    return menu.sort((a, b) => a.menuId - b.menuId);
   }
 }
