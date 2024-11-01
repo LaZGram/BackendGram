@@ -255,7 +255,7 @@ export class AdminController {
   @ApiQuery({ name: 'shopId', type: 'number' })
   @ApiResponse({ status: 200, description: 'Returns menu of a shop.', type: GetShopMenuResponse })
   async getShopMenu(@Query() shopId: object): Promise<string> {
-    const result = await this.client.send('getShopMenu', shopId)
+    const result = await this.client.send('adminGetShopMenu', shopId)
     .pipe(
       catchError(error => {
         const { statusCode, message } = error;

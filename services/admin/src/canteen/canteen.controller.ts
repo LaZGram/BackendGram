@@ -17,7 +17,7 @@ export class CanteenController {
     return this.canteenService.getShopInCanteen(canteenId);
   }
 
-  @MessagePattern('getShopMenu')
+  @MessagePattern('adminGetShopMenu')
   getShopMenu(data: object) {
     const shopId = parseInt(data['shopId'].toString());
     return this.canteenService.getShopMenu(shopId);
