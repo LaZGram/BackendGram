@@ -36,7 +36,7 @@ export class CanteenController {
   }
 
   onModuleInit() {
-    const topic_list = ['getMenu', 'getShopOrderHistory', 'getShopInfo']
+    const topic_list = ['getShopMenu', 'getShopOrderHistory', 'getShopInfo']
     topic_list.forEach(async (topic) => {
       await this.client.subscribeToResponseOf(topic);
     });
