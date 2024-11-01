@@ -72,8 +72,9 @@ export class AppService {
         profilePicture: true,
         bankAccountName: true,
         bankAccountNo: true,
-        registerAt: true,
         status: true,
+        registerAt: true,
+        verifyAt: true,
       },
     });
   }
