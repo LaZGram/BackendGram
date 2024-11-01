@@ -109,12 +109,13 @@ export class OrderService {
   }
 
   async shopUpdateOrderStatus(msg: UpdateOrderStatusDto) {
+    const shopId = await this.appservice.getShopId(msg.authId);
     const order = await this.prisma.order.findUnique({
       where: {
         orderId: msg.orderId,
       },
     });
-    await this.updateOrderItemStatus(msg.orderId, 'completed');
+    await this.updateOrderItemStatus(shopId, msg.orderId, 'completed');
     return order;
   }
 
@@ -129,11 +130,12 @@ export class OrderService {
     });
   }
 
-  async updateOrderItemStatus(orderId: number, status: string) {
+  async updateOrderItemStatus(shopId: number, orderId: number, status: string) {
     const date = new Date();
     return this.prisma.orderItem.updateMany({
       where: {
-        orderId: orderId
+        orderId: orderId,
+        shopId: shopId
       },
       data: {
         orderItemStatus: status,
