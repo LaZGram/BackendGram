@@ -97,6 +97,7 @@ model Address {
   note      String?
   latitude  Float
   longitude Float
+  deleted   String?
 
   requester   Requester @relation(fields: [requesterId], references: [requesterId])
   requesterId Int

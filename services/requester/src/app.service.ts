@@ -66,6 +66,12 @@ export class AppService {
         phoneNumber: true,
         profilePicture: true,
         address: {
+          where: {
+            OR: [
+              { deleted: null },
+              { deleted: { not: "delete" } }
+            ]
+          },
           select: {
             name: true,
             latitude: true,
