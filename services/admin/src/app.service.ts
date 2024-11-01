@@ -201,6 +201,7 @@ export class AppService {
           select: {
             shop: {
               select: {
+                shopId: true,
                 shopName: true,
               },
             },
@@ -221,13 +222,20 @@ export class AppService {
       },
     });
   
-    // Transform the output to remove the array structure in `orderItem`
-    return orders.map(order => {
+    // Remove duplicate shop names in each order's orderItems
+    const filteredOrders = orders.map(order => {
+      const uniqueShops = order.orderItem.filter(
+        (item, index, self) =>
+          index === self.findIndex((i) => i.shop.shopName === item.shop.shopName)
+      );
+  
       return {
         ...order,
-        shop: order.orderItem[0]?.shop || null, // Get the first shop object or null if it doesn't exist
+        orderItem: uniqueShops,
       };
-    }).map(({ orderItem, ...rest }) => rest); // Remove the original `orderItem` field
+    });
+  
+    return filteredOrders;
   }
   
   
