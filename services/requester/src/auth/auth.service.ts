@@ -69,6 +69,15 @@ export class AuthService {
         return requester;
     }
 
+    async existsWalker(authId: string) {
+        const walker = await this.prisma.walker.findUnique({
+            where: {
+                authId,
+            },
+        });
+        return walker;
+    }
+
     async createAuthId(msg: any) {
         const authId = await this.prisma.authorization.create({
             data: {
