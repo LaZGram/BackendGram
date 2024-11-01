@@ -13,16 +13,18 @@ export class OrderService {
     const order = await this.prisma.order.findMany({
       where: {
         orderStatus: "inProgress",
-        canteenId: canteenId
+        canteenId: canteenId,
+        orderItem: {
+          some: {
+            shopId: shopId
+          }
+        }
       },
       select: {
         orderId: true,
         orderDate: true,
         orderStatus: true,
         orderItem: {
-          where: {
-            shopId: shopId
-          },
           select: {
             orderItemId: true,
             quantity: true,
