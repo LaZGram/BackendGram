@@ -70,6 +70,11 @@ export class OrderService {
         orderDate: {
           gte: startOfDay,
           lte: endOfDay
+        },
+        orderItem: {
+          some: {
+            shopId: shopId
+          }
         }
       },
       select: {
@@ -77,9 +82,6 @@ export class OrderService {
         orderDate: true,
         orderStatus: true,
         orderItem: {
-          where: {
-            shopId: shopId
-          },
           select: {
             orderItemId: true,
             quantity: true,
