@@ -169,7 +169,9 @@ export class OrderItemExtra {
   @ApiProperty()
   orderItemExtraId: number
   @ApiProperty()
-  optionItem: OptionItem
+  name: string
+  @ApiProperty()
+  price: number
 }
 
 export class Menu {

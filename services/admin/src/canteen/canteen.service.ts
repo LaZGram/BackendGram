@@ -98,12 +98,8 @@ export class CanteenService {
                   selected: true
                 },
                 select: {
-                  optionItem: {
-                    select: {
-                      name: true,
-                      price: true
-                    }
-                  }
+                  name: true,
+                  price: true,
                 }
               }
             },
