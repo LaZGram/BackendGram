@@ -191,6 +191,7 @@ export class AppService {
         
         canteen: {
           select: {
+            canteenId: true,
             name: true,
             latitude: true,
             longitude: true,
