@@ -78,24 +78,14 @@ export class OrderService {
       }
     });
     for (let i = 0; i < orderItems.length; i++) {
-      const orderItemExtrasData = await Promise.all(
-        createOrderDto.orderItems[i].orderItemExtras.map(async extra => {
-          const optionItem = await this.prisma.optionItem.findUnique({
-            where: {
-              optionItemId: extra.optionItemId
-            }
-          });
+      await this.prisma.orderItemExtra.createMany({
+        data: createOrderDto.orderItems[i].orderItemExtras.map(extra => {
           return {
             orderItemId: orderItems[i].orderItemId,
-            name: optionItem.name,
-            price: optionItem.price,
+            optionItemId: extra.optionItemId,
             selected: extra.selected
-          };
+          }
         })
-      );
-    
-      await this.prisma.orderItemExtra.createMany({
-        data: orderItemExtrasData,
       });
     }
     return order;
@@ -231,8 +221,13 @@ export class OrderService {
                 },
                 select: {
                   OrderItemExtraId: true,
-                  name: true,
-                  price: true
+                  optionItem: {
+                    select: {
+                      optionItemId: true,
+                      name: true,
+                      price: true
+                    }
+                  }
                 }
               }
             }
