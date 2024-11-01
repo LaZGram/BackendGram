@@ -97,6 +97,7 @@ model Address {
   note      String?
   latitude  Float
   longitude Float
+  deleted   String?
 
   requester   Requester @relation(fields: [requesterId], references: [requesterId])
   requesterId Int
@@ -104,10 +105,14 @@ model Address {
 }
 
 model Photo {
-  photoId    Int      @id @default(autoincrement())
-  photoPath  String
-  uploadedAt DateTime @default(now())
-  order      Order?
+  photoId     Int      @id @default(autoincrement())
+  photoPath   String
+  uploadedAt  DateTime @default(now())
+  order       Order?
+  orderId Int?
+  orderItem   OrderItem?
+  orderItemId Int?
+  photoType   String?
 }
 
 model Order {
@@ -230,6 +235,7 @@ model Menu {
   picture     String
   description String
   status      Boolean
+  delete     Boolean?
 
   shop      Shop        @relation(fields: [shopId], references: [shopId])
   shopId    Int
@@ -256,7 +262,6 @@ model OptionItem {
 
   option         Option           @relation(fields: [optionId], references: [optionId])
   optionId       Int
-  orderItemExtra OrderItemExtra[]
 }
 
 model OrderItem {
@@ -267,7 +272,8 @@ model OrderItem {
   orderItemStatus     String
   orderItemDate       DateTime
   completedDate       DateTime?
-
+  Photo        Photo?   @relation(fields: [photoId], references: [photoId])
+  photoId      Int? @unique
   shop           Shop             @relation(fields: [shopId], references: [shopId])
   shopId         Int
   order          Order            @relation(fields: [orderId], references: [orderId])
@@ -279,12 +285,12 @@ model OrderItem {
 
 model OrderItemExtra {
   OrderItemExtraId Int     @id @default(autoincrement())
+  name         String
+  price        Float
   selected         Boolean
 
   orderItem    OrderItem  @relation(fields: [orderItemId], references: [orderItemId])
   orderItemId  Int
-  optionItem   OptionItem @relation(fields: [optionItemId], references: [optionItemId])
-  optionItemId Int
 }
 
 model Report {

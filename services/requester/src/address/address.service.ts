@@ -89,29 +89,12 @@ export class AddressService {
   }
 
   async deleteAddress(addressId: number) {
-    const address = await this.prisma.address.findUnique({
+    return this.prisma.address.update({
       where: {
         addressId: addressId
-      }
-    });
-    const requester = await this.prisma.requester.findUnique({
-      where: {
-        requesterId: address.requesterId
-      }
-    });
-    if (requester.defaultAddress === addressId) {
-      await this.prisma.requester.update({
-        where: {
-          requesterId: address.requesterId
-        },
-        data: {
-          defaultAddress: null
-        }
-      });
-    }
-    return this.prisma.address.delete({
-      where: {
-        addressId: addressId
+      },
+      data: {
+        deleted: "delete"
       }
     });
   }
@@ -128,17 +111,35 @@ export class AddressService {
     const defaultAddress = await this.prisma.requester.findUnique({
       where: {
         authId: authId
+      },
+      select: {
+        defaultAddress: true  // Retrieve only the defaultAddress field
       }
-    }).then(requester => {
-      return requester.defaultAddress;
-    });
-    let address = await this.prisma.address.findMany({
+    }).then(requester => requester?.defaultAddress);
+  
+    const address = await this.prisma.address.findMany({
       where: {
         requester: {
           authId: authId
-        }
+        },
+        OR: [
+          { deleted: null },
+          { deleted: { not: "delete" } }
+        ]
+      },
+      select: {
+        addressId: true,
+        name: true,
+        detail: true,
+        note: true,
+        latitude: true,
+        longitude: true,
+        // Add any other fields you want to retrieve
       }
     });
-    return {defaultAddress, address};
+  
+    return { defaultAddress, address };
   }
+  
+  
 }
