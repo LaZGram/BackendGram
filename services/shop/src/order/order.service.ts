@@ -40,8 +40,13 @@ export class OrderService {
               },
               select: {
                 OrderItemExtraId: true,
-                name: true,
-                price: true
+                optionItem: {
+                  select: {
+                    optionItemId: true,
+                    name: true,
+                    price: true
+                  }
+                }
               }
             }
           },
@@ -91,8 +96,12 @@ export class OrderService {
                 selected: true
               },
               select: {
-                name: true,
-                price: true
+                optionItem: {
+                  select: {
+                    name: true,
+                    price: true
+                  }
+                }
               }
             }
           },
