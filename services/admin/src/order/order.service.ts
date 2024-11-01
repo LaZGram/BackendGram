@@ -88,7 +88,12 @@ export class OrderService {
                   photoType: true,
                 }
               },
-              shopId: true,
+              shop: {
+                select: {
+                  shopId: true,
+                  shopName: true,
+                }
+              },
               menu:{
                 select: {
                   menuId: true,
