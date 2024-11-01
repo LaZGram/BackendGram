@@ -115,7 +115,7 @@ export class OrderService {
         orderId: msg.orderId,
       },
     });
-    await this.updateOrderItemStatus(shopId, msg.orderId, 'completed');
+    await this.updateOrderItemStatus(shopId, msg.orderId, 'done');
     return order;
   }
 
