@@ -184,7 +184,7 @@ export class MenuService {
     const menu = await this.prisma.menu.findMany({ 
       where: { 
         shopId: shopId,
-        delete: false,
+        delete: false || null,
     }});
     return menu.sort((a, b) => a.menuId - b.menuId);
   }
