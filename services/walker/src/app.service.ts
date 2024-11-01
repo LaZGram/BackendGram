@@ -466,7 +466,7 @@ export class AppService {
     try {
       const existingReport = await this.prisma.report.findMany({
         where: {
-          orderId: msg.orderId,
+          orderId: Number(msg.orderId),
           reportBy: 'walker',
         },
       });
@@ -485,8 +485,8 @@ export class AppService {
         throw new RpcException({ statusCode: 404, message: 'Order not found' });
       }
 
-      if (order.orderStatus !== 'completed') {
-        throw new RpcException({ statusCode: 400, message: 'Order not completed yet' });
+      if (order.orderStatus !== 'inProgress') {
+        throw new RpcException({ statusCode: 400, message: 'Order already completed or Order already cancelled.' });
       }
 
       const reportDate = new Date();
