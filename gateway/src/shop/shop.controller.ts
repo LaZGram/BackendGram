@@ -309,7 +309,8 @@ export class ShopController {
   @Patch('order/update-status')
   @ApiOperation({ summary: 'Update order status' })
   @ApiResponse({ status: 201, description: 'Update order status successes', type: UpdateOrderStatusResponseDto })
-  async updateOrderStatus(@Body() updateOrderStatus: UpdateOrderStatusRequestDto): Promise<string> {
+  async updateOrderStatus(@Body() updateOrderStatus: UpdateOrderStatusRequestDto, @Request() req): Promise<string> {
+    updateOrderStatus.authId = req.jwt.authId;
     const result = await this.client.send('updateShopOrderStatus', JSON.stringify(updateOrderStatus));
     const value = await lastValueFrom(result);
     return value;
