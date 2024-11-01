@@ -9,6 +9,7 @@ export class OrderService {
 
   async getOrders(authId: string) {
     const shopId = await this.appservice.getShopId(authId);
+    console.log(shopId);
     const canteenId = (await this.prisma.shop.findUnique({ where: { shopId: shopId } })).canteenId;
     const order = await this.prisma.order.findMany({
       where: {
@@ -50,7 +51,9 @@ export class OrderService {
         }
       },
     });
+    console.log(order);
     const filteredOrders = order.filter(o => o.orderItem.length > 0);
+    console.log(filteredOrders);
     return filteredOrders;
   }
 
