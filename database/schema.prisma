@@ -234,6 +234,7 @@ model Menu {
   picture     String
   description String
   status      Boolean
+  delete     Boolean?
 
   shop      Shop        @relation(fields: [shopId], references: [shopId])
   shopId    Int
@@ -260,7 +261,6 @@ model OptionItem {
 
   option         Option           @relation(fields: [optionId], references: [optionId])
   optionId       Int
-  orderItemExtra OrderItemExtra[]
 }
 
 model OrderItem {
@@ -284,12 +284,12 @@ model OrderItem {
 
 model OrderItemExtra {
   OrderItemExtraId Int     @id @default(autoincrement())
+  name         String
+  price        Float
   selected         Boolean
 
   orderItem    OrderItem  @relation(fields: [orderItemId], references: [orderItemId])
   orderItemId  Int
-  optionItem   OptionItem @relation(fields: [optionItemId], references: [optionItemId])
-  optionItemId Int
 }
 
 model Report {
