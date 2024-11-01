@@ -14,11 +14,11 @@ export class AuthController {
       await this.authService.sessionTokenSave(user.authId, sessionToken, msg.token);
       const requester = await this.authService.existsRequester(user.authId);
       const walker = await this.authService.existsWalker(user.authId);
-      console.log(JSON.stringify({ sessionToken, "alradyRegistered": (requester != null || walker != null) }));
+      console.log(JSON.stringify({ sessionToken, "alradyRegistered": (requester != null), "alradyRegisteredWalker": (walker != null) }));
       if(requester == null) {
         
       }
-      return JSON.stringify({ sessionToken, "alradyRegistered": (requester != null) });
+      return JSON.stringify({ sessionToken, "alradyRegistered": (requester != null), "alradyRegisteredWalker": (walker != null) });
     } catch (error) {
       console.error('Error verifying Google idToken:', error);
       return JSON.stringify({ error: 'Invalid token' });
