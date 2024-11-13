@@ -9,11 +9,17 @@ export class OrderService {
 
   async getOrders(authId: string) {
     const shopId = await this.appservice.getShopId(authId);
+    console.log(shopId);
     const canteenId = (await this.prisma.shop.findUnique({ where: { shopId: shopId } })).canteenId;
     const order = await this.prisma.order.findMany({
       where: {
         orderStatus: "inProgress",
-        canteenId: canteenId
+        canteenId: canteenId,
+        orderItem: {
+          some: {
+            shopId: shopId
+          }
+        }
       },
       select: {
         orderId: true,
@@ -25,6 +31,7 @@ export class OrderService {
           },
           select: {
             orderItemId: true,
+            orderItemStatus: true,
             quantity: true,
             totalPrice: true,
             specialInstructions: true,
@@ -48,7 +55,9 @@ export class OrderService {
         }
       },
     });
+    console.log(order);
     const filteredOrders = order.filter(o => o.orderItem.length > 0);
+    console.log(filteredOrders);
     return filteredOrders;
   }
 
@@ -65,6 +74,11 @@ export class OrderService {
         orderDate: {
           gte: startOfDay,
           lte: endOfDay
+        },
+        orderItem: {
+          some: {
+            shopId: shopId
+          }
         }
       },
       select: {
@@ -72,9 +86,6 @@ export class OrderService {
         orderDate: true,
         orderStatus: true,
         orderItem: {
-          where: {
-            shopId: shopId
-          },
           select: {
             orderItemId: true,
             quantity: true,
@@ -102,13 +113,13 @@ export class OrderService {
   }
 
   async shopUpdateOrderStatus(msg: UpdateOrderStatusDto) {
+    const shopId = await this.appservice.getShopId(msg.authId);
     const order = await this.prisma.order.findUnique({
       where: {
         orderId: msg.orderId,
       },
     });
-    await this.updateOrderStatus(msg.orderId, 'completed');
-    await this.updateOrderItemStatus(msg.orderId, 'completed');
+    await this.updateOrderItemStatus(shopId, msg.orderId, 'done');
     return order;
   }
 
@@ -123,11 +134,12 @@ export class OrderService {
     });
   }
 
-  async updateOrderItemStatus(orderId: number, status: string) {
+  async updateOrderItemStatus(shopId: number, orderId: number, status: string) {
     const date = new Date();
     return this.prisma.orderItem.updateMany({
       where: {
-        orderId: orderId
+        orderId: orderId,
+        shopId: shopId
       },
       data: {
         orderItemStatus: status,

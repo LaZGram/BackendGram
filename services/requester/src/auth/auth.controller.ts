@@ -1,6 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { RpcException } from '@nestjs/microservices';
 
 @Controller()
 export class AuthController {
@@ -10,6 +11,9 @@ export class AuthController {
   async requesterRegistration(@Payload() msg:any ) : Promise<string> {
     try {
       let { sessionToken, user } = await this.authService.verifyGoogleToken(msg.token);
+      if (user.email.split('@')[1] !== 'ku.th') {
+        throw new RpcException({statusCode: 400, message: `email ${user.email} is not ku email`});
+      }
       console.log('user:', JSON.stringify(user));
       await this.authService.sessionTokenSave(user.authId, sessionToken, msg.token);
       const requester = await this.authService.existsRequester(user.authId);
